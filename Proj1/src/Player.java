@@ -6,12 +6,14 @@ public class Player {
 	protected String name;
 	private ArrayList<Card> hand = new ArrayList<Card>();
 	private ArrayList<Card> playable = new ArrayList<Card>();
+	private int maxHandSize;
 	
-	public Player(){
+	public Player(int handSize){
 		name = "User";
+		maxHandSize = handSize;
 	}
-	public Player(String userName){
-		this();
+	public Player(int handSize, String userName){
+		this(handSize);
 		name = userName;
 	}
 	
@@ -42,10 +44,22 @@ public class Player {
 		}
 		return highest;
 	}
+	public void addCard( Card C){
+		hand.add( C);
+		if( hand.size() > maxHandSize){
+			//TODO
+		}
+	}
+	public void discardFromHand(Card c, CardPile discard){
+		discard.returnCard( c);
+	}
 	public ArrayList<Card> getHand(){
 		return hand;
 	}
 	
+	/*
+	 * Methods 
+	 */
 	private Boolean hasStraightFlush(){
 		return false;
 	}

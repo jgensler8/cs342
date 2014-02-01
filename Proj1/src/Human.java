@@ -2,13 +2,12 @@
 public class Human extends Player{
 	//doesn't contain AI, but IO
 	
-	public Human(){
+	public Human(int handSize){
+		super( handSize);
 		name = "Human";
 	}
-	public Human( String userName){
-		this();
-		name = userName;
+	public Human(int handSize, String userName){
+		super( handSize, userName);
 	}
-	
 	//
 }

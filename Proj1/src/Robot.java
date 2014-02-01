@@ -2,12 +2,12 @@
 public class Robot extends Player{
 	//Contains AI, no IO
 	
-	public Robot(){
+	public Robot(int handSize){
+		super( handSize);
 		name = "Robot";
 	}
-	public Robot(String userName){
-		this();
-		name = userName;
+	public Robot(int handSize, String userName){
+		super( handSize, userName);
 	}
 	
 	

@@ -1,15 +1,29 @@
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class Game {
-	//2 card piles
-	//Players
+	static int maxHandSize = 5; 
 	
-	//display hand
-	// name: {hand}
-	// highest playable move
 	public static void main( String[] Args){
-		System.out.println("hey");
-		//prompt
-			//user give number of computer opponents
+		printGreeting();
+		int numComps = getNumComps();
 		
+		//now generate the game
+		CardPile Deck = new CardPile(1);
+		Deck.shufflePile();
+		CardPile Discard = new CardPile();
+		Human User = new Human( maxHandSize);
+		ArrayList<Robot> Robots = new ArrayList<Robot>();
+		//generate the number of robots to play against
+		while( numComps >= 0){
+			Robot toAdd = new Robot(maxHandSize, "Computer " + Integer.toString(numComps) );
+			Robots.add( toAdd);
+			--numComps;
+		}
+		//deal out the cards
+		initPlayersHands( User, Robots, Deck);
+		
+		printHand( User);
 		//game starts
 			//give in game messages (deck being shuffled)
 			//
@@ -18,4 +32,61 @@ public class Game {
 		
 		
 	}
+	
+	/*
+	 * initial message sent at beginning of game
+	 */
+	static void printGreeting(){
+		System.out.println("Welcome to Poker!");
+	}
+	
+	/*
+	 * print the Humans Hand to system.out
+	 */
+	static void printHand( Human User){
+		System.out.print( User.getName() + ": ");
+		ArrayList<Card> UserHand = User.getHand();
+		for( Card c : UserHand){
+			System.out.print( c.getPrintable() + " ");
+		}
+		System.out.println("");
+	}
+	
+	/*
+	 * Distribute maxHandSize cards to each player and robot
+	 */
+	static void initPlayersHands( Human theUser, ArrayList<Robot> theRobots, CardPile Deck){
+		for( int handCounter = 0; handCounter < maxHandSize; ++handCounter){
+			theUser.addCard( Deck.drawCard() );
+			for( Robot R : theRobots){
+				R.addCard( Deck.drawCard() );
+			}
+		}
+	}
+	
+	/*
+	 * Get the user to specify the number of computers it wants to play against
+	 */
+	static int getNumComps(){
+		int input = 0;
+		System.out.println("Enter the number of computers you want to play against");
+		try {
+			input = System.in.read();
+			input -= 49;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		while( input < 1 && input > 4){ // if the number of computers is not 1,2,3,or4
+			System.out.println("Sorry, the number must be 1, 2, 3, or 4");
+			try {
+				input = System.in.read();
+				input -= 49;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return input;
+	}
+	
+	
 }
