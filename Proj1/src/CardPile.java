@@ -28,6 +28,11 @@ public class CardPile {
 			pile = generateDeck();
 		}
 	}
+	
+	/*
+	 * pull a card form the deck
+	 * if a card can't be drawn, throw an exception
+	 */
 	public Card drawCard(){
 		try{
 			return pile.remove(0);
@@ -37,10 +42,17 @@ public class CardPile {
 		Card top = new Card(0,0);
 		return top;
 	}
+	
+	/*
+	 * giving a card back to a pile (mostly used to discard)
+	 */
 	public void returnCard(Card toReturn){
 		pile.add(toReturn);
 	}
 	
+	/*
+	 * generate a standard 52 card deck and return it
+	 */
 	private ArrayList<Card> generateDeck(){
 		ArrayList<Card> deckPile = new ArrayList<Card>();
 		for(int rank = 1; rank < 14; ++rank){
@@ -51,6 +63,10 @@ public class CardPile {
 		}
 		return deckPile;
 	}
+	
+	/*
+	 * shuffle the deck
+	 */
 	public void shufflePile(){
 		Card temp;
 		int randomIndex;

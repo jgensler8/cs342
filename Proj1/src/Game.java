@@ -8,7 +8,7 @@ public class Game {
 		printGreeting();
 		int numComps = getNumComps();
 		
-		//now generate the game
+		//generate basic game items
 		CardPile Deck = new CardPile(1);
 		Deck.shufflePile();
 		CardPile Discard = new CardPile();
@@ -23,12 +23,8 @@ public class Game {
 		//deal out the cards
 		initPlayersHands( User, Robots, Deck);
 
-		//game has started
+		//start the game
 		launchGame( User, Robots, Deck, Discard);
-		
-		
-		//play game again?:w
-		
 	}
 	
 	/*
@@ -36,18 +32,6 @@ public class Game {
 	 */
 	static void printGreeting(){
 		System.out.println("Welcome to Poker!");
-	}
-	
-	/*
-	 * print the Humans Hand to system.out
-	 */
-	static void printHand( Human User){
-		System.out.print( User.getName() + "'s hand: ");
-		ArrayList<Card> UserHand = User.getHand();
-		for( Card c : UserHand){
-			System.out.print( c.getPrintable() + " ");
-		}
-		System.out.println("");
 	}
 	
 	/*
@@ -67,10 +51,10 @@ public class Game {
 	 */
 	static int getNumComps(){
 		int input = 0;
-		System.out.println("Enter the number of computers you want to play against");
+		System.out.print("Enter the number of computers you want to play against: ");
 		try {
 			input = System.in.read();
-			input -= 49;
+			input -= 49; 				//ascii to decimal
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -78,7 +62,7 @@ public class Game {
 			System.out.println("Sorry, the number must be 1, 2, 3, or 4");
 			try {
 				input = System.in.read();
-				input -= 49;
+				input -= 49; 			//ascii to decimal
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -90,12 +74,31 @@ public class Game {
 	 * the moves of user and robot are contained here
 	 */
 	static void launchGame(Human User, ArrayList<Robot> Robots, CardPile Deck, CardPile Discard ){
-		//show user hand
-		printHand( User);
-		//get user move
-		
-		
-		//resolve user hand and bot hands
+		User.printHand();												//show user hand
+		System.out.println("List the cards you wish to discard: ");		//get user move
+		//TODO*******
+		int userScore = User.evalHand();								//resolve user hand
+		for( Robot R : Robots){											//get the bot's move
+			R.makeMove( Deck, Discard);
+		}
+		int highestBotScore = 0, botScore, botNum = 0;
+		for( int botIndex = 0; botIndex < Robots.size(); ++botIndex){	//resolve bot(s) hand
+			botScore = Robots.get(botIndex).evalHand();
+			if( botScore > highestBotScore){
+				highestBotScore = botScore;
+				botNum = botIndex;
+			}
+		}
+			//calculate if the human or a bot won
+		if( userScore > highestBotScore){
+			System.out.println("CONGRATS, " + User.getName() + "! You've won!");
+		}
+		else if( userScore < highestBotScore){
+			System.out.println("BUMMER! " + Robots.get(botNum).getName() + " has beat you!");
+		}
+		else{
+			System.out.println("WOW! the game resulted in a tie of hands");
+		}
 		
 	}
 }

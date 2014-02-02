@@ -34,12 +34,24 @@ public class Card {
 			//TODO
 		}
 	}
+	
+	/*
+	 * get the rank of the card
+	 */
 	public int getRank(){
 		return rank;
 	}
+	
+	/*
+	 * get the suit of the card
+	 */
 	public int getSuit(){
 		return suit;
 	}
+	
+	/*
+	 * generate a string that represents the value of the card
+	 */
 	public String getPrintable(){
 		String printable = "";
 		switch( rank){
