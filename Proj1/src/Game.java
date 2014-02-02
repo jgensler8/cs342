@@ -22,14 +22,12 @@ public class Game {
 		}
 		//deal out the cards
 		initPlayersHands( User, Robots, Deck);
+
+		//game has started
+		launchGame( User, Robots, Deck, Discard);
 		
-		printHand( User);
-		//game starts
-			//give in game messages (deck being shuffled)
-			//
 		
 		//play game again?:w
-		
 		
 	}
 	
@@ -44,7 +42,7 @@ public class Game {
 	 * print the Humans Hand to system.out
 	 */
 	static void printHand( Human User){
-		System.out.print( User.getName() + ": ");
+		System.out.print( User.getName() + "'s hand: ");
 		ArrayList<Card> UserHand = User.getHand();
 		for( Card c : UserHand){
 			System.out.print( c.getPrintable() + " ");
@@ -88,5 +86,16 @@ public class Game {
 		return input;
 	}
 	
-	
+	/*
+	 * the moves of user and robot are contained here
+	 */
+	static void launchGame(Human User, ArrayList<Robot> Robots, CardPile Deck, CardPile Discard ){
+		//show user hand
+		printHand( User);
+		//get user move
+		
+		
+		//resolve user hand and bot hands
+		
+	}
 }
