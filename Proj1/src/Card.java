@@ -40,7 +40,7 @@ public class Card {
 	 */
 	public int getRank(){
 		return rank;
-	}
+	}	
 	
 	/*
 	 * get the suit of the card

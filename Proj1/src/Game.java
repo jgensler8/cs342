@@ -13,10 +13,10 @@ public class Game {
 		Deck.shufflePile();
 		CardPile Discard = new CardPile();
 		Human User = new Human( maxHandSize);
-		ArrayList<Robot> Robots = new ArrayList<Robot>();
+		ArrayList<Opponent> Robots = new ArrayList<Opponent>();
 		//generate the number of robots to play against
 		while( numComps >= 0){
-			Robot toAdd = new Robot(maxHandSize, "Computer " + Integer.toString(numComps) );
+			Opponent toAdd = new Opponent(maxHandSize, "Computer " + Integer.toString(numComps) );
 			Robots.add( toAdd);
 			--numComps;
 		}
@@ -37,10 +37,10 @@ public class Game {
 	/*
 	 * Distribute maxHandSize cards to each player and robot
 	 */
-	static void initPlayersHands( Human theUser, ArrayList<Robot> theRobots, CardPile Deck){
+	static void initPlayersHands( Human theUser, ArrayList<Opponent> theRobots, CardPile Deck){
 		for( int handCounter = 0; handCounter < maxHandSize; ++handCounter){
 			theUser.addCard( Deck.drawCard() );
-			for( Robot R : theRobots){
+			for( Opponent R : theRobots){
 				R.addCard( Deck.drawCard() );
 			}
 		}
@@ -73,23 +73,24 @@ public class Game {
 	/*
 	 * the moves of user and robot are contained here
 	 */
-	static void launchGame(Human User, ArrayList<Robot> Robots, CardPile Deck, CardPile Discard ){
-		User.printHand();												//show user hand
-		System.out.println("List the cards you wish to discard: ");		//get user move
+	static void launchGame(Human User, ArrayList<Opponent> Robots, CardPile Deck, CardPile Discard ){
+		printHand( User);
+		System.out.println("List the cards you wish to discard: ");
 		//TODO*******
-		int userScore = User.evalHand();								//resolve user hand
-		for( Robot R : Robots){											//get the bot's move
+		int userScore = User.hand.evalHand();
+		for( Opponent R : Robots){
 			R.makeMove( Deck, Discard);
 		}
 		int highestBotScore = 0, botScore, botNum = 0;
-		for( int botIndex = 0; botIndex < Robots.size(); ++botIndex){	//resolve bot(s) hand
-			botScore = Robots.get(botIndex).evalHand();
+		for( int botIndex = 0; botIndex < Robots.size(); ++botIndex){
+			botScore = Robots.get(botIndex).hand.evalHand();
 			if( botScore > highestBotScore){
 				highestBotScore = botScore;
 				botNum = botIndex;
 			}
 		}
-			//calculate if the human or a bot won
+		
+		//calculate if the human or a bot won
 		if( userScore > highestBotScore){
 			System.out.println("CONGRATS, " + User.getName() + "! You've won!");
 		}
@@ -101,4 +102,25 @@ public class Game {
 		}
 		
 	}
+	
+	/*
+	 * print the players hand to system.out
+	 */
+	public static void printHand(Human H){
+		Hand userHand = H.getHand();
+		System.out.print( H.getName() + "'s hand: ");
+		for(int cardNum = 0; cardNum < userHand.Cards.size(); ++cardNum ){
+			System.out.print( (cardNum+1) + ") " + userHand.Cards.get(cardNum).getPrintable() + " ");
+		}
+		System.out.println("");
+	}
+	public static void printHand( Opponent O){
+		Hand oppHand = O.getHand();
+		System.out.print( O.getName() + "'s hand: ");
+		for(int cardNum = 0; cardNum < oppHand.Cards.size(); ++cardNum ){
+			System.out.print( (cardNum+1) + ") " + oppHand.Cards.get(cardNum).getPrintable() + " ");
+		}
+		System.out.println("");
+	}
+
 }
