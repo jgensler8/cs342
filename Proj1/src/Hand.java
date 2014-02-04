@@ -17,7 +17,7 @@ public class Hand {
 	 */
 	public void add( Card C){
 		if( cards.size() > HANDSIZE){
-			//TODO ***THROW SOME EXCEPTIN OR SOMETHING
+			//TODO ***THROW SOME EXCEPTION OR SOMETHING
 		}
 		else{
 			cards.add( C);
@@ -57,14 +57,14 @@ public class Hand {
 		if( hasRoyalFlush() )		score += 180;	
 		else if( hasStraightFlush())score += 160;
 		else if( hasFourOfAKind() ) score += 140;
-		else if( hasFullHouse() ) 	score += 120;
+		else if( hasFullHouse() ) 	score += 120; // TODO RANK OF TRIPLE IS THE "highest card" 
 		else if( hasFlush() ) 		score += 100;
 		else if( hasStraight() ) 	score += 80;
 		else if( hasThreeOfAKind())	score += 60;
 		else if( hasTwoPair() ) 	score += 40;
 		else if( hasOnePair() ) 	score += 20;
 		
-		score += getHighestInPlayable();
+		score += getHighestInPlayable(); //SEE ABOVE
 		return score;
 	}
 	
@@ -91,7 +91,7 @@ public class Hand {
 	 * A,K,Q,J,10 in any suit
 	 */
 	private Boolean hasRoyalFlush(){
-		return hasStraightFlush();
+		return hasStraightFlush(); //TODO // && cards == A K Q J 10
 	}
 	/*
 	 * straight + flush 
@@ -118,7 +118,8 @@ public class Hand {
 	 * three of a kind + two of a kind
 	 */
 	private Boolean hasFullHouse(){
-		return hasThreeOfAKind() && hasOnePair(); //TODO
+		return hasThreeOfAKind() && hasOnePair(); //TODO what do we do when we find the three of a kind?
+		//perhaps we can actually enumerate this one
 	}
 	/*
 	 * five cards of same suit
@@ -138,7 +139,7 @@ public class Hand {
 		this.orderDescending();
 		int previousRank = cards.get(0).getRank();
 		for(int cardNum = 1; cardNum < cards.size(); previousRank = cards.get(cardNum).getRank(), ++cardNum){
-			if( cards.get(cardNum).getRank() != (previousRank-1) ) return false;
+			if( cards.get(cardNum).getRank() != (previousRank-1) ) return false; //TODO make work with A K Q J 10
 		}
 		return true;
 	}
