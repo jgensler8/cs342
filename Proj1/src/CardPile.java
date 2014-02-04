@@ -67,7 +67,7 @@ public class CardPile {
 	/*
 	 * shuffle the deck
 	 */
-	public void shufflePile(){
+	public void shuffle(){
 		Card temp;
 		int randomIndex;
 		for(int switches = 0; switches < 200; ++switches){

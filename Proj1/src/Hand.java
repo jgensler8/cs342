@@ -53,7 +53,8 @@ public class Hand {
 	 */
 	public int evalHand(){
 		int score = 0;
-		if( hasStraightFlush() ) 	score += 160;
+		if( hasRoyalFlush() )		score += 180;	
+		else if( hasStraightFlush())score += 160;
 		else if( hasFourOfAKind() ) score += 140;
 		else if( hasFullHouse() ) 	score += 120;
 		else if( hasFlush() ) 		score += 100;
@@ -85,6 +86,9 @@ public class Hand {
 	 * separate functions to determine if a certain type of
 	 * playable hand applies to the one in this player's hand
 	 */
+	private Boolean hasRoyalFlush(){
+		return false;
+	}
 	private Boolean hasStraightFlush(){
 		return false;
 	}
