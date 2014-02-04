@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Game {
-	static int maxHandSize = 5; 
+	static final int HANDSIZE = 5; 
 	
 	public static void main( String[] Args){
 		printGreeting();
@@ -12,12 +12,12 @@ public class Game {
 		CardPile deck = new CardPile(1);
 		deck.shuffle();
 		CardPile discard = new CardPile();
-		Human User = new Human( maxHandSize);
+		Human User = new Human( HANDSIZE);
 		ArrayList<Opponent> opponents = new ArrayList<Opponent>();
 		
 		//generate the number of robots to play against
 		while( numComps >= 0){
-			Opponent toAdd = new Opponent(maxHandSize, "Computer " + Integer.toString(numComps) );
+			Opponent toAdd = new Opponent(HANDSIZE, "Computer " + Integer.toString(numComps) );
 			opponents.add( toAdd);
 			--numComps;
 		}
@@ -40,11 +40,15 @@ public class Game {
 	 * Distribute maxHandSize cards to each player and robot
 	 */
 	static void initPlayersHands( Human user, ArrayList<Opponent> opponents, CardPile deck){
-		for( int handCounter = 0; handCounter < maxHandSize; ++handCounter){
-			user.hand.Cards.add( deck.drawCard() );
+		for( int handCounter = 0; handCounter < HANDSIZE; ++handCounter){
+			user.hand.cards.add( deck.drawCard() );
 			for( Opponent R : opponents){
-				R.hand.Cards.add( deck.drawCard() );
+				R.hand.cards.add( deck.drawCard() );
 			}
+		}
+		user.hand.orderDescending();
+		for( Opponent R: opponents){
+			R.hand.orderDescending();
 		}
 	}
 	
@@ -60,8 +64,8 @@ public class Game {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		while( input < 1 && input > 4){ // if the number of computers is not 1,2,3,or4
-			System.out.println("Sorry, the number must be 1, 2, 3, or 4");
+		while( input < 1 && input > 3){ // if the number of computers is not 1,2,3,or4
+			System.out.println("Sorry, the number must be 1, 2, or 3");
 			try {
 				input = System.in.read();
 				input -= 49;
@@ -111,16 +115,16 @@ public class Game {
 	public static void printHand(Human human){
 		Hand userHand = human.getHand();
 		System.out.print( human.getName() + "'s hand: ");
-		for(int cardNum = 0; cardNum < userHand.Cards.size(); ++cardNum ){
-			System.out.print( (cardNum+1) + ") " + userHand.Cards.get(cardNum).getPrintable() + " ");
+		for(int cardNum = 0; cardNum < userHand.cards.size(); ++cardNum ){
+			System.out.print( (cardNum+1) + ") " + userHand.cards.get(cardNum).getPrintable() + " ");
 		}
 		System.out.println("");
 	}
 	public static void printHand( Opponent opponent){
 		Hand oppHand = opponent.getHand();
 		System.out.print( opponent.getName() + "'s hand: ");
-		for(int cardNum = 0; cardNum < oppHand.Cards.size(); ++cardNum ){
-			System.out.print( (cardNum+1) + ") " + oppHand.Cards.get(cardNum).getPrintable() + " ");
+		for(int cardNum = 0; cardNum < oppHand.cards.size(); ++cardNum ){
+			System.out.print( (cardNum+1) + ") " + oppHand.cards.get(cardNum).getPrintable() + " ");
 		}
 		System.out.println("");
 	}

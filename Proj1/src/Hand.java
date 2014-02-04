@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Hand {
 	// the max hand size that is allowed for any hand
 	public final int HANDSIZE = 5;
 	// the actual list of cards that the hand contains
-	ArrayList<Card> Cards = new ArrayList<Card>();
+	ArrayList<Card> cards = new ArrayList<Card>();
 	
 	public Hand(){	
 	
@@ -15,11 +16,11 @@ public class Hand {
 	 * if the hand "overflows," throw an exception to stop the game
 	 */
 	public void add( Card C){
-		if( Cards.size() > HANDSIZE){
+		if( cards.size() > HANDSIZE){
 			//TODO ***THROW SOME EXCEPTIN OR SOMETHING
 		}
 		else{
-			Cards.add( C);
+			cards.add( C);
 		}
 	}
 	
@@ -27,14 +28,14 @@ public class Hand {
 	 * discard a card index
 	 */
 	public Card remove(int index){
-		return Cards.remove(index);
+		return cards.remove(index);
 	}
 	
 	/*
 	 * order the cards from highest value first to lowest value last
 	 */
 	public void orderDescending(){
-		
+		Collections.sort(cards, Card.cardComparatorDesc);
 	}
 	
 	/*
@@ -42,7 +43,7 @@ public class Hand {
 	 */
 	public ArrayList<Card> getHand(){
 		//TODO make this a deep copy?
-		return Cards;
+		return cards;
 	}
 	
 	/*
@@ -74,9 +75,9 @@ public class Hand {
 	private int getHighestInPlayable() {
 		//TODO *******************************MAKE THIS WORK FOR ACE HIGH************
 		int highest = 0;
-		for(int x = 0; x < Cards.size(); ++x){
-			if( Cards.get(x).getRank() > highest ){
-				highest = Cards.get(x).getRank();
+		for(int x = 0; x < cards.size(); ++x){
+			if( cards.get(x).getRank() > highest ){
+				highest = cards.get(x).getRank();
 			}
 		}
 		return highest;
@@ -86,32 +87,101 @@ public class Hand {
 	 * separate functions to determine if a certain type of
 	 * playable hand applies to the one in this player's hand
 	 */
+	/*
+	 * A,K,Q,J,10 in any suit
+	 */
 	private Boolean hasRoyalFlush(){
-		return false;
+		return hasStraightFlush();
 	}
+	/*
+	 * straight + flush 
+	 */
 	private Boolean hasStraightFlush(){
-		return false;
+		return hasStraight() && hasFlush();
 	}
+	/*
+	 * four of one type of card
+	 * only need to check the first two cards of a five card hand
+	 */
 	private Boolean hasFourOfAKind(){
-		return false;
+		for(int startCard = 0; startCard < (cards.size()-3) ; ++startCard){ //we don't have to check the last 3 cards in the array
+		int rankToCompare = cards.get(startCard).getRank();
+		int matchedCards = 0;
+		for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
+			if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+		}
+		if( matchedCards == 4) return true;
 	}
+	return false;
+	}
+	/*
+	 * three of a kind + two of a kind
+	 */
 	private Boolean hasFullHouse(){
-		return false;
+		return hasThreeOfAKind() && hasOnePair(); //TODO
 	}
+	/*
+	 * five cards of same suit
+	 */
 	private Boolean hasFlush(){
-		return false;
+		int firstSuit = cards.get(0).getSuit();
+		for(int cardNum = 1; cardNum < cards.size(); ++cardNum ){
+			if( firstSuit != cards.get(cardNum).getSuit() ) return false;
+		}
+		return true;
 	}
+	/*
+	 * five cards "in a row"
+	 * suit doesn't matter
+	 */
 	private Boolean hasStraight(){
-		return false;
+		this.orderDescending();
+		int previousRank = cards.get(0).getRank();
+		for(int cardNum = 1; cardNum < cards.size(); previousRank = cards.get(cardNum).getRank(), ++cardNum){
+			if( cards.get(cardNum).getRank() != (previousRank-1) ) return false;
+		}
+		return true;
 	}
+	/*
+	 * three cards of same rank
+	 */
 	private Boolean hasThreeOfAKind(){
+		for(int startCard = 0; startCard < (cards.size()-2) ; ++startCard){ //we don't have to check the last 2 cards in the array
+			int rankToCompare = cards.get(startCard).getRank();
+			int matchedCards = 0;
+			for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
+				if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+			}
+			if( matchedCards == 3) return true;
+		}
 		return false;
 	}
+	/*
+	 * two pairs of cards of same rank
+	 */
 	private Boolean hasTwoPair(){
+		for(int startCard = 0; startCard < (cards.size()-3) ; ++startCard){
+			int rankToCompare = cards.get(startCard).getRank();
+			int matchedCards = 0;
+			for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
+				if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+			}
+			if( matchedCards == 2) return true; //TODO maybe remove the matched cards and search the sublist?
+		}
 		return false;
 	}
+	/*
+	 * a pair of cards of same rank
+	 */
 	private Boolean hasOnePair(){
+		for(int startCard = 0; startCard < (cards.size()-3) ; ++startCard){
+			int rankToCompare = cards.get(startCard).getRank();
+			int matchedCards = 0;
+			for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
+				if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+			}
+			if( matchedCards == 2) return true;
+		}
 		return false;
 	}
-	
 }

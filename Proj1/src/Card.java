@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 /*
  * CARD VALUE
  * 1 = ace
@@ -70,4 +72,13 @@ public class Card {
 		}
 		return printable;
 	}
+	
+	/*
+	 * used in sorting a hand in descending value
+	 */
+	public static Comparator<Card> cardComparatorDesc = new Comparator<Card>(){
+		public int compare(Card A, Card B){
+			return B.rank - A.rank;
+		}	
+	};
 }
