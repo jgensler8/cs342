@@ -1,6 +1,5 @@
 
 public class Opponent extends Player{
-	//Contains AI, no IO
 	
 	public Opponent(int handSize){
 		super();

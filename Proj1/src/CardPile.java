@@ -19,6 +19,7 @@
 import java.util.ArrayList;
 
 public class CardPile {
+	
 	private ArrayList<Card> _pile;
 	
 	public CardPile(){

@@ -5,6 +5,7 @@ public class Player {
 	public Player(){
 		name = "User";
 	}
+	
 	public Player(String userName){
 		this();
 		name = userName;

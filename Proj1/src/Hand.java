@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Hand {
+	
 	// the max hand size that is allowed for any hand
 	public final int MAX_HAND_SIZE = 5;
 	// the actual list of cards that the hand contains

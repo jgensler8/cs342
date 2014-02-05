@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Game {
+	
 	static final int HANDSIZE = 5; 
 	
 	public static void main( String[] Args){

@@ -28,6 +28,7 @@ public class Card {
 	public final static int SPADES = 3;
 	public final static int DIAMONDS = 4;
 	
+	
 	public Card(){
 		_rank = -1;
 		_suit = -1;
