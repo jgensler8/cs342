@@ -19,13 +19,15 @@
 import java.util.ArrayList;
 
 public class CardPile {
-	private ArrayList<Card> pile = new ArrayList<Card>();
+	private ArrayList<Card> _pile;
 	
 	public CardPile(){
+		_pile = new ArrayList<Card>();
 	}
 	public CardPile(int mode){
+		this();
 		if( mode == 1 ){
-			pile = generateDeck();
+			_pile = generateDeck();
 		}
 	}
 	
@@ -34,10 +36,8 @@ public class CardPile {
 	 * if a card can't be drawn, throw an exception
 	 */
 	public Card drawCard(){
-		try{
-			return pile.remove(0);
-		}catch(Exception e){
-			e.printStackTrace();
+		if( !_pile.isEmpty() ){
+			return _pile.remove(0);
 		}
 		Card top = new Card(0,0);
 		return top;
@@ -46,8 +46,8 @@ public class CardPile {
 	/*
 	 * giving a card back to a pile (mostly used to discard)
 	 */
-	public void returnCard(Card toReturn){
-		pile.add(toReturn);
+	public void returnCard(Card card){
+		_pile.add(card);
 	}
 	
 	/*
@@ -55,11 +55,11 @@ public class CardPile {
 	 */
 	private ArrayList<Card> generateDeck(){
 		ArrayList<Card> deckPile = new ArrayList<Card>();
-		for(int rank = 1; rank < 14; ++rank){
-			for(int suit = 0; suit < 4; ++suit){
-				Card card = new Card(rank, suit);
-				deckPile.add( card);
-			}
+		for(int rank = Card.ACE; rank <= Card.KING; ++rank){
+			_pile.add( new Card(rank, Card.CLUBS));
+			_pile.add( new Card(rank, Card.HEARTS));
+			_pile.add( new Card(rank, Card.SPADES));
+			_pile.add( new Card(rank, Card.DIAMONDS));
 		}
 		return deckPile;
 	}
@@ -71,9 +71,9 @@ public class CardPile {
 		Card temp;
 		int randomIndex;
 		for(int switches = 0; switches < 200; ++switches){
-			randomIndex = ((int)Math.random()) % pile.size();
-			temp = pile.remove(randomIndex);
-			pile.add( temp);
+			randomIndex = ((int)Math.random()) % _pile.size();
+			temp = _pile.remove(randomIndex);
+			_pile.add( temp);
 		}
 	}
 }

@@ -41,9 +41,9 @@ public class Game {
 	 */
 	static void initPlayersHands( Human user, ArrayList<Opponent> opponents, CardPile deck){
 		for( int handCounter = 0; handCounter < HANDSIZE; ++handCounter){
-			user.hand.cards.add( deck.drawCard() );
+			user.hand._cards.add( deck.drawCard() );
 			for( Opponent R : opponents){
-				R.hand.cards.add( deck.drawCard() );
+				R.hand._cards.add( deck.drawCard() );
 			}
 		}
 		user.hand.orderDescending();
@@ -115,16 +115,16 @@ public class Game {
 	public static void printHand(Human human){
 		Hand userHand = human.getHand();
 		System.out.print( human.getName() + "'s hand: ");
-		for(int cardNum = 0; cardNum < userHand.cards.size(); ++cardNum ){
-			System.out.print( (cardNum+1) + ") " + userHand.cards.get(cardNum).getPrintable() + " ");
+		for(int cardNum = 0; cardNum < userHand._cards.size(); ++cardNum ){
+			System.out.print( (cardNum+1) + ") " + userHand._cards.get(cardNum).toString() + " ");
 		}
 		System.out.println("");
 	}
 	public static void printHand( Opponent opponent){
 		Hand oppHand = opponent.getHand();
 		System.out.print( opponent.getName() + "'s hand: ");
-		for(int cardNum = 0; cardNum < oppHand.cards.size(); ++cardNum ){
-			System.out.print( (cardNum+1) + ") " + oppHand.cards.get(cardNum).getPrintable() + " ");
+		for(int cardNum = 0; cardNum < oppHand._cards.size(); ++cardNum ){
+			System.out.print( (cardNum+1) + ") " + oppHand._cards.get(cardNum).toString() + " ");
 		}
 		System.out.println("");
 	}

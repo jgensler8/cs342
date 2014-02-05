@@ -19,18 +19,28 @@ import java.util.Comparator;
  * 3 = diamond
  */
 public class Card {
-	private int rank;
-	private int suit;
-
+	private int _rank;
+	private int _suit;
+	public final static int ACE = 1;
+	public final static int KING = 13;
+	public final static int CLUBS = 1;
+	public final static int HEARTS = 2;
+	public final static int SPADES = 3;
+	public final static int DIAMONDS = 4;
+	
+	public Card(){
+		_rank = -1;
+		_suit = -1;
+	}
 	public Card(int userRank, int userSuit){
 		if( userRank >= 1 || userRank <= 13){
-			rank = userRank;
+			_rank = userRank;
 		}
 		else{
 			//TODO
 		}
 		if( userSuit >= 0 || userSuit <= 3){
-			suit = userSuit;
+			_suit = userSuit;
 		}
 		else{
 			//TODO
@@ -41,30 +51,30 @@ public class Card {
 	 * get the rank of the card
 	 */
 	public int getRank(){
-		return rank;
+		return _rank;
 	}	
 	
 	/*
 	 * get the suit of the card
 	 */
 	public int getSuit(){
-		return suit;
+		return _suit;
 	}
 	
 	/*
 	 * generate a string that represents the value of the card
 	 */
-	public String getPrintable(){
+	public String toString(){
 		String printable = "";
-		switch( rank){
+		switch( _rank){
 		case 1: printable += "A"; break;
 		case 11: printable += "J"; break;
 		case 12: printable += "Q"; break;
 		case 13: printable += "K"; break;
-		default: printable += Integer.toString(rank);
+		default: printable += Integer.toString(_rank);
 		}
 		printable += ",";
-		switch( suit){
+		switch( _suit){
 		case 0: printable += "Cl"; break;
 		case 1: printable += "He"; break;
 		case 2: printable += "Sp"; break;
@@ -78,7 +88,7 @@ public class Card {
 	 */
 	public static Comparator<Card> cardComparatorDesc = new Comparator<Card>(){
 		public int compare(Card A, Card B){
-			return B.rank - A.rank;
+			return B._rank - A._rank;
 		}	
 	};
 }

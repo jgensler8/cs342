@@ -3,24 +3,24 @@ import java.util.Collections;
 
 public class Hand {
 	// the max hand size that is allowed for any hand
-	public final int HANDSIZE = 5;
+	public final int MAX_HAND_SIZE = 5;
 	// the actual list of cards that the hand contains
-	ArrayList<Card> cards = new ArrayList<Card>();
+	ArrayList<Card> _cards;
 	
 	public Hand(){	
-	
+		_cards = new ArrayList<Card>();
 	}
 	
 	/*
 	 * add card to the players hand
-	 * if the hand "overflows," throw an exception to stop the game
+	 * if the hand "overflows," throw an exception to setup the game
 	 */
 	public void add( Card C){
-		if( cards.size() > HANDSIZE){
+		if( _cards.size() > MAX_HAND_SIZE){
 			//TODO ***THROW SOME EXCEPTION OR SOMETHING
 		}
 		else{
-			cards.add( C);
+			_cards.add( C);
 		}
 	}
 	
@@ -28,23 +28,27 @@ public class Hand {
 	 * discard a card index
 	 */
 	public Card remove(int index){
-		return cards.remove(index);
+		if( (index-1) > _cards.size() ){
+			//TODO ***THROW SOME EXCEPTION
+		}
+		return _cards.remove(index);
 	}
 	
 	/*
 	 * order the cards from highest value first to lowest value last
 	 */
 	public void orderDescending(){
-		Collections.sort(cards, Card.cardComparatorDesc);
+		Collections.sort(_cards, Card.cardComparatorDesc);
 	}
 	
 	/*
 	 * return a deep copy of the players hand
-	 */
+	 *//*
+	 *
 	public ArrayList<Card> getHand(){
 		//TODO make this a deep copy?
-		return cards;
-	}
+		return _cards;
+	}*/
 	
 	/*
 	 * return a score heuristic of the playable hand
@@ -75,9 +79,9 @@ public class Hand {
 	private int getHighestInPlayable() {
 		//TODO *******************************MAKE THIS WORK FOR ACE HIGH************
 		int highest = 0;
-		for(int x = 0; x < cards.size(); ++x){
-			if( cards.get(x).getRank() > highest ){
-				highest = cards.get(x).getRank();
+		for(int x = 0; x < _cards.size(); ++x){
+			if( _cards.get(x).getRank() > highest ){
+				highest = _cards.get(x).getRank();
 			}
 		}
 		return highest;
@@ -104,11 +108,11 @@ public class Hand {
 	 * only need to check the first two cards of a five card hand
 	 */
 	private Boolean hasFourOfAKind(){
-		for(int startCard = 0; startCard < (cards.size()-3) ; ++startCard){ //we don't have to check the last 3 cards in the array
-		int rankToCompare = cards.get(startCard).getRank();
+		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){ //we don't have to check the last 3 cards in the array
+		int rankToCompare = _cards.get(startCard).getRank();
 		int matchedCards = 0;
-		for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
-			if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+		for(int otherCard = startCard+1; otherCard < _cards.size(); ++otherCard){
+			if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
 		}
 		if( matchedCards == 4) return true;
 	}
@@ -125,9 +129,9 @@ public class Hand {
 	 * five cards of same suit
 	 */
 	private Boolean hasFlush(){
-		int firstSuit = cards.get(0).getSuit();
-		for(int cardNum = 1; cardNum < cards.size(); ++cardNum ){
-			if( firstSuit != cards.get(cardNum).getSuit() ) return false;
+		int firstSuit = _cards.get(0).getSuit();
+		for(int cardNum = 1; cardNum < _cards.size(); ++cardNum ){
+			if( firstSuit != _cards.get(cardNum).getSuit() ) return false;
 		}
 		return true;
 	}
@@ -137,9 +141,9 @@ public class Hand {
 	 */
 	private Boolean hasStraight(){
 		this.orderDescending();
-		int previousRank = cards.get(0).getRank();
-		for(int cardNum = 1; cardNum < cards.size(); previousRank = cards.get(cardNum).getRank(), ++cardNum){
-			if( cards.get(cardNum).getRank() != (previousRank-1) ) return false; //TODO make work with A K Q J 10
+		int previousRank = _cards.get(0).getRank();
+		for(int cardNum = 1; cardNum < _cards.size(); previousRank = _cards.get(cardNum).getRank(), ++cardNum){
+			if( _cards.get(cardNum).getRank() != (previousRank-1) ) return false; //TODO make work with A K Q J 10
 		}
 		return true;
 	}
@@ -147,11 +151,11 @@ public class Hand {
 	 * three cards of same rank
 	 */
 	private Boolean hasThreeOfAKind(){
-		for(int startCard = 0; startCard < (cards.size()-2) ; ++startCard){ //we don't have to check the last 2 cards in the array
-			int rankToCompare = cards.get(startCard).getRank();
+		for(int startCard = 0; startCard < (_cards.size()-2) ; ++startCard){ //we don't have to check the last 2 cards in the array
+			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
-			for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
-				if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+			for(int otherCard = startCard+1; otherCard < _cards.size(); ++otherCard){
+				if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
 			}
 			if( matchedCards == 3) return true;
 		}
@@ -161,11 +165,11 @@ public class Hand {
 	 * two pairs of cards of same rank
 	 */
 	private Boolean hasTwoPair(){
-		for(int startCard = 0; startCard < (cards.size()-3) ; ++startCard){
-			int rankToCompare = cards.get(startCard).getRank();
+		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
+			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
-			for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
-				if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+			for(int otherCard = startCard+1; otherCard < _cards.size(); ++otherCard){
+				if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
 			}
 			if( matchedCards == 2) return true; //TODO maybe remove the matched cards and search the sublist?
 		}
@@ -175,11 +179,11 @@ public class Hand {
 	 * a pair of cards of same rank
 	 */
 	private Boolean hasOnePair(){
-		for(int startCard = 0; startCard < (cards.size()-3) ; ++startCard){
-			int rankToCompare = cards.get(startCard).getRank();
+		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
+			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
-			for(int otherCard = startCard+1; otherCard < cards.size(); ++otherCard){
-				if( cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+			for(int otherCard = startCard+1; otherCard < _cards.size(); ++otherCard){
+				if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
 			}
 			if( matchedCards == 2) return true;
 		}
