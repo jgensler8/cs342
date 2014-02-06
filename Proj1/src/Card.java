@@ -19,14 +19,17 @@ import java.util.Comparator;
  * 3 = diamond
  */
 public class Card {
-	private int _rank;
-	private int _suit;
+	//Ranks
 	public final static int ACE = 1;
 	public final static int KING = 13;
+	//Suits
 	public final static int CLUBS = 1;
 	public final static int HEARTS = 2;
 	public final static int SPADES = 3;
 	public final static int DIAMONDS = 4;
+	//member variables
+	private int _rank;
+	private int _suit;
 	
 	
 	public Card(){
@@ -34,17 +37,20 @@ public class Card {
 		_suit = -1;
 	}
 	public Card(int userRank, int userSuit){
-		if( userRank >= 1 || userRank <= 13){
+		if( userRank >= ACE || userRank <= KING){
 			_rank = userRank;
 		}
 		else{
 			//TODO
+			// defensive programming, maybe throw exception
 		}
-		if( userSuit >= 0 || userSuit <= 3){
+		if( userSuit == CLUBS || userSuit == HEARTS 
+				|| userSuit == SPADES || userSuit == DIAMONDS){
 			_suit = userSuit;
 		}
 		else{
 			//TODO
+			// defensive programming, maybe throw exception
 		}
 	}
 	

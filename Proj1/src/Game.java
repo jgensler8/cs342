@@ -6,6 +6,11 @@ public class Game {
 	public final static int MAX_HAND_SIZE = 5;
 	// the max number of computer players that can play against the human
 	public final static int MAX_COMPUTER_PLAYERS = 3;
+	// the normal discard limit
+	public final static int NORMAL_DISCARD_LIMIT = 3;
+	//the discard limit for holding an ace
+	public final static int ACE_DISCARD_LIMIT = 4;
+	
 	
 	public static void main( String[] Args){
 		printGreeting();
@@ -83,25 +88,38 @@ public class Game {
 	 */
 	static void launchGame(Human human, ArrayList<Opponent> opponents, CardPile deck, CardPile discard ){
 		human.printHand();
-		System.out.println("List the cards you wish to discard: ");
 		makeHumanMove( human, deck, discard);
 		
 		for( Opponent opponent : opponents){
 			makeComputerMove( opponent, deck, discard);
 		}
 		
-		calcWinner( human, opponents);
+		calculateWinner( human, opponents);
 	}
 	
-	private static void calcWinner(Human user, ArrayList<Opponent> opponents) {
-		// TODO Auto-generated method stub
-		
+	/*
+	 * find the winner and print it out
+	 */
+	private static void calculateWinner(Human human, ArrayList<Opponent> opponents) {
+		//compare human hand to opponents hands
+		//TODO
+		//print out victor
+		//TODO
 	}
 
+	/*
+	 * get the cards that the human wants to discard
+	 */
 	private static void makeHumanMove( Human human, CardPile deck, CardPile discard){
-		//get the cards to discard
-		
-		//
+		System.out.println("List the cards you wish to discard: ");
+		if( human.getHand().hasVal( Card.ACE) ){
+			//TODO
+			//they can discard 4 cards BUT NOT including the ace
+		}
+		else{
+			//TODO
+			//they can discard 3 cards
+		}
 	}
 	
 	/*
@@ -128,16 +146,24 @@ public class Game {
 			//don't do anything
 		}
 		else if( opponentHand.hasThreeOfAKind()){
-			//TODO
+			//basically, if one card is over a threshold (lets say 10)
+			//then we would keep that card and discard the other in order to try and get a two pair
+			//will not try and get flush
 		}
 		else if( opponentHand.hasTwoPair() ){
-			//TODO
+			//if the last card is over the threshold, don't do anything
+			//else pick up a new card
 		}
 		else if( opponentHand.hasOnePair() ){
-			//TODO
+			//flush may be considered?
+			//try and get a 3 of a kind if a card is over threshold
 		}
 		else{
-			//TODO
+			//flush?
+			//straight?
+			//we could use something along the lines of the one listed in the 
+			//assignment pdf if you would like. It doesn't really make a difference
+			//to me so long as it works
 		}
 	}
 }

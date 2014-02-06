@@ -1,15 +1,21 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 
 public class Hand {
-	
 	// the max hand size that is allowed for any hand
 	public final int MAX_HAND_SIZE = Game.MAX_HAND_SIZE;
 	// the actual list of cards that the hand contains
 	ArrayList<Card> _cards;
+	Hashtable<Integer,Integer> _rankHashCount; 
+	Hashtable<Integer,Integer> _suitHashCount;
 	
 	public Hand(){	
 		_cards = new ArrayList<Card>();
+		_rankHashCount = new Hashtable<Integer,Integer>();
+		_suitHashCount = new Hashtable<Integer,Integer>();
+		//TODO maybe initialize all to zero?
+		//we know all ranks of cards and all suits of cards
 	}
 	
 	/*
@@ -18,10 +24,23 @@ public class Hand {
 	 */
 	public void add( Card C){
 		if( _cards.size() > MAX_HAND_SIZE){
-			//TODO ***THROW SOME EXCEPTION OR SOMETHING
+			//TODO
+			//maybe throw exception
 		}
 		else{
 			_cards.add( C);
+			if( _rankHashCount.contains(C.getRank()) ){
+				_rankHashCount.put(C.getRank(), _rankHashCount.get(C.getRank())+1);
+			}
+			else{
+				_rankHashCount.put(C.getRank(), 1);
+			}
+			if( _suitHashCount.contains(C.getSuit())){
+				_suitHashCount.put(C.getSuit(), _suitHashCount.get(C.getSuit()) + 1);
+			}
+			else{
+				_suitHashCount.put(C.getRank(), 1);
+			}
 		}
 	}
 	
@@ -31,8 +50,13 @@ public class Hand {
 	 */
 	public Card remove(int index){
 		if( index > _cards.size() ){
-			//TODO ***THROW SOME EXCEPTION
+			//TODO
+			//maybe throw exception
 		}
+		_rankHashCount.put( _cards.get(index).getRank(),
+				_rankHashCount.get( _cards.get(index).getRank())-1);
+		_suitHashCount.put( _cards.get(index).getSuit(),
+				_rankHashCount.get( _cards.get(index).getSuit())-1);
 		return _cards.remove(index);
 	}
 	
@@ -42,6 +66,17 @@ public class Hand {
 	public void orderDescending(){
 		Collections.sort(_cards, Card.cardComparatorDesc);
 	}
+	
+	
+	
+	
+	
+	/*
+	 * **NOTE**
+	 * the use of the code below is tentative for now.
+	 * this is most likely move to the game if needed.
+	 */
+	
 	
 	/*
 	 * return a score heuristic of the playable hand
@@ -64,7 +99,6 @@ public class Hand {
 		score += getHighestInPlayable(); //SEE ABOVE
 		return score;
 	}
-	
 	/*
 	 * return the highest card in the playable hand
 	 * this is used to rank two hands of the same type
@@ -80,6 +114,7 @@ public class Hand {
 		return highest;
 	}
 	
+	
 	/*
 	 * separate functions to determine if a certain type of
 	 * playable hand applies to the one in this player's hand
@@ -88,7 +123,7 @@ public class Hand {
 	 * A,K,Q,J,10 in any suit
 	 */
 	Boolean hasRoyalFlush(){
-		return hasStraightFlush(); //TODO // && cards == A K Q J 10
+		return hasStraightFlush() && hasVal( Card.ACE) && hasVal( Card.KING);
 	}
 	/*
 	 * straight + flush 
@@ -101,6 +136,11 @@ public class Hand {
 	 * only need to check the first two cards of a five card hand
 	 */
 	Boolean hasFourOfAKind(){
+		//either this
+		if( _rankHashCount.containsValue(4)) return true;
+		else return false;
+		
+		/*
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){ //we don't have to check the last 3 cards in the array
 		int rankToCompare = _cards.get(startCard).getRank();
 		int matchedCards = 0;
@@ -109,24 +149,27 @@ public class Hand {
 		}
 		if( matchedCards == 4) return true;
 	}
-	return false;
+	return false;*/
 	}
 	/*
 	 * three of a kind + two of a kind
 	 */
 	Boolean hasFullHouse(){
-		return hasThreeOfAKind() && hasOnePair(); //TODO what do we do when we find the three of a kind?
-		//perhaps we can actually enumerate this one
+		return hasThreeOfAKind() && hasOnePair();
 	}
 	/*
 	 * five cards of same suit
 	 */
 	Boolean hasFlush(){
+		if( _suitHashCount.containsValue(5)) return true;
+		else return false;
+		/*
 		int firstSuit = _cards.get(0).getSuit();
 		for(int cardNum = 1; cardNum < _cards.size(); ++cardNum ){
 			if( firstSuit != _cards.get(cardNum).getSuit() ) return false;
 		}
 		return true;
+		*/
 	}
 	/*
 	 * five cards "in a row"
@@ -144,6 +187,9 @@ public class Hand {
 	 * three cards of same rank
 	 */
 	Boolean hasThreeOfAKind(){
+		if( _rankHashCount.containsValue(3) ) return true;
+		else return false;
+		/*
 		for(int startCard = 0; startCard < (_cards.size()-2) ; ++startCard){ //we don't have to check the last 2 cards in the array
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
@@ -153,11 +199,13 @@ public class Hand {
 			if( matchedCards == 3) return true;
 		}
 		return false;
+		*/
 	}
 	/*
 	 * two pairs of cards of same rank
 	 */
 	Boolean hasTwoPair(){
+		_rankHashCount.keys();
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
@@ -172,6 +220,9 @@ public class Hand {
 	 * a pair of cards of same rank
 	 */
 	Boolean hasOnePair(){
+		if( _rankHashCount.containsValue(2)) return true;
+		else return false;
+		/*
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
@@ -179,6 +230,17 @@ public class Hand {
 				if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
 			}
 			if( matchedCards == 2) return true;
+		}
+		return false;
+		*/
+	}
+	/*
+	 * determine if a hand has an ace
+	 * this is used for determining if a plater can discard 3 or 4 cards
+	 */
+	Boolean hasVal(int val){
+		for(Card c : _cards){
+			if( c.getRank() == val) return true;
 		}
 		return false;
 	}
