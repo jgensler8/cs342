@@ -4,7 +4,7 @@ import java.util.Collections;
 public class Hand {
 	
 	// the max hand size that is allowed for any hand
-	public final int MAX_HAND_SIZE = 5;
+	public final int MAX_HAND_SIZE = Game.MAX_HAND_SIZE;
 	// the actual list of cards that the hand contains
 	ArrayList<Card> _cards;
 	
@@ -27,9 +27,10 @@ public class Hand {
 	
 	/*
 	 * discard a card index
+	 * NOTE: starts numbering at zero
 	 */
 	public Card remove(int index){
-		if( (index-1) > _cards.size() ){
+		if( index > _cards.size() ){
 			//TODO ***THROW SOME EXCEPTION
 		}
 		return _cards.remove(index);
@@ -43,15 +44,6 @@ public class Hand {
 	}
 	
 	/*
-	 * return a deep copy of the players hand
-	 *//*
-	 *
-	public ArrayList<Card> getHand(){
-		//TODO make this a deep copy?
-		return _cards;
-	}*/
-	
-	/*
 	 * return a score heuristic of the playable hand
 	 * this heuristic can be used to see if one of two 
 	 * hands of the same type ranks higher but will not
@@ -59,7 +51,7 @@ public class Hand {
 	 */
 	public int evalHand(){
 		int score = 0;
-		if( hasRoyalFlush() )		score += 180;	
+		if( hasRoyalFlush() )		score += 180;
 		else if( hasStraightFlush())score += 160;
 		else if( hasFourOfAKind() ) score += 140;
 		else if( hasFullHouse() ) 	score += 120; // TODO RANK OF TRIPLE IS THE "highest card" 
@@ -80,9 +72,9 @@ public class Hand {
 	private int getHighestInPlayable() {
 		//TODO *******************************MAKE THIS WORK FOR ACE HIGH************
 		int highest = 0;
-		for(int x = 0; x < _cards.size(); ++x){
-			if( _cards.get(x).getRank() > highest ){
-				highest = _cards.get(x).getRank();
+		for( Card c : _cards){
+			if( c.getRank() > highest ){
+				highest = c.getRank();
 			}
 		}
 		return highest;
@@ -95,20 +87,20 @@ public class Hand {
 	/*
 	 * A,K,Q,J,10 in any suit
 	 */
-	private Boolean hasRoyalFlush(){
+	Boolean hasRoyalFlush(){
 		return hasStraightFlush(); //TODO // && cards == A K Q J 10
 	}
 	/*
 	 * straight + flush 
 	 */
-	private Boolean hasStraightFlush(){
+	Boolean hasStraightFlush(){
 		return hasStraight() && hasFlush();
 	}
 	/*
 	 * four of one type of card
 	 * only need to check the first two cards of a five card hand
 	 */
-	private Boolean hasFourOfAKind(){
+	Boolean hasFourOfAKind(){
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){ //we don't have to check the last 3 cards in the array
 		int rankToCompare = _cards.get(startCard).getRank();
 		int matchedCards = 0;
@@ -122,14 +114,14 @@ public class Hand {
 	/*
 	 * three of a kind + two of a kind
 	 */
-	private Boolean hasFullHouse(){
+	Boolean hasFullHouse(){
 		return hasThreeOfAKind() && hasOnePair(); //TODO what do we do when we find the three of a kind?
 		//perhaps we can actually enumerate this one
 	}
 	/*
 	 * five cards of same suit
 	 */
-	private Boolean hasFlush(){
+	Boolean hasFlush(){
 		int firstSuit = _cards.get(0).getSuit();
 		for(int cardNum = 1; cardNum < _cards.size(); ++cardNum ){
 			if( firstSuit != _cards.get(cardNum).getSuit() ) return false;
@@ -140,7 +132,7 @@ public class Hand {
 	 * five cards "in a row"
 	 * suit doesn't matter
 	 */
-	private Boolean hasStraight(){
+	Boolean hasStraight(){
 		this.orderDescending();
 		int previousRank = _cards.get(0).getRank();
 		for(int cardNum = 1; cardNum < _cards.size(); previousRank = _cards.get(cardNum).getRank(), ++cardNum){
@@ -151,7 +143,7 @@ public class Hand {
 	/*
 	 * three cards of same rank
 	 */
-	private Boolean hasThreeOfAKind(){
+	Boolean hasThreeOfAKind(){
 		for(int startCard = 0; startCard < (_cards.size()-2) ; ++startCard){ //we don't have to check the last 2 cards in the array
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
@@ -165,7 +157,7 @@ public class Hand {
 	/*
 	 * two pairs of cards of same rank
 	 */
-	private Boolean hasTwoPair(){
+	Boolean hasTwoPair(){
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
@@ -179,7 +171,7 @@ public class Hand {
 	/*
 	 * a pair of cards of same rank
 	 */
-	private Boolean hasOnePair(){
+	Boolean hasOnePair(){
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;

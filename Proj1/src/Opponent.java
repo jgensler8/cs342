@@ -1,18 +1,11 @@
 
 public class Opponent extends Player{
 	
-	public Opponent(int handSize){
+	public Opponent(){
 		super();
-		name = "Robot";
+		_name = "Robot";
 	}
-	public Opponent(int handSize, String userName){
+	public Opponent(String userName){
 		super(userName);
-	}
-	
-	/*
-	 * decides if it wants to draw more cards
-	 */
-	public void makeMove(){
-		
 	}
 }

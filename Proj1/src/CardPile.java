@@ -28,7 +28,7 @@ public class CardPile {
 	public CardPile(int mode){
 		this();
 		if( mode == 1 ){
-			_pile = generateDeck();
+			generateDeck();
 		}
 	}
 	
@@ -54,15 +54,13 @@ public class CardPile {
 	/*
 	 * generate a standard 52 card deck and return it
 	 */
-	private ArrayList<Card> generateDeck(){
-		ArrayList<Card> deckPile = new ArrayList<Card>();
+	private void generateDeck(){
 		for(int rank = Card.ACE; rank <= Card.KING; ++rank){
 			_pile.add( new Card(rank, Card.CLUBS));
 			_pile.add( new Card(rank, Card.HEARTS));
 			_pile.add( new Card(rank, Card.SPADES));
 			_pile.add( new Card(rank, Card.DIAMONDS));
 		}
-		return deckPile;
 	}
 	
 	/*

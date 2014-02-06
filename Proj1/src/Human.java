@@ -1,8 +1,8 @@
 public class Human extends Player{
 	
-	public Human(int handSize){
+	public Human(){
 		super();
-		name = "Human";
+		_name = "Human";
 	}
 	public Human(String userName){
 		super(userName);
