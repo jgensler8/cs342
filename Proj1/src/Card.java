@@ -82,10 +82,10 @@ public class Card {
 		}
 		printable += ",";
 		switch( _suit){
-		case 0: printable += "Cl"; break;
-		case 1: printable += "He"; break;
-		case 2: printable += "Sp"; break;
-		case 3: printable += "Di";
+		case 1: printable += "Cl"; break;
+		case 2: printable += "He"; break;
+		case 3: printable += "Sp"; break;
+		case 4: printable += "Di";
 		}
 		return printable;
 	}

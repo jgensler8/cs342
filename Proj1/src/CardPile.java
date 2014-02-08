@@ -75,4 +75,11 @@ public class CardPile {
 			_pile.add( temp);
 		}
 	}
+	
+	/*
+	 * add an array of cards to this card pile
+	 */
+	public void returnCards(ArrayList<Card> toDiscardCards) {
+		_pile.addAll( toDiscardCards);
+	}
 }

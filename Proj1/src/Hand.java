@@ -29,17 +29,18 @@ public class Hand {
 		}
 		else{
 			_cards.add( C);
-			if( _rankHashCount.contains(C.getRank()) ){
+			if( _rankHashCount.containsKey(C.getRank()) ){
 				_rankHashCount.put(C.getRank(), _rankHashCount.get(C.getRank())+1);
 			}
 			else{
 				_rankHashCount.put(C.getRank(), 1);
 			}
-			if( _suitHashCount.contains(C.getSuit())){
+			if( _suitHashCount.containsKey(C.getSuit())){
+				//_suitHashCount.
 				_suitHashCount.put(C.getSuit(), _suitHashCount.get(C.getSuit()) + 1);
 			}
 			else{
-				_suitHashCount.put(C.getRank(), 1);
+				_suitHashCount.put(C.getSuit(), 1);
 			}
 		}
 	}
@@ -199,7 +200,7 @@ public class Hand {
 			if( matchedCards == 3) return true;
 		}
 		return false;
-		*/
+		*/	
 	}
 	/*
 	 * two pairs of cards of same rank
