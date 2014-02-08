@@ -11,12 +11,12 @@ public class Game {
 	//the discard limit for holding an ace
 	public final static int ACE_DISCARD_LIMIT = 4;
 	
-	
 	public static void main( String[] Args){
+		//the start message of the game
 		printGreeting();
-		int numComps = getNumComps();
 		
 		//generate basic game items
+		int numComps = getNumComps();
 		CardPile deck = new CardPile(1);
 		deck.shuffle();
 		CardPile discard = new CardPile();
@@ -35,7 +35,6 @@ public class Game {
 		//start the game
 		launchGame( human, opponents, deck, discard);
 	}
-	
 	/*
 	 * initial message sent at beginning of game
 	 */
@@ -60,6 +59,19 @@ public class Game {
 	}
 	
 	/*
+	 * the moves of user and robot are contained here
+	 */
+	static void launchGame(Human human, ArrayList<Opponent> opponents, CardPile deck, CardPile discard ){
+		makeHumanMove( human, deck, discard);
+		
+		for( Opponent opponent : opponents){
+			makeComputerMove( opponent, deck, discard);
+		}
+		
+		calculateWinner( human, opponents);
+	}
+	
+	/*
 	 * Get the user to specify the number of computers it wants to play against
 	 */
 	static int getNumComps(){
@@ -74,30 +86,75 @@ public class Game {
 	}
 	
 	/*
-	 * the moves of user and robot are contained here
-	 */
-	static void launchGame(Human human, ArrayList<Opponent> opponents, CardPile deck, CardPile discard ){
-		makeHumanMove( human, deck, discard);
-		
-		for( Opponent opponent : opponents){
-			makeComputerMove( opponent, deck, discard);
-		}
-		
-		calculateWinner( human, opponents);
-	}
-	
-	/*
 	 * find the winner and print it out
+	 * player ---> score
+	 * we need to compare scores but keep the player with the score
+	 * find the highest score(s)
+	 * resolve a winner among the highest scores
 	 */
 	private static void calculateWinner(Human human, ArrayList<Opponent> opponents) {
 		//compare human hand to opponents hands
-		//TODO
+		Boolean tieFlag = false;
+		ArrayList<String> tyingNames = new ArrayList<String>();
+		int winnerIndex = -1;
+		tyingNames.add(human.getName());
+		for( int oppIndex = 0; oppIndex < opponents.size(); ++oppIndex){
+			if( winnerIndex == -1){ //human is current winner
+				switch( opponents.get(oppIndex)._hand.willBeat( human._hand) ){
+				case 1:
+					winnerIndex = oppIndex;
+					tieFlag = false;
+					tyingNames.clear();
+					tyingNames.add( opponents.get(oppIndex).getName()); //add name for future reference
+					break;
+				case -1:
+					tieFlag = true;
+					tyingNames.add( opponents.get(oppIndex).getName());
+					break;
+				case 0: //nothing happened
+				}
+			}
+			else{ //an opponent is current winner
+				switch( opponents.get(oppIndex)._hand.willBeat( opponents.get(winnerIndex)._hand )){
+				case 1:
+					winnerIndex = oppIndex;
+					tieFlag = false;
+					tyingNames.clear();
+					tyingNames.add( opponents.get(oppIndex).getName()); //add name for future reference
+					break;
+				case -1:
+					tieFlag = true;
+					tyingNames.add( opponents.get(oppIndex).getName());
+					break;
+				case 0: //nothing happened
+				}
+			}
+		}
 		//print out all cards
 		human.printHand();
-		for( Opponent opponent : opponents)
+		System.out.println( human.getName() + "'s score: " + human._hand.evalHand());
+		for( Opponent opponent : opponents){
 			opponent.printHand();
+			System.out.println( opponent.getName() + "'s score: " + opponent._hand.evalHand() );
+		}
 		//print out victor
-		//TODO
+		if( tieFlag){
+			if(winnerIndex == -1){
+				System.out.println("You've tied!");
+			}
+			else{
+				System.out.println("You've lost, but the game resulted in a tie");
+			}
+			System.out.println("Here are the tying players:");
+			for( String name : tyingNames)
+				System.out.println(name);
+		}
+		else if( winnerIndex == -1){
+			System.out.println("Horray! You Won!");
+		}
+		else{
+			System.out.println("Sorry, " + opponents.get(winnerIndex).getName() + " won!");
+		}
 	}
 	
 	/*
@@ -108,13 +165,13 @@ public class Game {
 	 *    - index could be out of bound
 	 *    - number of indices could be too high
 	 *    - if they have an ace and discard 4, the ace can't be discarded (right?)
-	 *    - enter the same number twice
+	 *    - enter the same number twice TODO XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX FIXME
 	 */
 	private static Boolean isValidDiscard(Hand hand, ArrayList<Integer> toDiscard){
 		if( toDiscard.isEmpty() ) return true;
-		int discardLimit = 3;
+		int discardLimit = NORMAL_DISCARD_LIMIT;
 		for( Card c : hand._cards){
-			if( c.getRank() == Card.ACE) discardLimit = 4;
+			if( c.getRank() == Card.ACE) discardLimit = ACE_DISCARD_LIMIT;
 		}
 		
 		for( int x : toDiscard){
@@ -122,14 +179,14 @@ public class Game {
 				System.out.println("You entered card(s) out of the range");
 				return false;
 			}
-			else if( discardLimit == 4 //they had an ace
-					&& toDiscard.size() == 4 //and they are trying to discard 4 cards
+			else if( discardLimit == ACE_DISCARD_LIMIT //they had an ace
+					&& toDiscard.size() == ACE_DISCARD_LIMIT //and they are trying to discard 4 cards
 					&& hand._cards.get(x).getRank() == Card.ACE){ // and they are discarding the ace
-				System.out.println("You tried to discard the ace you are holding");
 				return false;
 			}
 		}
-		if( toDiscard.size() > discardLimit ){ //they can discard 4 cards BUT NOT including the ace
+		
+		if( toDiscard.size() > discardLimit ){
 			System.out.println("You entered too many cards!");
 			return false;
 		}
@@ -194,21 +251,25 @@ public class Game {
 			//basically, if one card is over a threshold (lets say 10)
 			//then we would keep that card and discard the other in order to try and get a two pair
 			//will not try and get flush
+			System.out.println( opponent.getName() + " would do something here");
 		}
 		else if( opponentHand.hasTwoPair() ){
 			//if the last card is over the threshold, don't do anything
 			//else pick up a new card
+			System.out.println( opponent.getName() + " would do something here also");
 		}
 		else if( opponentHand.hasOnePair() ){
 			//flush may be considered?
 			//try and get a 3 of a kind if a card is over threshold
+			System.out.println( opponent.getName() + " hand isn't that much better");
 		}
 		else{
-			//flush?
-			//straight?
+			//go for flush?
+			//go for straight?
 			//we could use something along the lines of the one listed in the 
 			//assignment pdf if you would like. It doesn't really make a difference
 			//to me so long as it works
+			System.out.println( opponent.getName() + " hand stinks.");
 		}
 	}
 }
