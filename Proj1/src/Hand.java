@@ -6,7 +6,7 @@ public class Hand {
 	// the max hand size that is allowed for any hand
 	public final int MAX_HAND_SIZE = Game.MAX_HAND_SIZE;
 	// the actual list of cards that the hand contains
-	ArrayList<Card> _cards;
+	private ArrayList<Card> _cards;
 	
 	/*
 	ArrayList<Card> _tieBreakers;
@@ -34,14 +34,17 @@ public class Hand {
 		else{
 			_cards.add( C);
 			if( _rankHashCount.containsKey(C.getRank()) ){
-				_rankHashCount.put(C.getRank(), _rankHashCount.get(C.getRank())+1);
+				int prevRankHashValue = _rankHashCount.get(C.getRank());
+				_rankHashCount.remove( C.getRank());
+				_rankHashCount.put(C.getRank(), prevRankHashValue +1);
 			}
 			else{
 				_rankHashCount.put(C.getRank(), 1);
 			}
 			if( _suitHashCount.containsKey(C.getSuit())){
-				//_suitHashCount.
-				_suitHashCount.put(C.getSuit(), _suitHashCount.get(C.getSuit()) + 1);
+				int prevSuitHashValue = _suitHashCount.get(C.getSuit());
+				_suitHashCount.remove( C.getSuit());
+				_suitHashCount.put(C.getSuit(), prevSuitHashValue + 1);
 			}
 			else{
 				_suitHashCount.put(C.getSuit(), 1);
@@ -58,11 +61,87 @@ public class Hand {
 			//TODO
 			//maybe throw exception
 		}
-		_rankHashCount.put( _cards.get(index).getRank(),
-				_rankHashCount.get( _cards.get(index).getRank())-1);
-		_suitHashCount.put( _cards.get(index).getSuit(),
-				_rankHashCount.get( _cards.get(index).getSuit())-1);
+		int prevRankHashValue = _rankHashCount.get( _cards.get(index).getRank());
+		int prevSuitHashValue = _rankHashCount.get( _cards.get(index).getSuit());
+		int prevRankHashKey = _cards.get(index).getRank();
+		int prevSuitHashKey = _cards.get(index).getSuit();
+		_rankHashCount.remove(prevRankHashKey);
+		_suitHashCount.remove(prevSuitHashKey);
+		_rankHashCount.put(prevRankHashKey, prevRankHashValue-1);
+		_suitHashCount.put(prevSuitHashKey, prevSuitHashValue-1);
 		return _cards.remove(index);
+	}
+	
+	/*
+	 * discard a card index
+	 * NOTE: starts numbering at zero
+	 */
+	public ArrayList<Card> removeAll(ArrayList<Integer> indices){
+		ArrayList<Card> discarded = new ArrayList<Card>();
+		for( int index : indices){
+			if( index > _cards.size() ){
+				//TODO
+				//maybe throw exception
+			}
+			//recalculate the table
+			int prevRankHashValue = _rankHashCount.get( _cards.get(index).getRank());
+			int prevSuitHashValue = _suitHashCount.get( _cards.get(index).getSuit());
+			int prevRankHashKey = _cards.get(index).getRank();
+			int prevSuitHashKey = _cards.get(index).getSuit();
+			_rankHashCount.remove(prevRankHashKey);
+			_suitHashCount.remove(prevSuitHashKey);
+			_rankHashCount.put(prevRankHashKey, prevRankHashValue-1);
+			_suitHashCount.put(prevSuitHashKey, prevSuitHashValue-1);
+			discarded.add( _cards.get(index));
+		}
+		_cards.removeAll(discarded);
+		return discarded;
+	}
+	
+	/*
+	 * return the size of the hand
+	 */
+	public int size(){
+		return _cards.size();
+	}
+	
+	/*
+	 * index should be passed starting from 0 and going to MAX_HAND_SIZE-1
+	 */
+	public String toString(int index){
+		if( index >= _cards.size() || index < 0){
+			return "";
+		}
+		else return _cards.get(index).toString();
+	}
+	
+	/*
+	 * get the suit at an index of the hand
+	 */
+	public int getSuit(int index){
+		if( index >= _cards.size() || index < 0){
+			return -1;
+		}
+		return _cards.get(index).getSuit();
+	}
+	
+	/*
+	 * get the rank at an index of the hand
+	 */
+	public int getRank(int index){
+		if( index >= _cards.size() || index < 0){
+			return -1;
+		}
+		return _cards.get(index).getRank();
+	}
+	
+	/*
+	 * 
+	 */
+	public void refill(CardPile deck) {
+		while( _cards.size() < MAX_HAND_SIZE){
+			this.add( deck.drawCard());
+		}
 	}
 	
 	/*
@@ -78,7 +157,7 @@ public class Hand {
 	 * hands of the same type ranks higher but will not
 	 * work when these hands tie.
 	 */
-	public int evalHand(){
+	private int evalHand(){
 		int score = 0;
 		if( hasRoyalFlush() ) score += 180;
 		else if( hasStraightFlush()) score += 160;
@@ -164,33 +243,33 @@ public class Hand {
 	/*
 	 * A,K,Q,J,10 in any suit
 	 */
-	Boolean hasRoyalFlush(){
+	public Boolean hasRoyalFlush(){
 		return hasStraightFlush() && hasVal( Card.ACE) && hasVal( Card.KING);
 	}
 	/*
 	 * straight + flush 
 	 */
-	Boolean hasStraightFlush(){
+	public Boolean hasStraightFlush(){
 		return hasFlush() && hasStraight();
 	}
 	/*
 	 * four of one type of card
 	 * only need to check the first two cards of a five card hand
 	 */
-	Boolean hasFourOfAKind(){
+	public Boolean hasFourOfAKind(){
 		if( _rankHashCount.containsValue(4)) return true;
 		else return false;
 	}
 	/*
 	 * three of a kind + two of a kind
 	 */
-	Boolean hasFullHouse(){
+	public Boolean hasFullHouse(){
 		return hasThreeOfAKind() && hasOnePair();
 	}
 	/*
 	 * five cards of same suit
 	 */
-	Boolean hasFlush(){
+	public Boolean hasFlush(){
 		if( _suitHashCount.containsValue(5)) return true;
 		else return false;
 	}
@@ -198,12 +277,9 @@ public class Hand {
 	 * five cards "in a row"
 	 * suit doesn't matter
 	 */
-	Boolean hasStraight(){
-		if( _rankHashCount.containsKey(Card.ACE)
-				&& _rankHashCount.containsKey(Card.KING)
-				&& _rankHashCount.containsKey(Card.QUEEN)
-				&& _rankHashCount.containsKey(Card.JACK)
-				&& _rankHashCount.containsKey(Card.TEN)) return true; //ace high straight
+	public Boolean hasStraight(){
+		if( this.hasVal(Card.ACE) && this.hasVal(Card.KING) && this.hasVal(Card.QUEEN)
+				&& this.hasVal(Card.JACK) && this.hasVal(Card.TEN)) return true; //ace high straight
 		this.orderDescending();
 		int previousRank = _cards.get(0).getRank();
 		for(int cardNum = 1; cardNum < _cards.size(); previousRank = _cards.get(cardNum).getRank(), ++cardNum){
@@ -214,28 +290,28 @@ public class Hand {
 	/*
 	 * three cards of same rank
 	 */
-	Boolean hasThreeOfAKind(){
+	public Boolean hasThreeOfAKind(){
 		if( _rankHashCount.containsValue(3) ) return true;
 		else return false;
 	}
 	/*
 	 * two pairs of cards of same rank
 	 */
-	Boolean hasTwoPair(){
+	public Boolean hasTwoPair(){
 		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
 			int rankToCompare = _cards.get(startCard).getRank();
 			int matchedCards = 0;
 			for(int otherCard = startCard+1; otherCard < _cards.size(); ++otherCard){
 				if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
 			}
-			if( matchedCards == 2) return true; //TODO maybe remove the matched cards and search the sublist?
+			if( matchedCards == 2) return true;
 		}
 		return false;
 	}
 	/*
 	 * a pair of cards of same rank
 	 */
-	Boolean hasOnePair(){
+	public Boolean hasOnePair(){
 		if( _rankHashCount.containsValue(2)) return true;
 		else return false;
 	}
@@ -243,10 +319,34 @@ public class Hand {
 	 * determine if a hand has an ace
 	 * this is used for determining if a plater can discard 3 or 4 cards
 	 */
-	Boolean hasVal(int val){
+	public Boolean hasVal(int val){
 		for(Card c : _cards){
 			if( c.getRank() == val) return true;
 		}
+		return false;
+	}
+	
+	/*
+	 * see if the card at this index contributes to a three of a kind
+	 */
+	public Boolean contibutesToFour( int index){
+		if( _rankHashCount.get( _cards.get(index).getRank()) == 4) return true;
+		return false;
+	}
+	
+	/*
+	 * see if the card at this index contributes to a three of a kind
+	 */
+	public Boolean contributesToThree( int index){
+		if( _rankHashCount.get( _cards.get(index).getRank()) == 3) return true;
+		return false;
+	}
+	
+	/*
+	 * see if the card at this index contributes to a pair of cards
+	 */
+	public Boolean contributesToPair( int index){
+		if( _rankHashCount.get( _cards.get(index).getRank()) == 2) return true;
 		return false;
 	}
 }

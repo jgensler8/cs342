@@ -10,6 +10,8 @@ public class Game {
 	public final static int NORMAL_DISCARD_LIMIT = 3;
 	//the discard limit for holding an ace
 	public final static int ACE_DISCARD_LIMIT = 4;
+	//the threshold that the AI will use to decide if it will discard
+	public final static int OPPONENT_DISCARD_THRESH = 10;
 	
 	public static void main( String[] Args){
 		//the start message of the game
@@ -35,6 +37,7 @@ public class Game {
 		//start the game
 		launchGame( human, opponents, deck, discard);
 	}
+	
 	/*
 	 * initial message sent at beginning of game
 	 */
@@ -132,10 +135,12 @@ public class Game {
 		}
 		//print out all cards
 		human.printHand();
-		System.out.println( human.getName() + "'s score: " + human._hand.evalHand());
+		//System.out.println( human.getName() + "'s score: " + human._hand.evalHand());
+		human.printHandValue();
 		for( Opponent opponent : opponents){
 			opponent.printHand();
-			System.out.println( opponent.getName() + "'s score: " + opponent._hand.evalHand() );
+			//System.out.println( opponent.getName() + "'s score: " + opponent._hand.evalHand() );
+			opponent.printHandValue();
 		}
 		//print out victor
 		if( tieFlag){
@@ -170,18 +175,16 @@ public class Game {
 	private static Boolean isValidDiscard(Hand hand, ArrayList<Integer> toDiscard){
 		if( toDiscard.isEmpty() ) return true;
 		int discardLimit = NORMAL_DISCARD_LIMIT;
-		for( Card c : hand._cards){
-			if( c.getRank() == Card.ACE) discardLimit = ACE_DISCARD_LIMIT;
-		}
+		if( hand.hasVal(Card.ACE)) discardLimit = ACE_DISCARD_LIMIT;
 		
-		for( int x : toDiscard){
-			if ( x < 0 || x > MAX_HAND_SIZE-1){
+		for( int discardIndex : toDiscard){
+			if ( discardIndex < 0 || discardIndex > hand.size()){
 				System.out.println("You entered card(s) out of the range");
 				return false;
 			}
 			else if( discardLimit == ACE_DISCARD_LIMIT //they had an ace
 					&& toDiscard.size() == ACE_DISCARD_LIMIT //and they are trying to discard 4 cards
-					&& hand._cards.get(x).getRank() == Card.ACE){ // and they are discarding the ace
+					&& hand.getRank(discardIndex) == Card.ACE){ // and they are discarding the ace
 				return false;
 			}
 		}
@@ -200,7 +203,6 @@ public class Game {
 	private static void makeHumanMove( Human human, CardPile deck, CardPile discard){
 		Scanner scanner = new Scanner(System.in);
 		ArrayList<Integer> toDiscardIndices = new ArrayList<Integer>();
-		ArrayList<Card> toDiscardCards = new ArrayList<Card>();
 		do{
 			toDiscardIndices.clear();
 			human.printHand();
@@ -213,15 +215,8 @@ public class Game {
 				}
 			}
 		}while( !isValidDiscard( human.getHand(), toDiscardIndices) ); //check if there is an error
-		for( int x : toDiscardIndices){
-			toDiscardCards.add( human._hand._cards.get( x) );
-		}
-		human._hand._cards.removeAll(toDiscardCards);
-		discard.returnCards( toDiscardCards);
-		//fill the humans hand up
-		while( human._hand._cards.size() < MAX_HAND_SIZE){
-			human._hand._cards.add( deck.drawCard() );
-		}
+		discard.returnCards( human._hand.removeAll(toDiscardIndices) );
+		human._hand.refill(deck);
 	}
 	
 	/*
@@ -237,6 +232,7 @@ public class Game {
 		}
 		else if( opponentHand.hasFourOfAKind() ){
 			//don't do anything
+			//TODO
 		}
 		else if( opponentHand.hasFullHouse() ){
 			//don't do anything
@@ -251,17 +247,58 @@ public class Game {
 			//basically, if one card is over a threshold (lets say 10)
 			//then we would keep that card and discard the other in order to try and get a two pair
 			//will not try and get flush
-			System.out.println( opponent.getName() + " would do something here");
+			//get the cards not in the three of a kind
+			ArrayList<Integer> toCheck = new ArrayList<Integer>();
+			ArrayList<Integer> toRemove = new ArrayList<Integer>();
+			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
+				if( !opponent._hand.contributesToThree(cardIndex))
+					toCheck.add( cardIndex);
+			}
+			for( int checkThresh : toCheck){
+				if( checkThresh < OPPONENT_DISCARD_THRESH){
+					if( toRemove.isEmpty()){
+						System.out.println( opponent.getName() + " is dscarding cards");
+					}
+					toRemove.add( checkThresh);
+				}
+			}
+			discard.returnCards( opponent._hand.removeAll( toRemove));
+			opponent._hand.refill(deck);
 		}
 		else if( opponentHand.hasTwoPair() ){
 			//if the last card is over the threshold, don't do anything
 			//else pick up a new card
-			System.out.println( opponent.getName() + " would do something here also");
+			int toCheck = -1;
+			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
+				if( !opponent._hand.contributesToPair(cardIndex)){
+					toCheck = cardIndex;
+					break;
+				}
+			}
+			if( toCheck < OPPONENT_DISCARD_THRESH){
+				discard.returnCard( ( opponent._hand.remove( toCheck)));
+				System.out.println( opponent.getName() + " is dscarding cards");
+			}
+			opponent._hand.refill(deck);
 		}
 		else if( opponentHand.hasOnePair() ){
-			//flush may be considered?
 			//try and get a 3 of a kind if a card is over threshold
-			System.out.println( opponent.getName() + " hand isn't that much better");
+			ArrayList<Integer> toCheck = new ArrayList<Integer>();
+			ArrayList<Integer> toRemove = new ArrayList<Integer>();
+			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
+				if( !opponent._hand.contributesToPair(cardIndex))
+					toCheck.add( cardIndex);
+			}
+			for( int checkThresh : toCheck){
+				if( checkThresh < OPPONENT_DISCARD_THRESH){
+					if( toRemove.isEmpty()){
+						System.out.println( opponent.getName() + " is dscarding cards");
+					}
+					toRemove.add( checkThresh);
+				}
+			}
+			discard.returnCards( opponent._hand.removeAll( toRemove));
+			opponent._hand.refill(deck);
 		}
 		else{
 			//go for flush?
@@ -269,7 +306,17 @@ public class Game {
 			//we could use something along the lines of the one listed in the 
 			//assignment pdf if you would like. It doesn't really make a difference
 			//to me so long as it works
-			System.out.println( opponent.getName() + " hand stinks.");
+			ArrayList<Integer> toRemove = new ArrayList<Integer>();
+			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
+				if( opponent._hand.getRank(cardIndex) < OPPONENT_DISCARD_THRESH){
+					if(toRemove.isEmpty()){
+						System.out.println( opponent.getName() + " is dscarding cards");
+					}
+					toRemove.add( cardIndex);
+				}
+			}
+			discard.returnCards( opponent._hand.removeAll( toRemove));
+			opponent._hand.refill(deck);
 		}
 	}
 }
