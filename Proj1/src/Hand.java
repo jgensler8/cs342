@@ -17,9 +17,9 @@ public class Hand {
 	Hashtable<Integer,Integer> _suitHashCount;
 	
 	public Hand(){	
-		_cards = new ArrayList<Card>();
-		_rankHashCount = new Hashtable<Integer,Integer>();
-		_suitHashCount = new Hashtable<Integer,Integer>();
+		this._cards = new ArrayList<Card>();
+		this._rankHashCount = new Hashtable<Integer,Integer>();
+		this._suitHashCount = new Hashtable<Integer,Integer>();
 	}
 	
 	/*
@@ -27,27 +27,27 @@ public class Hand {
 	 * if the hand "overflows," throw an exception to setup the game
 	 */
 	public void add( Card C){
-		if( _cards.size() > MAX_HAND_SIZE){
+		if( this._cards.size() > MAX_HAND_SIZE){
 			//TODO
 			//maybe throw exception
 		}
 		else{
-			_cards.add( C);
-			if( _rankHashCount.containsKey(C.getRank()) ){
-				int prevRankHashValue = _rankHashCount.get(C.getRank());
-				_rankHashCount.remove( C.getRank());
-				_rankHashCount.put(C.getRank(), prevRankHashValue +1);
+			this._cards.add( C);
+			if( this._rankHashCount.containsKey(C.getRank()) ){
+				int prevRankHashValue = this._rankHashCount.get(C.getRank());
+				this._rankHashCount.remove( C.getRank());
+				this._rankHashCount.put(C.getRank(), prevRankHashValue +1);
 			}
 			else{
-				_rankHashCount.put(C.getRank(), 1);
+				this._rankHashCount.put(C.getRank(), 1);
 			}
-			if( _suitHashCount.containsKey(C.getSuit())){
-				int prevSuitHashValue = _suitHashCount.get(C.getSuit());
-				_suitHashCount.remove( C.getSuit());
-				_suitHashCount.put(C.getSuit(), prevSuitHashValue + 1);
+			if( this._suitHashCount.containsKey(C.getSuit())){
+				int prevSuitHashValue = this._suitHashCount.get(C.getSuit());
+				this._suitHashCount.remove( C.getSuit());
+				this._suitHashCount.put(C.getSuit(), prevSuitHashValue + 1);
 			}
 			else{
-				_suitHashCount.put(C.getSuit(), 1);
+				this._suitHashCount.put(C.getSuit(), 1);
 			}
 		}
 	}
@@ -57,19 +57,19 @@ public class Hand {
 	 * NOTE: starts numbering at zero
 	 */
 	public Card remove(int index){
-		if( index > _cards.size() ){
+		if( index > this._cards.size() ){
 			//TODO
 			//maybe throw exception
 		}
-		int prevRankHashValue = _rankHashCount.get( _cards.get(index).getRank());
-		int prevSuitHashValue = _rankHashCount.get( _cards.get(index).getSuit());
-		int prevRankHashKey = _cards.get(index).getRank();
-		int prevSuitHashKey = _cards.get(index).getSuit();
-		_rankHashCount.remove(prevRankHashKey);
-		_suitHashCount.remove(prevSuitHashKey);
-		_rankHashCount.put(prevRankHashKey, prevRankHashValue-1);
-		_suitHashCount.put(prevSuitHashKey, prevSuitHashValue-1);
-		return _cards.remove(index);
+		int prevRankHashValue = this._rankHashCount.get( this._cards.get(index).getRank());
+		int prevSuitHashValue = this._suitHashCount.get( this._cards.get(index).getSuit());
+		int prevRankHashKey = this._cards.get(index).getRank();
+		int prevSuitHashKey = this._cards.get(index).getSuit();
+		this._rankHashCount.remove(prevRankHashKey);
+		this._suitHashCount.remove(prevSuitHashKey);
+		this._rankHashCount.put(prevRankHashKey, prevRankHashValue-1);
+		this._suitHashCount.put(prevSuitHashKey, prevSuitHashValue-1);
+		return this._cards.remove(index);
 	}
 	
 	/*
@@ -79,22 +79,22 @@ public class Hand {
 	public ArrayList<Card> removeAll(ArrayList<Integer> indices){
 		ArrayList<Card> discarded = new ArrayList<Card>();
 		for( int index : indices){
-			if( index > _cards.size() ){
+			if( index > this._cards.size() ){
 				//TODO
 				//maybe throw exception
 			}
 			//recalculate the table
-			int prevRankHashValue = _rankHashCount.get( _cards.get(index).getRank());
-			int prevSuitHashValue = _suitHashCount.get( _cards.get(index).getSuit());
-			int prevRankHashKey = _cards.get(index).getRank();
-			int prevSuitHashKey = _cards.get(index).getSuit();
-			_rankHashCount.remove(prevRankHashKey);
-			_suitHashCount.remove(prevSuitHashKey);
-			_rankHashCount.put(prevRankHashKey, prevRankHashValue-1);
-			_suitHashCount.put(prevSuitHashKey, prevSuitHashValue-1);
-			discarded.add( _cards.get(index));
+			int prevRankHashKey = this._cards.get(index).getRank();
+			int prevSuitHashKey = this._cards.get(index).getSuit();
+			int prevRankHashValue = this._rankHashCount.get( prevRankHashKey);
+			int prevSuitHashValue = this._suitHashCount.get( prevSuitHashKey);
+			this._rankHashCount.remove(prevRankHashKey);
+			this._suitHashCount.remove(prevSuitHashKey);
+			this._rankHashCount.put(prevRankHashKey, prevRankHashValue-1);
+			this._suitHashCount.put(prevSuitHashKey, prevSuitHashValue-1);
+			discarded.add( this._cards.get(index));
 		}
-		_cards.removeAll(discarded);
+		this._cards.removeAll(discarded);
 		return discarded;
 	}
 	
@@ -102,44 +102,44 @@ public class Hand {
 	 * return the size of the hand
 	 */
 	public int size(){
-		return _cards.size();
+		return this._cards.size();
 	}
 	
 	/*
 	 * index should be passed starting from 0 and going to MAX_HAND_SIZE-1
 	 */
 	public String toString(int index){
-		if( index >= _cards.size() || index < 0){
+		if( index >= this._cards.size() || index < 0){
 			return "";
 		}
-		else return _cards.get(index).toString();
+		else return this._cards.get(index).toString();
 	}
 	
 	/*
 	 * get the suit at an index of the hand
 	 */
 	public int getSuit(int index){
-		if( index >= _cards.size() || index < 0){
+		if( index >= this._cards.size() || index < 0){
 			return -1;
 		}
-		return _cards.get(index).getSuit();
+		return this._cards.get(index).getSuit();
 	}
 	
 	/*
 	 * get the rank at an index of the hand
 	 */
 	public int getRank(int index){
-		if( index >= _cards.size() || index < 0){
+		if( index >= this._cards.size() || index < 0){
 			return -1;
 		}
-		return _cards.get(index).getRank();
+		return this._cards.get(index).getRank();
 	}
 	
 	/*
 	 * 
 	 */
 	public void refill(CardPile deck) {
-		while( _cards.size() < MAX_HAND_SIZE){
+		while( this._cards.size() < MAX_HAND_SIZE){
 			this.add( deck.drawCard());
 		}
 	}
@@ -148,7 +148,7 @@ public class Hand {
 	 * order the cards from highest value first to lowest value last
 	 */
 	public void orderDescending(){
-		Collections.sort(_cards, Card.cardComparatorDesc);
+		Collections.sort(this._cards, Card.cardComparatorDesc);
 	}
 	
 	/*
@@ -257,7 +257,7 @@ public class Hand {
 	 * only need to check the first two cards of a five card hand
 	 */
 	public Boolean hasFourOfAKind(){
-		if( _rankHashCount.containsValue(4)) return true;
+		if( this._rankHashCount.containsValue(4)) return true;
 		else return false;
 	}
 	/*
@@ -270,7 +270,7 @@ public class Hand {
 	 * five cards of same suit
 	 */
 	public Boolean hasFlush(){
-		if( _suitHashCount.containsValue(5)) return true;
+		if( this._suitHashCount.containsValue(5)) return true;
 		else return false;
 	}
 	/*
@@ -281,9 +281,9 @@ public class Hand {
 		if( this.hasVal(Card.ACE) && this.hasVal(Card.KING) && this.hasVal(Card.QUEEN)
 				&& this.hasVal(Card.JACK) && this.hasVal(Card.TEN)) return true; //ace high straight
 		this.orderDescending();
-		int previousRank = _cards.get(0).getRank();
-		for(int cardNum = 1; cardNum < _cards.size(); previousRank = _cards.get(cardNum).getRank(), ++cardNum){
-			if( _cards.get(cardNum).getRank() != (previousRank-1) ) return false;
+		int previousRank = this._cards.get(0).getRank();
+		for(int cardNum = 1; cardNum < this._cards.size(); previousRank = this._cards.get(cardNum).getRank(), ++cardNum){
+			if( this._cards.get(cardNum).getRank() != (previousRank-1) ) return false;
 		}
 		return true;
 	}
@@ -291,28 +291,28 @@ public class Hand {
 	 * three cards of same rank
 	 */
 	public Boolean hasThreeOfAKind(){
-		if( _rankHashCount.containsValue(3) ) return true;
+		if( this._rankHashCount.containsValue(3) ) return true;
 		else return false;
 	}
 	/*
 	 * two pairs of cards of same rank
 	 */
 	public Boolean hasTwoPair(){
-		for(int startCard = 0; startCard < (_cards.size()-3) ; ++startCard){
-			int rankToCompare = _cards.get(startCard).getRank();
-			int matchedCards = 0;
-			for(int otherCard = startCard+1; otherCard < _cards.size(); ++otherCard){
-				if( _cards.get(otherCard).getRank() == rankToCompare) ++matchedCards;
+		int pairCounter = 0, pairRank1 = -1;
+		for( Card c : this._cards){
+			if( this._rankHashCount.get( c.getRank()) == 2 ){
+				if( pairRank1 == -1) pairRank1 = c.getRank();
+				else if( pairRank1 != c.getRank() ) ++pairCounter; //the first pair has been set,this card is not the pair
 			}
-			if( matchedCards == 2) return true;
 		}
-		return false;
+		if( pairCounter == 2) return true;
+		else return false;
 	}
 	/*
 	 * a pair of cards of same rank
 	 */
 	public Boolean hasOnePair(){
-		if( _rankHashCount.containsValue(2)) return true;
+		if( this._rankHashCount.containsValue(2)) return true;
 		else return false;
 	}
 	/*
@@ -320,7 +320,7 @@ public class Hand {
 	 * this is used for determining if a plater can discard 3 or 4 cards
 	 */
 	public Boolean hasVal(int val){
-		for(Card c : _cards){
+		for(Card c : this._cards){
 			if( c.getRank() == val) return true;
 		}
 		return false;
@@ -330,7 +330,7 @@ public class Hand {
 	 * see if the card at this index contributes to a three of a kind
 	 */
 	public Boolean contibutesToFour( int index){
-		if( _rankHashCount.get( _cards.get(index).getRank()) == 4) return true;
+		if( this._rankHashCount.get( this._cards.get(index).getRank()) == 4) return true;
 		return false;
 	}
 	
@@ -338,7 +338,7 @@ public class Hand {
 	 * see if the card at this index contributes to a three of a kind
 	 */
 	public Boolean contributesToThree( int index){
-		if( _rankHashCount.get( _cards.get(index).getRank()) == 3) return true;
+		if( this._rankHashCount.get( this._cards.get(index).getRank()) == 3) return true;
 		return false;
 	}
 	
@@ -346,7 +346,7 @@ public class Hand {
 	 * see if the card at this index contributes to a pair of cards
 	 */
 	public Boolean contributesToPair( int index){
-		if( _rankHashCount.get( _cards.get(index).getRank()) == 2) return true;
+		if( this._rankHashCount.get( this._cards.get(index).getRank()) == 2) return true;
 		return false;
 	}
 }

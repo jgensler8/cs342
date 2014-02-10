@@ -38,7 +38,7 @@ public class CardPile {
 	 */
 	public Card drawCard(){
 		if( !_pile.isEmpty() ){
-			return _pile.remove( (int)((512*Math.random())%_pile.size()) );
+			return _pile.remove( 0);
 		}
 		Card top = new Card(0,0);
 		return top;
@@ -71,7 +71,7 @@ public class CardPile {
 		int randomIndex;
 		int randomSwitches = 500 + ((int)(512*Math.random())%200); //at least 500 plus up to 599 more
 		for(int switches = 0; switches < randomSwitches; ++switches){
-			randomIndex = ((int)(512*Math.random())) % _pile.size();
+			randomIndex = ((int)(1024*Math.random())) % _pile.size();
 			temp = _pile.remove(randomIndex);
 			_pile.add( temp);
 		}
