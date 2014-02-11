@@ -1,322 +1,420 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Game {
+
 	// the max hand size that is allowed for any hand
 	public final static int MAX_HAND_SIZE = 5;
 	// the max number of computer players that can play against the human
 	public final static int MAX_COMPUTER_PLAYERS = 3;
 	// the normal discard limit
 	public final static int NORMAL_DISCARD_LIMIT = 3;
-	//the discard limit for holding an ace
+	// the discard limit for holding an ace
 	public final static int ACE_DISCARD_LIMIT = 4;
-	//the threshold that the AI will use to decide if it will discard
-	public final static int OPPONENT_DISCARD_THRESH = 10;
-	
-	public static void main( String[] Args){
-		//the start message of the game
-		printGreeting();
-		
-		//generate basic game items
-		int numComps = getNumComps();
-		CardPile deck = new CardPile(1);
-		deck.shuffle();
-		CardPile discard = new CardPile();
-		Human human = new Human("Jeff");
-		ArrayList<Opponent> opponents = new ArrayList<Opponent>();
-		
-		//generate the number of robots to play against
-		while( numComps > 0){
-			opponents.add( new Opponent("Computer " + Integer.toString(numComps) ));
-			--numComps;
-		}
-		
-		//deal out the cards
-		initPlayersHands( human, opponents, deck);
+	// index position of user amongst players
+	public final static int USER_INDEX_POSITION = 0;
+	// set to true to enter debug mode
+	public static final boolean DEBUG = false;
 
-		//start the game
-		launchGame( human, opponents, deck, discard);
+	public static void main(String[] args) {
+
+		Boolean didUserWin = false;
+		CardPile deck;
+
+		ArrayList<Player> players = new ArrayList<Player>();
+		players.add(new User("Human"));
+
+		printGreeting();
+
+		int numComps;
+		if (DEBUG) {
+			numComps = 3;
+		} else {
+			/*
+			 * ask for number of player
+			 */
+			numComps = getNumComps();
+		}
+		/*
+		 * Create computer players
+		 */
+		for (int i = 0; i < numComps; i++) {
+			players.add(new Opponent("Comp " + String.valueOf(i + 1)));
+		}
+
+		/*
+		 * get our deck of cards
+		 */
+		deck = new CardPile();
+
+		Boolean isContinuePlay = true;
+
+		while (isContinuePlay) {
+
+			/*
+			 * randomizes position of cards within deck
+			 */
+			deck.shuffle();
+
+			System.out.println("Cards have been shuffled.  Let's play!");
+			pause();
+
+			System.out.println("Dealer is dealing cards to players...");
+			pause();
+
+			/*
+			 * draw cards for each player
+			 */
+			if (DEBUG) {
+				players.get(0).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.ACE));
+				players.get(0).getHand()
+						.addCard(new Card(Suit.HEARTS, Rank.TEN));
+				players.get(0).getHand()
+						.addCard(new Card(Suit.HEARTS, Rank.TWO));
+				players.get(0).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.FIVE));
+				players.get(0).getHand()
+						.addCard(new Card(Suit.CLUBS, Rank.FOUR));
+				players.get(1).getHand()
+						.addCard(new Card(Suit.HEARTS, Rank.ACE));
+				players.get(1).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.NINE));
+				players.get(1).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.THREE));
+				players.get(1).getHand()
+						.addCard(new Card(Suit.CLUBS, Rank.KING));
+				players.get(1).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.FOUR));
+				players.get(2).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.QUEEN));
+				players.get(2).getHand()
+						.addCard(new Card(Suit.CLUBS, Rank.TEN));
+				players.get(2).getHand()
+						.addCard(new Card(Suit.CLUBS, Rank.JACK));
+				players.get(2).getHand()
+						.addCard(new Card(Suit.HEARTS, Rank.SIX));
+				players.get(2).getHand()
+						.addCard(new Card(Suit.CLUBS, Rank.FOUR));
+				players.get(3).getHand()
+						.addCard(new Card(Suit.DIAMONDS, Rank.TWO));
+				players.get(3).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.NINE));
+				players.get(3).getHand()
+						.addCard(new Card(Suit.DIAMONDS, Rank.THREE));
+				players.get(3).getHand()
+						.addCard(new Card(Suit.SPADES, Rank.TEN));
+				players.get(3).getHand()
+						.addCard(new Card(Suit.HEARTS, Rank.FOUR));
+			} else {
+				for (int c = 1; c <= MAX_HAND_SIZE; c++) {
+					for (Player player : players) {
+						player.getHand().addCard(deck.drawCard());
+					}
+				}
+
+			}
+			/*
+			 * show user their hand in descending rank
+			 */
+			showHand(players.get(USER_INDEX_POSITION),
+					"The cards in your hand are: ");
+			pause();
+
+			System.out.println("It is time now to discard unwanted cards.");
+			/*
+			 * get user's unwanted cards
+			 */
+			ArrayList<Integer> discardIndices = getDiscardedCards(players
+					.get(USER_INDEX_POSITION));
+
+			/*
+			 * physically discard the user's cards
+			 */
+			ArrayList<Card> discardCards = new ArrayList<Card>();
+			for (int discardIndex : discardIndices) {
+				Card card = players.get(USER_INDEX_POSITION).getHand()
+						.getCardAtIndex(discardIndex - 1);
+				if (card != null) {
+					discardCards.add(card);
+				} else {
+					System.out.println("Failed to get card at index "
+							+ discardIndex);
+				}
+			}
+			for (Card discardCard : discardCards) {
+				players.get(USER_INDEX_POSITION).getHand()
+						.discardCard(discardCard);
+			}
+
+			if (!DEBUG) {
+				/*
+				 * opponents discard their non-valuable cards
+				 */
+				for (int i = 0; i < players.size(); i++) {
+					// we loop through all index values of array not assuming
+					// which
+					// index position user is at... if index is user, continue
+					if (i == USER_INDEX_POSITION)
+						continue;
+					// now we are in index position related to opponent
+					// Cast player as opponent
+					Opponent opponent = (Opponent) players.get(i);
+					opponent.discardCards();
+
+					int discarded = MAX_HAND_SIZE
+							- players.get(i).getHand().getCardCount();
+					if (discarded > 0) {
+						System.out.println(players.get(i).getName()
+								+ " has discarded " + discarded + " card"
+								+ (discarded > 1 ? "s" : ""));
+					} else {
+						System.out.println(players.get(i).getName()
+								+ " has chosen to keep their hand");
+					}
+				}
+			}
+			pause();
+
+			/*
+			 * loop through each player and draw new cards
+			 */
+			for (Player player : players) {
+				int drawn = 0;
+				for (int i = player.getHand().getCardCount() + 1; i <= MAX_HAND_SIZE; i++) {
+					player.getHand().addCard(deck.drawCard());
+					drawn++;
+				}
+				if (drawn > 0)
+					System.out.println(player.getName() + " has drawn " + drawn
+							+ " card" + (drawn > 1 ? "s" : ""));
+			}
+			pause();
+
+			/*
+			 * show everyone's hand and determine who has best
+			 */
+			int highestScore = -1;
+			for (Player player : players) {
+				int playerScore = player.getHand().evalHand();
+				if (highestScore < playerScore) {
+					highestScore = playerScore;
+				}
+
+				System.out.println(player.getName() + " has a "
+						+ player.getHand().getHandHas());
+				showHand(player, player.getName() + "'s hand: ");
+				System.out.println();
+			}
+			// We need ArrayList of who has highest score in case of ties
+			ArrayList<Player> winners = new ArrayList<Player>();
+			for (Player player : players) {
+				int playerScore = player.getHand().evalHand();
+				if (highestScore == playerScore) {
+					winners.add(player);
+				}
+			}
+
+			System.out.println();
+			if (winners.size() == 1) {
+				System.out.println(winners.get(0).getName()
+						+ " wins this hand with a "
+						+ winners.get(0).getHand().getHandHas() + ".");
+				didUserWin = (winners.get(0).getName() == players.get(
+						USER_INDEX_POSITION).getName());
+			} else {
+				// we need to break ties
+				for (int i = 0; i < winners.size() - 1; i++)
+					for (int j = i + 1; j < winners.size(); j++) {
+						Player player1 = winners.get(i);
+						Player player2 = winners.get(j);
+						if (player1.equals(player2))
+							continue;
+						int result = player1.getHand().willBeat(
+								player2.getHand());
+						if (result == 1) {
+							// player 2 lost this match, so remove from winners
+							// list
+							winners.remove(player2);
+							j--;
+						} else if (result == 0) {
+							// player 1 lost this match, so remove from winners
+							// list
+							winners.remove(player1);
+							j--;
+						}
+					}
+				if (winners.size() == 1) {
+					System.out.println(winners.get(0).getName()
+							+ " wins this hand with a "
+							+ winners.get(0).getHand().getHandHas() + ".");
+					didUserWin = (winners.get(0).getName() == players.get(
+							USER_INDEX_POSITION).getName());
+				} else {
+					System.out.println("There was an unbreakable tie.");
+				}
+			}
+
+			// Placeholder - hardcode to end game
+			isContinuePlay = false;
+
+		}
+
+		if (didUserWin)
+			System.out.println("Thanks for playing.  You rock!");
+		else
+			System.out.println("Thanks for playing.  Better luck next time.");
 	}
-	
+
+	/*
+	 * force user to press enter to continue
+	 */
+	static void pause() {
+		if (DEBUG)
+			return;
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			System.out.println("press Enter to continue...");
+			br.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/*
 	 * initial message sent at beginning of game
 	 */
-	static void printGreeting(){
+	static void printGreeting() {
 		System.out.println("Welcome to Poker!");
-	}
-	
-	/*
-	 * Distribute maxHandSize cards to each player and robot
-	 */
-	static void initPlayersHands( Human human, ArrayList<Opponent> opponents, CardPile deck){
-		for( int handCounter = 0; handCounter < MAX_HAND_SIZE; ++handCounter){
-			human.getHand().add( deck.drawCard() );
-			for( Opponent opponent : opponents){
-				opponent.getHand().add( deck.drawCard() );
-			}
-		}
-		human.getHand().orderDescending();
-		for( Opponent R: opponents){
-			R.getHand().orderDescending();
-		}
-	}
-	
-	/*
-	 * the moves of user and robot are contained here
-	 */
-	static void launchGame(Human human, ArrayList<Opponent> opponents, CardPile deck, CardPile discard ){
-		makeHumanMove( human, deck, discard);
-		
-		for( Opponent opponent : opponents){
-			makeComputerMove( opponent, deck, discard);
-		}
-		
-		calculateWinner( human, opponents);
-	}
-	
-	/*
-	 * Get the user to specify the number of computers it wants to play against
-	 */
-	static int getNumComps(){
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Enter the number of computers you want to play against: ");
-		int numComputers  = scanner.nextInt();
-		while( numComputers < 1 || numComputers > 3){
-			System.out.println("Sorry, the number must be 1, 2, or 3. Enter again: ");
-			numComputers = scanner.nextInt();
-		}
-		return numComputers;
-	}
-	
-	/*
-	 * find the winner and print it out
-	 * player ---> score
-	 * we need to compare scores but keep the player with the score
-	 * find the highest score(s)
-	 * resolve a winner among the highest scores
-	 */
-	private static void calculateWinner(Human human, ArrayList<Opponent> opponents) {
-		//compare human hand to opponents hands
-		Boolean tieFlag = false;
-		ArrayList<String> tyingNames = new ArrayList<String>();
-		int winnerIndex = -1;
-		tyingNames.add(human.getName());
-		for( int oppIndex = 0; oppIndex < opponents.size(); ++oppIndex){
-			if( winnerIndex == -1){ //human is current winner
-				switch( opponents.get(oppIndex)._hand.willBeat( human._hand) ){
-				case 1:
-					winnerIndex = oppIndex;
-					tieFlag = false;
-					tyingNames.clear();
-					tyingNames.add( opponents.get(oppIndex).getName()); //add name for future reference
-					break;
-				case -1:
-					tieFlag = true;
-					tyingNames.add( opponents.get(oppIndex).getName());
-					break;
-				case 0: //nothing happened
-				}
-			}
-			else{ //an opponent is current winner
-				switch( opponents.get(oppIndex)._hand.willBeat( opponents.get(winnerIndex)._hand )){
-				case 1:
-					winnerIndex = oppIndex;
-					tieFlag = false;
-					tyingNames.clear();
-					tyingNames.add( opponents.get(oppIndex).getName()); //add name for future reference
-					break;
-				case -1:
-					tieFlag = true;
-					tyingNames.add( opponents.get(oppIndex).getName());
-					break;
-				case 0: //nothing happened
-				}
-			}
-		}
-		//print out all cards
-		human.printHand();
-		//System.out.println( human.getName() + "'s score: " + human._hand.evalHand());
-		human.printHandValue();
-		for( Opponent opponent : opponents){
-			opponent.printHand();
-			//System.out.println( opponent.getName() + "'s score: " + opponent._hand.evalHand() );
-			opponent.printHandValue();
-		}
-		//print out victor
-		if( tieFlag){
-			if(winnerIndex == -1){
-				System.out.println("You've tied!");
-			}
-			else{
-				System.out.println("You've lost, but the game resulted in a tie");
-			}
-			System.out.println("Here are the tying players:");
-			for( String name : tyingNames)
-				System.out.println(name);
-		}
-		else if( winnerIndex == -1){
-			System.out.println("Horray! You Won!");
-		}
-		else{
-			System.out.println("Sorry, " + opponents.get(winnerIndex).getName() + " won!");
-		}
-	}
-	
-	/*
-	 * used to check if a human has entered valid cards to discard
-	 * the indices stored in the array list are assumed to be ADJUSTED to start at
-	 * index 0.
-	 * possible user errors:
-	 *    - index could be out of bound
-	 *    - number of indices could be too high
-	 *    - if they have an ace and discard 4, the ace can't be discarded (right?)
-	 *    - enter the same number twice TODO XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX FIXME
-	 */
-	private static Boolean isValidDiscard(Hand hand, ArrayList<Integer> toDiscard){
-		if( toDiscard.isEmpty() ) return true;
-		int discardLimit = NORMAL_DISCARD_LIMIT;
-		if( hand.hasVal(Card.ACE)) discardLimit = ACE_DISCARD_LIMIT;
-		
-		for( int discardIndex : toDiscard){
-			if ( discardIndex < 0 || discardIndex > hand.size()){
-				System.out.println("You entered card(s) out of the range");
-				return false;
-			}
-			else if( discardLimit == ACE_DISCARD_LIMIT //they had an ace
-					&& toDiscard.size() == ACE_DISCARD_LIMIT //and they are trying to discard 4 cards
-					&& hand.getRank(discardIndex) == Card.ACE){ // and they are discarding the ace
-				return false;
-			}
-		}
-		
-		if( toDiscard.size() > discardLimit ){
-			System.out.println("You entered too many cards!");
-			return false;
-		}
-		
-		return true;
 	}
 
 	/*
-	 * get the cards that the human wants to discard
+	 * Get the user to specify the number of computers it wants to play against
 	 */
-	private static void makeHumanMove( Human human, CardPile deck, CardPile discard){
-		Scanner scanner = new Scanner(System.in);
-		ArrayList<Integer> toDiscardIndices = new ArrayList<Integer>();
-		do{
-			toDiscardIndices.clear();
-			human.printHand();
-			System.out.println("List the cards you wish to discard: ");
-			String inputLine = scanner.nextLine();
-			if( !inputLine.isEmpty()){
-				String[] splitLine = inputLine.split(" ");
-				for( String s : splitLine){
-					toDiscardIndices.add( Integer.parseInt(s)-1 ); // USER INDEX = hand index-1
+	static int getNumComps() {
+		Boolean isNotValid;
+		int input = 0;
+		do {
+			System.out
+					.print("Enter the number of computers you want to play against: ");
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					System.in));
+			try {
+				input = Integer.parseInt(br.readLine());
+				if (isNotValid = input < 1 || input > MAX_COMPUTER_PLAYERS) {
+					System.out.println("You must compete against 1 to "
+							+ MAX_COMPUTER_PLAYERS + " players.");
 				}
+			} catch (IOException ex) {
+				System.out.println("You must enter a number between 1 to "
+						+ MAX_COMPUTER_PLAYERS + ".");
+				isNotValid = true;
 			}
-		}while( !isValidDiscard( human.getHand(), toDiscardIndices) ); //check if there is an error
-		discard.returnCards( human._hand.removeAll(toDiscardIndices) );
-		human._hand.refill(deck);
+		} while (isNotValid);
+		return input;
 	}
-	
+
 	/*
-	 * decides if it wants to draw more cards
+	 * print player's hand to screen
 	 */
-	private static void makeComputerMove(Opponent opponent, CardPile deck, CardPile discard){
-		Hand opponentHand = opponent.getHand();
-		if( opponentHand.hasRoyalFlush() ){
-			//don't do anything
+	static void showHand(Player player, String msg) {
+		int i = 0;
+		System.out.print(msg);
+		for (Card card : player.getHand().getHighestToLowestRankCards(true)) {
+			System.out.print(String.valueOf(++i) + ") " + card.toString()
+					+ "   ");
 		}
-		else if( opponentHand.hasStraightFlush()){
-			//don't do anything
-		}
-		else if( opponentHand.hasFourOfAKind() ){
-			//don't do anything
-			//TODO
-		}
-		else if( opponentHand.hasFullHouse() ){
-			//don't do anything
-		}
-		else if( opponentHand.hasFlush() ){
-			//don't do anything
-		}
-		else if( opponentHand.hasStraight() ){
-			//don't do anything
-		}
-		else if( opponentHand.hasThreeOfAKind()){
-			//basically, if one card is over a threshold (lets say 10)
-			//then we would keep that card and discard the other in order to try and get a two pair
-			//will not try and get flush
-			//get the cards not in the three of a kind
-			ArrayList<Integer> toCheck = new ArrayList<Integer>();
-			ArrayList<Integer> toRemove = new ArrayList<Integer>();
-			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
-				if( !opponent._hand.contributesToThree(cardIndex))
-					toCheck.add( cardIndex);
-			}
-			for( int checkThresh : toCheck){
-				if( checkThresh < OPPONENT_DISCARD_THRESH){
-					if( toRemove.isEmpty()){
-						System.out.println( opponent.getName() + " is dscarding cards");
-					}
-					toRemove.add( checkThresh);
-				}
-			}
-			discard.returnCards( opponent._hand.removeAll( toRemove));
-			opponent._hand.refill(deck);
-		}
-		else if( opponentHand.hasTwoPair() ){
-			//if the last card is over the threshold, don't do anything
-			//else pick up a new card
-			int toCheck = -1;
-			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
-				if( !opponent._hand.contributesToPair(cardIndex)){
-					toCheck = cardIndex;
-					break;
-				}
-			}
-			if( toCheck < OPPONENT_DISCARD_THRESH){
-				discard.returnCard( ( opponent._hand.remove( toCheck)));
-				System.out.println( opponent.getName() + " is dscarding cards");
-			}
-			opponent._hand.refill(deck);
-		}
-		else if( opponentHand.hasOnePair() ){
-			//try and get a 3 of a kind if a card is over threshold
-			ArrayList<Integer> toCheck = new ArrayList<Integer>();
-			ArrayList<Integer> toRemove = new ArrayList<Integer>();
-			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
-				if( !opponent._hand.contributesToPair(cardIndex))
-					toCheck.add( cardIndex);
-			}
-			for( int checkThresh : toCheck){
-				if( checkThresh < OPPONENT_DISCARD_THRESH){
-					if( toRemove.isEmpty()){
-						System.out.println( opponent.getName() + " is dscarding cards");
-					}
-					toRemove.add( checkThresh);
-				}
-			}
-			discard.returnCards( opponent._hand.removeAll( toRemove));
-			opponent._hand.refill(deck);
-		}
-		else{
-			//go for flush?
-			//go for straight?
-			//we could use something along the lines of the one listed in the 
-			//assignment pdf if you would like. It doesn't really make a difference
-			//to me so long as it works
-			ArrayList<Integer> toRemove = new ArrayList<Integer>();
-			for( int cardIndex = 0; cardIndex < opponent._hand.size(); ++cardIndex){
-				if( opponent._hand.getRank(cardIndex) < OPPONENT_DISCARD_THRESH){
-					if(toRemove.isEmpty()){
-						System.out.println( opponent.getName() + " is dscarding cards");
-					}
-					toRemove.add( cardIndex);
-				}
-			}
-			discard.returnCards( opponent._hand.removeAll( toRemove));
-			opponent._hand.refill(deck);
-		}
+		System.out.println();
 	}
+
+	/*
+	 * prompt for and return cards to discard based off their index position
+	 */
+	static ArrayList<Integer> getDiscardedCards(Player player) {
+
+		System.out.println();
+		int aceCount = player.getHand().getAceCount();
+
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		// control to keep asking for user input until valid input received
+		Boolean isInvalid = true;
+		while (isInvalid) {
+
+			int discardLimit = NORMAL_DISCARD_LIMIT;
+			if (aceCount > 0) {
+				discardLimit = ACE_DISCARD_LIMIT;
+
+				System.out
+						.println("Since you have an Ace you can keep the Ace and discard the other four cards.");
+			}
+
+			isInvalid = false;
+			System.out
+					.print("List the card numbers you wish to discard (Enter 0 to keep existing hand). > ");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					System.in));
+			try {
+				Boolean isFirstCard = true;
+				String[] indices = br.readLine().split(" ");
+				for (String index : indices) {
+					try {
+						int idx = Integer.parseInt(index);
+
+						// user opt to keep current hand
+						if (isFirstCard && idx == 0) {
+							return list;
+						}
+						isFirstCard = false;
+
+						// get card in hand that user index input corresponds to
+						Card card = player.getHand().getCardAtIndex(idx - 1);
+						if (card == null) {
+							// index out of range - card not found
+							System.out.println("Card not found... Try again.");
+							isInvalid = true;
+							list.clear();
+							break;
+						}
+
+						list.add(idx);
+						discardLimit--;
+						// if user discards an Ace, confirm they have another
+						// Ace so they maintain a valid discard limit
+						if ((card.getRank() == Rank.ACE) && (aceCount == 1)) {
+							// user discarded their only Ace, reduce discard
+							// limit
+							discardLimit--;
+						}
+
+						if (discardLimit < 0) {
+							// user discarded too many cards
+							System.out
+									.println("Cannot exceed your discard limit... Try again.");
+							isInvalid = true;
+							list.clear();
+							break;
+						}
+
+					} catch (NumberFormatException ex) {
+						System.out
+								.println("Invalid number received... Try again.");
+						isInvalid = true;
+						list.clear();
+						break;
+					}
+				}
+			} catch (IOException ex) {
+				System.out.println("Invalid number received... Try again.");
+				isInvalid = true;
+				list.clear();
+				break;
+			}
+		}
+		return list;
+	}
+
 }

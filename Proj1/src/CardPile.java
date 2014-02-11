@@ -1,72 +1,33 @@
-/*
- * CARD VALUE
- * 1 = ace
- * 2 = two
- * 3 = three
- * ...
- * 9 = nine
- * 10 = ten
- * 11 = jack
- * 12 = queen
- * 13 = king
- * 
- * CARD SUIT
- * 0 = club
- * 1 = heart
- * 2 = spade
- * 3 = diamond
- */
 import java.util.ArrayList;
 
 public class CardPile {
-	
+
 	private ArrayList<Card> _pile;
-	
-	public CardPile(){
+
+	public CardPile() {
 		_pile = new ArrayList<Card>();
 	}
-	public CardPile(int mode){
-		this();
-		if( mode == 1 ){
-			generateDeck();
+
+	/*
+	 * initializes our current pile to a deck of 52 cards
+	 * (this will only be called when shuffle is requested)
+	 */
+	private void init() {
+		for (int rank = Rank.ACE; rank <= Rank.KING; ++rank) {
+			_pile.add(new Card(Suit.CLUBS, rank));
+			_pile.add(new Card(Suit.HEARTS, rank));
+			_pile.add(new Card(Suit.SPADES, rank));
+			_pile.add(new Card(Suit.DIAMONDS, rank));
 		}
 	}
-	
+
 	/*
-	 * pull a card form the deck
-	 * if a card can't be drawn, throw an exception
+	 * randomizes position of cards within deck
 	 */
-	public Card drawCard(){
-		if( !_pile.isEmpty() ){
-			return _pile.remove( 0);
-		}
-		Card top = new Card(0,0);
-		return top;
-	}
-	
-	/*
-	 * giving a card back to a pile (mostly used to discard)
-	 */
-	public void returnCard(Card card){
-		_pile.add(card);
-	}
-	
-	/*
-	 * generate a standard 52 card deck and return it
-	 */
-	private void generateDeck(){
-		for(int rank = Card.ACE; rank <= Card.KING; ++rank){
-			_pile.add( new Card(rank, Card.CLUBS));
-			_pile.add( new Card(rank, Card.HEARTS));
-			_pile.add( new Card(rank, Card.SPADES));
-			_pile.add( new Card(rank, Card.DIAMONDS));
-		}
-	}
-	
-	/*
-	 * shuffle the deck
-	 */
-	public void shuffle(){
+	public void shuffle() {
+		init();
+		
+		//--- Shuffle by exchanging each element randomly
 		Card temp;
 		int randomIndex;
 		int randomSwitches = 500 + ((int)(512*Math.random())%200); //at least 500 plus up to 599 more
@@ -76,11 +37,27 @@ public class CardPile {
 			_pile.add( temp);
 		}
 	}
-	
+
 	/*
-	 * add an array of cards to this card pile
+	 * pull a card from deck if card can't be drawn, throw exception
 	 */
-	public void returnCards(ArrayList<Card> toDiscardCards) {
-		_pile.addAll( toDiscardCards);
+	public Card drawCard() {
+		if (!_pile.isEmpty()) {
+			try {
+				return _pile.remove(0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		Card top = new Card();
+		return top;
 	}
+
+	/*
+	 * giving a card back to a pile (mostly used to discard)
+	 */
+	public void returnCard(Card card){
+		_pile.add(card);
+	}
+
 }
