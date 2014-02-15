@@ -25,7 +25,6 @@ public class BombButton extends JButton implements ActionListener {
 	private int _adjacentBombs;
 
 	/*
-	 * the action listeer for a bomb
 	 * will signal the bombfield to start a reveal()
 	 * and will signal the end of a game
 	 */
