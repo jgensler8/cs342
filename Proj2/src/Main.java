@@ -1,14 +1,9 @@
-import java.awt.BorderLayout;
 import java.awt.Container;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JWindow;
-
 public class Main {
 	
 	/**

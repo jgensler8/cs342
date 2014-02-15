@@ -8,6 +8,7 @@ public class BombButton extends JButton implements ActionListener {
 	private static final int DEFAULT_SIZE = 4;
 	private int _heightIndex;
 	private int _widthIndex;
+	BombField _parent;
 	
 	/*
 	 * is a space hasn't been discovered, it's picture can be changed to 
@@ -32,7 +33,7 @@ public class BombButton extends JButton implements ActionListener {
 		public void actionPerformed( ActionEvent event){
 			System.out.println("THIS IS A BOMB");
 			if(!_isDiscovered){
-				//TODO emit a custom action so that bombfield can listen
+				_parent.onBombClick( _widthIndex, _heightIndex);
 			}
 		}
 	};
@@ -44,7 +45,7 @@ public class BombButton extends JButton implements ActionListener {
 		public void actionPerformed( ActionEvent event){
 			System.out.println("THIS IS NORMAL TILE");
 			if(!_isDiscovered){
-				//TODO emit a custom action so that bombfield can listen
+				_parent.onBlankClick( _widthIndex, _heightIndex);
 			}
 			//TODO MAKE THIS WORK FOR A RIGHT CLICK
 			//NOTICE HOW IT SAYS TO DEFINE SOMETHING BEHIND THE BUTTON...
@@ -59,19 +60,20 @@ public class BombButton extends JButton implements ActionListener {
 	/*
 	 * construct a button with the default size
 	 */
-	public BombButton(int bombType, int userWidthIndex, int userHeightIndex){
+	public BombButton(int bombType, int userWidthIndex, int userHeightIndex, BombField parent){
 		super(); //set up jbutton stuff
 		this.setSize(DEFAULT_SIZE, DEFAULT_SIZE);
 		this.setFields(bombType);
 		//addActionListener( this);
 		_widthIndex = userWidthIndex;
 		_heightIndex = userHeightIndex;
+		_parent = parent;
 	}
 	/*
 	 * construct a button with a given width and height 
 	 */
-	public BombButton(int bombType, int userWidthIndex, int userHeightIndex, int width, int height){
-		this(bombType, userWidthIndex, userHeightIndex); //set up defaults and jbutton stuff
+	public BombButton(int bombType, int userWidthIndex, int userHeightIndex, BombField parent, int width, int height){
+		this(bombType, userWidthIndex, userHeightIndex, parent); //set up defaults and jbutton stuff
 		if( width < 1) width = DEFAULT_SIZE;
 		if( height < 1) height = DEFAULT_SIZE;
 		this.setSize( width, height);

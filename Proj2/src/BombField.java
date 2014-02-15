@@ -1,6 +1,3 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /*
  * counting scheme for _bombArray:
  *    <--- width --- >
@@ -13,7 +10,7 @@ import java.awt.event.ActionListener;
  * t V
  */
 
-public class BombField implements BlankTileClickListener{
+public class BombField{
 	/*
 	 * tiles in the x direction
 	 */
@@ -41,23 +38,9 @@ public class BombField implements BlankTileClickListener{
 	 */
 	private BombButton[][] _bombArray;
 	
-
-	ActionListener onBombClick = new ActionListener(){
-		public void actionPerformed( ActionEvent event){
-			
-		}
-	};
-	
-	ActionListener onBlankClick = new ActionListener(){
-		public void actionPerformed( ActionEvent event){
-			
-		}
-	};
-	
-	
 	/*
 	 * Creates a bombfield of a given width and height
-	 * no error checking becaues this object should always be used in a BombPanel
+	 * no error checking because this object should always be used in a BombPanel
 	 */
 	public BombField(BombPanel panel, int userWidth, int userHeight, int numBombs) {
 		_width = userWidth;
@@ -67,7 +50,7 @@ public class BombField implements BlankTileClickListener{
 		_bombArray = new BombButton[userWidth][userHeight];
 		for(int heightIndex = 0; heightIndex < _height; ++heightIndex){
 			for(int widthIndex = 0; widthIndex < _width; ++widthIndex){
-				_bombArray[widthIndex][heightIndex] = new BombButton( createdField[widthIndex][heightIndex], widthIndex, heightIndex);
+				_bombArray[widthIndex][heightIndex] = new BombButton( createdField[widthIndex][heightIndex], widthIndex, heightIndex, this);
 				panel.add( _bombArray[widthIndex][heightIndex]);
 			}
 		}
@@ -159,5 +142,27 @@ public class BombField implements BlankTileClickListener{
 			}
 		}
 		return field;
+	}
+
+	/*
+	 * when a regular "blank" button has been left clicked, it will trigger this
+	 */
+	public void onBlankClick(int calleeWIndex, int calleeHIndex) {
+		this.floodFill( calleeWIndex, calleeHIndex);
+		System.out.println("The user clicked button: " + Integer.toString( calleeWIndex) + " " + Integer.toString(calleeHIndex));
+	}
+	
+	/*
+	 * when a bom has been left clicked, it will trigger this
+	 */
+	public void onBombClick(int calledWIndex, int calleeHIndex){
+		System.out.println("Bombfield noticed a bomb has been click");
+	}
+	
+	/*
+	 * fill the tiles around where the person guessed
+	 */
+	private void floodFill( int widthIndex, int heightIndex){
+		//TODO
 	}
 }

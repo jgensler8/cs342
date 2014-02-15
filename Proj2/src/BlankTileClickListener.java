@@ -1,5 +1,5 @@
-import java.awt.event.ActionListener;
+import java.util.EventListener;
 
-public interface BlankTileClickListener extends ActionListener {
-	public void onBlankTileClick();
+public interface BlankTileClickListener extends EventListener {
+	public void onBlankTileClick( int myWIndex, int myHIndex);
 }
