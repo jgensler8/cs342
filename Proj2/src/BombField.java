@@ -1,3 +1,6 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /*
  * counting scheme for _bombArray:
  *    <--- width --- >
@@ -10,7 +13,7 @@
  * t V
  */
 
-public class BombField {
+public class BombField implements BlankTileClickListener{
 	/*
 	 * tiles in the x direction
 	 */
@@ -38,6 +41,20 @@ public class BombField {
 	 */
 	private BombButton[][] _bombArray;
 	
+
+	ActionListener onBombClick = new ActionListener(){
+		public void actionPerformed( ActionEvent event){
+			
+		}
+	};
+	
+	ActionListener onBlankClick = new ActionListener(){
+		public void actionPerformed( ActionEvent event){
+			
+		}
+	};
+	
+	
 	/*
 	 * Creates a bombfield of a given width and height
 	 * no error checking becaues this object should always be used in a BombPanel
@@ -50,7 +67,7 @@ public class BombField {
 		_bombArray = new BombButton[userWidth][userHeight];
 		for(int heightIndex = 0; heightIndex < _height; ++heightIndex){
 			for(int widthIndex = 0; widthIndex < _width; ++widthIndex){
-				_bombArray[widthIndex][heightIndex] = new BombButton( createdField[widthIndex][heightIndex]);
+				_bombArray[widthIndex][heightIndex] = new BombButton( createdField[widthIndex][heightIndex], widthIndex, heightIndex);
 				panel.add( _bombArray[widthIndex][heightIndex]);
 			}
 		}
@@ -66,7 +83,6 @@ public class BombField {
 				_bombArray[widthIndex][heightIndex].setFields( newField[widthIndex][heightIndex]);
 			}
 		}
-		//TODO
 	}
 	
 	/*
@@ -77,10 +93,14 @@ public class BombField {
 	}
 	
 	/*
-	 * shows all bombs and recalculates 
+	 * shows all tiles and their contents
 	 */
 	public void revealBoard(){
-		
+		for( int heightIndex = 0; heightIndex < _height; ++heightIndex){
+			for( int widthIndex = 0; widthIndex < _width; ++widthIndex){
+				_bombArray[widthIndex][heightIndex].reveal();
+			}
+		}
 	}
 	
 	/*
