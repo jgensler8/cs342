@@ -60,6 +60,7 @@ public class BombField{
 	 * reset all spaces on the field and create a new game board
 	 */
 	public void resetField(){
+		System.out.println("RESETING THE BOARD (generating a new one)");
 		int[][] newField = fieldCreator( _width, _height, _numBombs);
 		for( int heightIndex = 0; heightIndex < _height; ++heightIndex){
 			for( int widthIndex = 0; widthIndex < _width; ++widthIndex){
@@ -149,14 +150,14 @@ public class BombField{
 	 */
 	public void onBlankClick(int calleeWIndex, int calleeHIndex) {
 		this.floodFill( calleeWIndex, calleeHIndex);
-		System.out.println("The user clicked button: " + Integer.toString( calleeWIndex) + " " + Integer.toString(calleeHIndex));
+		System.out.println("The user clicked button at " + Integer.toString( calleeWIndex) + " " + Integer.toString(calleeHIndex));
 	}
 	
 	/*
-	 * when a bom has been left clicked, it will trigger this
+	 * when a bomb has been left clicked, it will trigger this
 	 */
-	public void onBombClick(int calledWIndex, int calleeHIndex){
-		System.out.println("Bombfield noticed a bomb has been click");
+	public void onBombClick(int calleeWIndex, int calleeHIndex){
+		System.out.println("Bombfield noticed a bomb has been click at "+ Integer.toString( calleeWIndex) + " " + Integer.toString(calleeHIndex));
 	}
 	
 	/*

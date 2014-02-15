@@ -24,7 +24,7 @@ public class BombPanel extends JPanel{
 		_width = DEFAULT_WIDTH;
 		_numBombs = DEFAULT_NUM_BOMBS;
 		this.setLayout( new GridLayout( _height, _width));
-		//create a field inside of this panel
+		//create a field inside of this panel (this call adds buttons to *this*)
 		_field = new BombField( this, _width, _height, _numBombs);
 	}
 	/*
@@ -52,7 +52,7 @@ public class BombPanel extends JPanel{
 			_numBombs = userNumBombs;
 		}
 		this.setLayout( new GridLayout( _height, _width));
-		//create a field inside of this panel
+		//create a field inside of this panel (this call adds buttons to *this*)
 		_field = new BombField( this, _width, _height, _numBombs);
 	}
 	

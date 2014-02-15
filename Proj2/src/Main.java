@@ -43,13 +43,11 @@ public class Main {
 	private static void initMenuBar( JMenuBar menuBar){
 		JMenu gameMenu = new JMenu("GAME");
 		JMenuItem startGameMenuItem = new JMenuItem("Reset");
-		//startGameMenuItem.addActionListener( actionListener e){
-			
-		//}
+		//TODO maybe make a "resetEvent"
 		gameMenu.add(startGameMenuItem);
 		
 		//see write up for what these are supposed to do/accomplish
-		//TODO jmenuitem topten
+		//TODO jmenuitem topten not sure how this will be done... don't quite have a timer working yet either
 		//TODO jmenuitem exit
 		
 		//TODO jmenu help
