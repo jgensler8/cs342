@@ -3,4 +3,4 @@
 | Project Number | Description |
 | --- | --- |
 | 1 | Poker Game |
-| adsf | asdf |
+| 2 | Minesweeper |

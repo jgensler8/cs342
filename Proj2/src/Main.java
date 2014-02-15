@@ -19,7 +19,7 @@ public class Main {
 		JFrame frame = new JFrame(); //functions as a frame
 		initFrame( frame);
 		//game loop
-		playGame(frame);
+		playGame( frame);
 	}
 
 	/**
@@ -48,10 +48,12 @@ public class Main {
 	private static void initMenuBar( JMenuBar menuBar){
 		JMenu gameMenu = new JMenu("GAME");
 		JMenuItem startGameMenuItem = new JMenuItem("Reset");
-		startGameMenuItem.addActionListener( actionListener e){
+		//startGameMenuItem.addActionListener( actionListener e){
 			
-		}
+		//}
 		gameMenu.add(startGameMenuItem);
+		
+		//see write up for what these are supposed to do/accomplish
 		//TODO jmenuitem topten
 		//TODO jmenuitem exit
 		
