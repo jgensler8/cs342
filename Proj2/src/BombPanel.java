@@ -13,7 +13,6 @@ public class BombPanel extends JPanel{
 	private int _height;
 	private int _numBombs;
 	private BombField _field;
-	
 	/*
 	 * Constructor to create a bomb panel. Initializes panel to have DEFAULT_HEIGHT and
 	 * DEFAULT_WIDTH size.
