@@ -262,9 +262,10 @@ public class BombPanel extends JPanel{
 			_isDiscovered = false;
 			_wasExploded = false;
 			try {
-				this.setIcon(new ImageIcon("res/blank.png"));
+				ClassLoader cl = this.getClass().getClassLoader();
+				this.setIcon(new ImageIcon(cl.getResource("img/blank.png")));
 				}catch(Exception e){
-				  System.out.println("ERROR loading image");
+				  System.out.println("ERROR loading image: constructor");
 			}
 		}
 		
@@ -292,19 +293,20 @@ public class BombPanel extends JPanel{
 		public void fill() {
 			if( !_isDiscovered){
 				try {
+					ClassLoader cl = this.getClass().getClassLoader();
 					switch(this._numAdjacentBombs){
-					case 0: this.setIcon(new ImageIcon("res/blank.png")); break;
-					case 1: this.setIcon(new ImageIcon("res/1.png")); break;
-					case 2: this.setIcon(new ImageIcon("res/2.png")); break;
-					case 3: this.setIcon(new ImageIcon("res/3.png")); break;
-					case 4: this.setIcon(new ImageIcon("res/4.png")); break;
-					case 5: this.setIcon(new ImageIcon("res/5.png")); break;
-					case 6: this.setIcon(new ImageIcon("res/6.png")); break;
-					case 7: this.setIcon(new ImageIcon("res/7.png")); break;
-					case 8: this.setIcon(new ImageIcon("res/8.png")); break;
+					case 0: this.setIcon(new ImageIcon(cl.getResource("img/blank.png"))); break;
+					case 1: this.setIcon(new ImageIcon(cl.getResource("img/1.png"))); break;
+					case 2: this.setIcon(new ImageIcon(cl.getResource("img/2.png"))); break;
+					case 3: this.setIcon(new ImageIcon(cl.getResource("img/3.png"))); break;
+					case 4: this.setIcon(new ImageIcon(cl.getResource("img/4.png"))); break;
+					case 5: this.setIcon(new ImageIcon(cl.getResource("img/5.png"))); break;
+					case 6: this.setIcon(new ImageIcon(cl.getResource("img/6.png"))); break;
+					case 7: this.setIcon(new ImageIcon(cl.getResource("img/7.png"))); break;
+					case 8: this.setIcon(new ImageIcon(cl.getResource("img/8.png"))); break;
 					}
 				  } catch(Exception e){
-					  System.out.println("ERROR loading image");
+					  System.out.println("ERROR loading image: fill");
 				}
 				
 				this._isDiscovered = true;
@@ -321,29 +323,30 @@ public class BombPanel extends JPanel{
 		 * OR when a bomb is click (user has lost)
 		 */
 		public void reveal(){
+			ClassLoader cl = this.getClass().getClassLoader();
 			if( _isBomb){
 				try {
-					if( _wasExploded) this.setIcon(new ImageIcon("Proj2/res/bombExploded.png"));
-					else this.setIcon(new ImageIcon("Proj2/res/bombNormal.png"));
+					if( _wasExploded) this.setIcon(new ImageIcon(cl.getResource("img/bombExploded.png")));
+					else this.setIcon(new ImageIcon(cl.getResource("img/bombNormal.png")));
 				  } catch(Exception e){
-					  System.out.println("ERROR loading image");
+					  System.out.println("ERROR loading image: reveal");
 				}
 			}
 			else{
 				try {
 					switch(this._numAdjacentBombs){
-					case 0: this.setIcon(new ImageIcon("Proj2/res/blank.png")); break;
-					case 1: this.setIcon(new ImageIcon("Proj2/res/1.png")); break;
-					case 2: this.setIcon(new ImageIcon("Proj2/res/2.png")); break;
-					case 3: this.setIcon(new ImageIcon("Proj2/res/3.png")); break;
-					case 4: this.setIcon(new ImageIcon("Proj2/res/4.png")); break;
-					case 5: this.setIcon(new ImageIcon("Proj2/res/5.png")); break;
-					case 6: this.setIcon(new ImageIcon("Proj2/res/6.png")); break;
-					case 7: this.setIcon(new ImageIcon("Proj2/res/7.png")); break;
-					case 8: this.setIcon(new ImageIcon("Proj2/res/8.png")); break;
+					case 0: this.setIcon(new ImageIcon(cl.getResource("img/blank.png"))); break;
+					case 1: this.setIcon(new ImageIcon(cl.getResource("img/1.png"))); break;
+					case 2: this.setIcon(new ImageIcon(cl.getResource("img/2.png"))); break;
+					case 3: this.setIcon(new ImageIcon(cl.getResource("img/3.png"))); break;
+					case 4: this.setIcon(new ImageIcon(cl.getResource("img/4.png"))); break;
+					case 5: this.setIcon(new ImageIcon(cl.getResource("img/5.png"))); break;
+					case 6: this.setIcon(new ImageIcon(cl.getResource("img/6.png"))); break;
+					case 7: this.setIcon(new ImageIcon(cl.getResource("img/7.png"))); break;
+					case 8: this.setIcon(new ImageIcon(cl.getResource("img/8.png"))); break;
 					}
 				  } catch(Exception e){
-					  System.out.println("ERROR loading image");
+					  System.out.println("ERROR loading image: reveal");
 				}
 			}
 		}
