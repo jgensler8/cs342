@@ -4,8 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
 public class Main {
-	
 	/**
 	 * @param args
 	 */
@@ -17,8 +17,7 @@ public class Main {
 		playGame( frame);
 	}
 
-	/**
-	 * @param frame
+	/*
 	 * initializes the frame with the game contents
 	 */
 	private static void initFrame( JFrame frame){
@@ -30,15 +29,18 @@ public class Main {
 		frame.setJMenuBar( menuBar);
 		
 		//configure the bomb panel
-		BombPanel bombPanel = new BombPanel();
-		container.add( bombPanel);
+		BombPanel bombpanel = new BombPanel();
+		container.add( bombpanel);
+		
+		//configure the scoreboard
+		ScoreBoard scoreboard = new ScoreBoard();
 		
 		//configure the frame
 		frame.setSize(400, 400);
 	}
 	
 	/*
-	 * 
+	 * initialize components in the passed menuBar
 	 */
 	private static void initMenuBar( JMenuBar menuBar){
 		JMenu gameMenu = new JMenu("GAME");
@@ -58,7 +60,7 @@ public class Main {
 	}
 	
 	/*
-	 * start the game loop, handle replaying of the game
+	 * set the frame as visible, starting the game
 	 */
 	private static void playGame( JFrame frame){
 		frame.setVisible( true);

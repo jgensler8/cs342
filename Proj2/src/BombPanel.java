@@ -1,10 +1,14 @@
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 public class BombPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -18,11 +22,11 @@ public class BombPanel extends JPanel{
 	private int _numBombs;
 	private int _solvedTiles;
 	private int _totalSolvableTiles;
+	private Timer timer; //TODO get this to work
 	private BombButton[][] _field;
 	
-	/*
-	 * Constructor to create a bomb panel. Initializes panel to have DEFAULT_HEIGHT and
-	 * DEFAULT_WIDTH size.
+	/**
+	 * Initializes panel to have DEFAULT_HEIGHT and DEFAULT_WIDTH size (10, each)
 	 */
 	public BombPanel(){
 		super(); //set up whatever jpanel sets up automatically
@@ -33,9 +37,12 @@ public class BombPanel extends JPanel{
 		this.setLayout( new GridLayout( _height, _width));
 		initBombArray();
 	}
-	/*
-	 * Constructor to create a bomb panel. Initializes panel to have user given
-	 * height and width
+	/**
+	 * Initializes panel to have userWidth and userHeight size with userNumBombs bombs
+	 * @param userWidth number of tiles in the "x" direction, must be >0 and <100
+	 * @param userHeight number of tiles in the "y" direction, must be >0 and <100
+	 * @param userNumBombs number of bombs to place on the map, must be >0 and <userWidth*userHeight
+	 * @see BombPanel
 	 */
 	public BombPanel(int userWidth, int userHeight, int userNumBombs){
 		super(); //set up whatever jpanel sets up automatically
@@ -56,8 +63,8 @@ public class BombPanel extends JPanel{
 		initBombArray();
 	}
 	
-	/*
-	 * reset all spaces on the field and create a new game board
+	/**
+	 * reset the panel with a new field
 	 */
 	public void resetField(){
 		System.out.println("RESETING THE BOARD (generating a new one)");
@@ -69,18 +76,27 @@ public class BombPanel extends JPanel{
 		}
 	}
 	
+	/**
+	 * get the time, in seconds, that the game took to complete
+	 * @return time, time since first button click to completion of bomb field
+	 */
+	public int getCompletionTime(){
+		return 1;
+	}
+	
+	
 	/*
 	 * return true if the bombfield has been solved
 	 */
-	public Boolean hasWon(){
+	private Boolean hasWon(){
 		return _solvedTiles == _totalSolvableTiles;
+		
 	}
 	
 	/*
 	 * shows all tiles and their contents
-	 * TODO
 	 */
-	public void revealBoard(){
+	private void revealBoard(){
 		for( int heightIndex = 0; heightIndex < _height; ++heightIndex){
 			for( int widthIndex = 0; widthIndex < _width; ++widthIndex){
 				_field[widthIndex][heightIndex].reveal();
@@ -203,7 +219,7 @@ public class BombPanel extends JPanel{
 	 * used in array fashion to simulate a minesweeper field
 	 * 
 	 */
-	public class BombButton extends JButton{
+	private class BombButton extends JToggleButton{
 		private static final long serialVersionUID = 1L;
 		private static final int DEFAULT_SIZE = 6;
 		private int _heightIndex;
@@ -214,6 +230,14 @@ public class BombPanel extends JPanel{
 		 * help the user identify a possible bomb
 		 */
 		private Boolean _isDiscovered;
+		/*
+		 * these three Booleans toggle the right mouse click
+		 * picture
+		 * blank -> questionsmark -> flagged -> blank(loop)
+		 */
+		private Boolean _isUD_Blank;
+		private Boolean _isUD_Flagged;
+		private Boolean _isUD_QuestionMark;
 		/*
 		 * flag identifying a bomb on the board
 		 */
@@ -227,25 +251,58 @@ public class BombPanel extends JPanel{
 		 * the number to be displayed s
 		 */
 		private int _numAdjacentBombs;
+		
 		/*
-		 * will signal the bombfield to start a reveal()
-		 * and will signal the end of a game
+		 * 
 		 */
-		ActionListener bombListener = new ActionListener(){
-			public void actionPerformed( ActionEvent event){
-				_wasExploded = true;
-				concludeLoss();
+		MouseListener clickListener = new MouseListener(){
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if (SwingUtilities.isRightMouseButton( arg0) ){
+					System.out.println("right mouse click");
+					if( !_isDiscovered){
+						if( _isUD_Blank){
+							_isUD_Blank = false;
+							_isUD_Flagged = true;
+							setIconSafe("img/flag.png", "ERROR Loading image: right click toggle");
+						}
+						else if( _isUD_Flagged){
+							_isUD_Flagged = false;
+							_isUD_QuestionMark = true;
+							setIconSafe("img/question.png", "ERROR Loading image: right click toggle");
+						}
+						else if( _isUD_QuestionMark){
+							_isUD_QuestionMark = false;
+							_isUD_Blank = true;
+							setIconSafe("img/blank.png", "ERROR Loading image: right click toggle");
+						}
+					}
+				}
+				else if( SwingUtilities.isLeftMouseButton(arg0) ){
+					//System.out.println("left mouse click");
+					if( _isBomb){
+						_wasExploded = true;
+						concludeLoss();
+					}
+					else{
+						System.out.println("THIS IS A NORMAL TILE: " + Integer.toString( _widthIndex) 
+										+ " " + Integer.toString( _heightIndex));
+						floodFill( _widthIndex, _heightIndex);
+					}
+				}
 			}
-		};
-		/*
-		 * the action listener for a normal tile
-		 * will signal a floodfill()
-		 */
-		ActionListener normalTileListener = new ActionListener(){
-			public void actionPerformed( ActionEvent event){
-				System.out.println("THIS IS A NORMAL TILE: " + Integer.toString( _widthIndex) 
-								+ " " + Integer.toString( _heightIndex));
-				floodFill( _widthIndex, _heightIndex);
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
 			}
 		};
 		
@@ -256,17 +313,15 @@ public class BombPanel extends JPanel{
 			super(); //set up jbutton stuff
 			this.setSize(DEFAULT_SIZE, DEFAULT_SIZE);
 			this.setFields(bombType);
-			//addActionListener( this);
+			this.addMouseListener( clickListener);
 			_widthIndex = userWidthIndex;
 			_heightIndex = userHeightIndex;
 			_isDiscovered = false;
 			_wasExploded = false;
-			try {
-				ClassLoader cl = this.getClass().getClassLoader();
-				this.setIcon(new ImageIcon(cl.getResource("img/blank.png")));
-				}catch(Exception e){
-				  System.out.println("ERROR loading image: constructor");
-			}
+			_isUD_QuestionMark = false;
+			_isUD_Flagged = false;
+			_isUD_Blank = true;
+			this.setIconSafe("img/blank.png", "ERROR loading image: constructor");
 		}
 		
 		/*
@@ -292,21 +347,16 @@ public class BombPanel extends JPanel{
 		 */
 		public void fill() {
 			if( !_isDiscovered){
-				try {
-					ClassLoader cl = this.getClass().getClassLoader();
-					switch(this._numAdjacentBombs){
-					case 0: this.setIcon(new ImageIcon(cl.getResource("img/blank.png"))); break;
-					case 1: this.setIcon(new ImageIcon(cl.getResource("img/1.png"))); break;
-					case 2: this.setIcon(new ImageIcon(cl.getResource("img/2.png"))); break;
-					case 3: this.setIcon(new ImageIcon(cl.getResource("img/3.png"))); break;
-					case 4: this.setIcon(new ImageIcon(cl.getResource("img/4.png"))); break;
-					case 5: this.setIcon(new ImageIcon(cl.getResource("img/5.png"))); break;
-					case 6: this.setIcon(new ImageIcon(cl.getResource("img/6.png"))); break;
-					case 7: this.setIcon(new ImageIcon(cl.getResource("img/7.png"))); break;
-					case 8: this.setIcon(new ImageIcon(cl.getResource("img/8.png"))); break;
-					}
-				  } catch(Exception e){
-					  System.out.println("ERROR loading image: fill");
+				switch(this._numAdjacentBombs){
+				case 0: this.setIconSafe("img/blank.png", "ERROR loading image: fill"); break;
+				case 1: this.setIconSafe("img/1.png", "ERROR loading image: fill"); break;
+				case 2: this.setIconSafe("img/2.png", "ERROR loading image: fill"); break;
+				case 3: this.setIconSafe("img/3.png", "ERROR loading image: fill"); break;
+				case 4: this.setIconSafe("img/4.png", "ERROR loading image: fill"); break;
+				case 5: this.setIconSafe("img/5.png", "ERROR loading image: fill"); break;
+				case 6: this.setIconSafe("img/6.png", "ERROR loading image: fill"); break;
+				case 7: this.setIconSafe("img/7.png", "ERROR loading image: fill"); break;
+				case 8: this.setIconSafe("img/8.png", "ERROR loading image: fill"); break;
 				}
 				
 				this._isDiscovered = true;
@@ -323,30 +373,22 @@ public class BombPanel extends JPanel{
 		 * OR when a bomb is click (user has lost)
 		 */
 		public void reveal(){
-			ClassLoader cl = this.getClass().getClassLoader();
+			_isDiscovered = true;
 			if( _isBomb){
-				try {
-					if( _wasExploded) this.setIcon(new ImageIcon(cl.getResource("img/bombExploded.png")));
-					else this.setIcon(new ImageIcon(cl.getResource("img/bombNormal.png")));
-				  } catch(Exception e){
-					  System.out.println("ERROR loading image: reveal");
-				}
+				if( _wasExploded) this.setIconSafe("img/bombExploded.png", "ERROR loading image: reaveal");
+				else this.setIconSafe("img/bombNormal.png", "ERROR loading image: reaveal");
 			}
 			else{
-				try {
-					switch(this._numAdjacentBombs){
-					case 0: this.setIcon(new ImageIcon(cl.getResource("img/blank.png"))); break;
-					case 1: this.setIcon(new ImageIcon(cl.getResource("img/1.png"))); break;
-					case 2: this.setIcon(new ImageIcon(cl.getResource("img/2.png"))); break;
-					case 3: this.setIcon(new ImageIcon(cl.getResource("img/3.png"))); break;
-					case 4: this.setIcon(new ImageIcon(cl.getResource("img/4.png"))); break;
-					case 5: this.setIcon(new ImageIcon(cl.getResource("img/5.png"))); break;
-					case 6: this.setIcon(new ImageIcon(cl.getResource("img/6.png"))); break;
-					case 7: this.setIcon(new ImageIcon(cl.getResource("img/7.png"))); break;
-					case 8: this.setIcon(new ImageIcon(cl.getResource("img/8.png"))); break;
-					}
-				  } catch(Exception e){
-					  System.out.println("ERROR loading image: reveal");
+				switch(this._numAdjacentBombs){
+				case 0: setIconSafe("img/blank.png", "ERROR loading image: reaveal"); break;
+				case 1: setIconSafe("img/1.png", "ERROR loading image: reaveal"); break;
+				case 2: setIconSafe("img/2.png", "ERROR loading image: reaveal"); break;
+				case 3: setIconSafe("img/3.png", "ERROR loading image: reaveal"); break;
+				case 4: setIconSafe("img/4.png", "ERROR loading image: reaveal"); break;
+				case 5: setIconSafe("img/5.png", "ERROR loading image: reaveal"); break;
+				case 6: setIconSafe("img/6.png", "ERROR loading image: reaveal"); break;
+				case 7: setIconSafe("img/7.png", "ERROR loading image: reaveal"); break;
+				case 8: setIconSafe("img/8.png", "ERROR loading image: reaveal"); break;
 				}
 			}
 		}
@@ -358,14 +400,25 @@ public class BombPanel extends JPanel{
 			if( bombType == -1){
 				_numAdjacentBombs = -1;
 				_isBomb = true;
-				this.addActionListener( bombListener);
 				//this.setText("BOMB"); //DEBUG
 			}
 			else{
 				_numAdjacentBombs = bombType;
 				_isBomb = false;
-				this.addActionListener( normalTileListener);
+			}
+		}
+		
+		/*
+		 * try and set the icon
+		 */
+		private void setIconSafe(String path, String errorMessage){
+			try {
+				ClassLoader cl = this.getClass().getClassLoader();
+				this.setIcon( new ImageIcon( cl.getResource(path)));
+			  } catch(Exception e){
+				  System.out.println( errorMessage);
 			}
 		}
 	}
+
 }
