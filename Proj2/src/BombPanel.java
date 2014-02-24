@@ -262,7 +262,7 @@ public class BombPanel extends JPanel{
 			_isDiscovered = false;
 			_wasExploded = false;
 			try {
-				this.setIcon(new ImageIcon("Proj2/res/blank.png"));
+				this.setIcon(new ImageIcon("res/blank.png"));
 				}catch(Exception e){
 				  System.out.println("ERROR loading image");
 			}
@@ -293,15 +293,15 @@ public class BombPanel extends JPanel{
 			if( !_isDiscovered){
 				try {
 					switch(this._numAdjacentBombs){
-					case 0: this.setIcon(new ImageIcon("Proj2/res/blank.png")); break;
-					case 1: this.setIcon(new ImageIcon("Proj2/res/1.png")); break;
-					case 2: this.setIcon(new ImageIcon("Proj2/res/2.png")); break;
-					case 3: this.setIcon(new ImageIcon("Proj2/res/3.png")); break;
-					case 4: this.setIcon(new ImageIcon("Proj2/res/4.png")); break;
-					case 5: this.setIcon(new ImageIcon("Proj2/res/5.png")); break;
-					case 6: this.setIcon(new ImageIcon("Proj2/res/6.png")); break;
-					case 7: this.setIcon(new ImageIcon("Proj2/res/7.png")); break;
-					case 8: this.setIcon(new ImageIcon("Proj2/res/8.png")); break;
+					case 0: this.setIcon(new ImageIcon("res/blank.png")); break;
+					case 1: this.setIcon(new ImageIcon("res/1.png")); break;
+					case 2: this.setIcon(new ImageIcon("res/2.png")); break;
+					case 3: this.setIcon(new ImageIcon("res/3.png")); break;
+					case 4: this.setIcon(new ImageIcon("res/4.png")); break;
+					case 5: this.setIcon(new ImageIcon("res/5.png")); break;
+					case 6: this.setIcon(new ImageIcon("res/6.png")); break;
+					case 7: this.setIcon(new ImageIcon("res/7.png")); break;
+					case 8: this.setIcon(new ImageIcon("res/8.png")); break;
 					}
 				  } catch(Exception e){
 					  System.out.println("ERROR loading image");
