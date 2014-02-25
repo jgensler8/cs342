@@ -424,7 +424,7 @@ public class BombPanel extends JPanel{
 		}
 		
 		/*
-		 * resolve 
+		 * resolve the condition of the first button on the board getting clicked
 		 */
 		private void resolveFirstClickFromButton() {
 			if( _isFirstClick){

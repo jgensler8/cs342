@@ -18,10 +18,11 @@ public class ScoreBoard extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private final int DEFAULT_TOP_NUM_PLAYERS = 10;
 	private final int MAX_TOP_NUM_PLAYERS = 100;
-	private int _topNumPlayers;
 	private final String _fileName = "SCORE_FILE.txt";
+	private int _topNumPlayers;
 	private File _scoreFile;
 	private JButton _closeButton;
+	private JLabel _scoreOutput;
 	
 	private ArrayList<Player> TopList = new ArrayList<Player>();
 	
@@ -31,6 +32,7 @@ public class ScoreBoard extends JFrame{
 	public ScoreBoard(){
 		super();
 		_topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
+		//initialize the close button
 		_closeButton = new JButton();
 		_closeButton.setText("CLOSE");
 		_closeButton.setSize(10, 10); //TODO
@@ -40,6 +42,10 @@ public class ScoreBoard extends JFrame{
 			};
 		});
 		this.add( _closeButton);
+		//init the text view to display top scores
+		_scoreOutput = new JLabel();
+		_scoreOutput.setSize(200,200);
+		this.add(_scoreOutput);
 		//initialize the scoreboard file
 		_scoreFile = new File( _fileName);
 		if( !_scoreFile.exists() ){
@@ -98,6 +104,7 @@ public class ScoreBoard extends JFrame{
 	 * show the scoreboard to the user
 	 */
 	public void showToUser(){
+		this._scoreOutput.setText( this.getScoreString() );
 		this.setVisible(true);
 		this.setAlwaysOnTop(true);
 	}
@@ -128,21 +135,28 @@ public class ScoreBoard extends JFrame{
 	}
 
 	/*
-	 * write the list of score to the file
-	 * @throws FileNotFoundException e
+	 * @return the concatenation of the high scorers on the list;
 	 */
-	private void writeToFile(){
+	private String getScoreString(){
 		String total = "";
 		for( Player p : TopList){
 			total += p.getName() + " " +  p.getScore() + "\n";
 		}
+		return total;
+	}
+	
+	/*
+	 * write the list of score to the file
+	 * @throws FileNotFoundException e
+	 */
+	private void writeToFile(){
 		PrintWriter overWriter = null;
 		try {
 			overWriter = new PrintWriter(_scoreFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		overWriter.print(total);
+		overWriter.print( this.getScoreString()	);
 		overWriter.close();
 	}
 	
