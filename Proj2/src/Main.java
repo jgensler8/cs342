@@ -32,8 +32,9 @@ public class Main {
 		BombPanel bombpanel = new BombPanel();
 		container.add( bombpanel);
 		
-		//configure the scoreboard
 		ScoreBoard scoreboard = new ScoreBoard();
+		scoreboard.addScorer("Jeff", 20);
+		scoreboard.promptScorer(30);
 		
 		//configure the frame
 		frame.setSize(400, 400);

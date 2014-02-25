@@ -1,6 +1,4 @@
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -22,8 +20,10 @@ public class BombPanel extends JPanel{
 	private int _numBombs;
 	private int _solvedTiles;
 	private int _totalSolvableTiles;
-	private Timer timer; //TODO get this to work
 	private BombButton[][] _field;
+	private Timer _timer; //TODO get this to work
+	private ScoreBoard _scoreBoard;
+	
 	
 	/**
 	 * Initializes panel to have DEFAULT_HEIGHT and DEFAULT_WIDTH size (10, each)
@@ -84,13 +84,18 @@ public class BombPanel extends JPanel{
 		return 1;
 	}
 	
+	/**
+	 * @param scoreboard the scoreboard to hold the winners of the bomb panel
+	 */
+	public void setScoreBoard(ScoreBoard userBoard){
+		_scoreBoard = userBoard;
+	}
 	
 	/*
 	 * return true if the bombfield has been solved
 	 */
 	private Boolean hasWon(){
 		return _solvedTiles == _totalSolvableTiles;
-		
 	}
 	
 	/*
@@ -201,14 +206,16 @@ public class BombPanel extends JPanel{
 	}
 	
 	/*
-	 * 
+	 * launch if the game is over and the user has won
 	 */
 	private void concludeWin(){
 		this.revealBoard();
+		System.out.println("YOU HAVE WON!");
+		//_scoreBoard.promptInput( this.getCompletionTime() );
 	}
 	
 	/*
-	 * 
+	 * launch if the game is over and the user has lost
 	 */
 	private void concludeLoss(){
 		this.revealBoard();
@@ -348,7 +355,7 @@ public class BombPanel extends JPanel{
 		public void fill() {
 			if( !_isDiscovered){
 				switch(this._numAdjacentBombs){
-				case 0: this.setIconSafe("img/blank.png", "ERROR loading image: fill"); break;
+				case 0: this.setIconSafe("img/blankClicked.png", "ERROR loading image: fill"); break;
 				case 1: this.setIconSafe("img/1.png", "ERROR loading image: fill"); break;
 				case 2: this.setIconSafe("img/2.png", "ERROR loading image: fill"); break;
 				case 3: this.setIconSafe("img/3.png", "ERROR loading image: fill"); break;
@@ -380,7 +387,7 @@ public class BombPanel extends JPanel{
 			}
 			else{
 				switch(this._numAdjacentBombs){
-				case 0: setIconSafe("img/blank.png", "ERROR loading image: reaveal"); break;
+				case 0: setIconSafe("img/blankClicked.png", "ERROR loading image: reaveal"); break;
 				case 1: setIconSafe("img/1.png", "ERROR loading image: reaveal"); break;
 				case 2: setIconSafe("img/2.png", "ERROR loading image: reaveal"); break;
 				case 3: setIconSafe("img/3.png", "ERROR loading image: reaveal"); break;
@@ -400,7 +407,7 @@ public class BombPanel extends JPanel{
 			if( bombType == -1){
 				_numAdjacentBombs = -1;
 				_isBomb = true;
-				//this.setText("BOMB"); //DEBUG
+				this.setText("BOMB"); //DEBUG
 			}
 			else{
 				_numAdjacentBombs = bombType;

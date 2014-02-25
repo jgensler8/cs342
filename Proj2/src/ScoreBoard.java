@@ -1,16 +1,21 @@
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
-public class ScoreBoard extends JFrame implements ActionListener{
+public class ScoreBoard extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private final int DEFAULT_TOP_NUM_PLAYERS = 10;
 	private final int MAX_TOP_NUM_PLAYERS = 100;
 	private int topNumPlayers;
+	private JButton _closeButton;
 	
 	private ArrayList<Player> TopList = new ArrayList<Player>();
 	
@@ -18,14 +23,25 @@ public class ScoreBoard extends JFrame implements ActionListener{
 	 * Construct a ScoreBoard keeping the default amount of scores (10)
 	 */
 	public ScoreBoard(){
+		super();
 		topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
+		_closeButton = new JButton();
+		_closeButton.setText("CLOSE");
+		_closeButton.setSize(10, 10); //TODO
+		_closeButton.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			};
+		});
+		this.add( _closeButton);
 	}
+	
 	/**
 	 * Construct a ScoreBoard keeping the userTopNum amount of scores
 	 * @param userTopNum must be >0 and <100
 	 */
 	public ScoreBoard(int userTopNum){
-		super();
+		this();
 		if( userTopNum < 0 || userTopNum > MAX_TOP_NUM_PLAYERS){
 			topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
 		}
@@ -57,11 +73,35 @@ public class ScoreBoard extends JFrame implements ActionListener{
 	/**
 	 * show the scoreboard to the user
 	 */
-	public void show(){
+	public void showToUser(){
 		this.setVisible(true);
 		this.setAlwaysOnTop(true);
 	}
 	
+	/**
+	 * prompt for the input of a name with the score
+	 * @param score
+	 */
+	public void promptScorer(int score) {
+		this.showToUser();
+		if( TopList.size() <= topNumPlayers){
+			InputBox inbox = new InputBox();
+			inbox.promptName();
+			this.addScorer( inbox.getName() , score);
+		}
+		else{
+			for(int playerIndex = 0; playerIndex < TopList.size(); ++playerIndex){
+				if( score > TopList.get(playerIndex).getScore() ){
+					InputBox inbox = new InputBox();
+					inbox.promptName();
+					this.addScorer( inbox.getName() , score);
+					break;
+				}
+			}
+		}
+		this.sort();
+	}
+
 	/*
 	 * sort the list from hightest to lowest 
 	 */
@@ -74,37 +114,89 @@ public class ScoreBoard extends JFrame implements ActionListener{
 	 */
 	public static final Comparator<Player> playerComparatorDesc = new Comparator<Player>(){
 		public int compare(Player A, Player B){
-			return A.score - B.score;
+			return A.getScore() - B.getScore();
 		}	
 	};
 		
 	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 * 
+	 * the unit that makes up the top scorers
 	 */
-	public void actionPerformed(ActionEvent e) {
-		//TODO
-	}
-	
 	private class Player{
-		String name;
-		int score;
+		String _name;
+		int _score;
 		
 		public Player(){
-			name = "EMPTY";
-			score = 0;
-		}
-		
-		public int getScore() {
-			return score;
+			_name = "EMPTY";
+			_score = 0;
 		}
 		public Player(String userName, int userTime){
 			this();
-			name = userName;
-			score = userTime;
+			_name = userName;
+			_score = userTime;
+		}
+		public int getScore() {
+			return _score;
+		}
+	}
+	
+	/*
+	 * the box that the scoreboard uses to add new scores
+	 */
+	private class InputBox extends JFrame{
+		private static final long serialVersionUID = 1L;
+		private String name;
+		private Boolean _validName;
+		private JLabel _label;
+		private JTextField _input;
+		private JButton _commit;
+		
+		/*
+		 * contains 3 elements
+		 * label to show what user has to do
+		 * text field to enter the text
+		 * button to commit the text
+		 */
+		public InputBox(){
+			super();
+			this.setLayout( new FlowLayout() );
+			this.setSize(100, 200);
+			this.setAlwaysOnTop(true);
+			_validName = false;
+			_label = new JLabel();
+			_label.setText("Enter your name below:");
+			this.add( _label);
+			_input = new JTextField();
+			_input.setSize(100, 200);
+			this.add(_input);
+			_commit = new JButton();
+			_commit.addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent arg0) {
+					if( _input.getText() != ""){
+						name = _input.getText();
+						_validName = true;
+					}
+				}
+			});
+			_commit.setSize(200, 200);
+			_commit.setText("SUBMIT");
+			this.add( _commit);
 		}
 		
+		/*
+		 * open the box and don't close until you get a name
+		 */
+		public void promptName(){
+			this.setVisible(true);
+			while( !_validName);
+			this.setVisible(false);
+		}
+		
+		/*
+		 * return the name that has been read
+		 */
+		public String getName(){
+			return name;
+		}
 	}
 
 }
