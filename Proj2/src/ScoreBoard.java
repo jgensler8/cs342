@@ -1,6 +1,10 @@
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,7 +18,9 @@ public class ScoreBoard extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private final int DEFAULT_TOP_NUM_PLAYERS = 10;
 	private final int MAX_TOP_NUM_PLAYERS = 100;
-	private int topNumPlayers;
+	private int _topNumPlayers;
+	private final String _fileName = "SCORE_FILE.txt";
+	private File _scoreFile;
 	private JButton _closeButton;
 	
 	private ArrayList<Player> TopList = new ArrayList<Player>();
@@ -24,7 +30,7 @@ public class ScoreBoard extends JFrame{
 	 */
 	public ScoreBoard(){
 		super();
-		topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
+		_topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
 		_closeButton = new JButton();
 		_closeButton.setText("CLOSE");
 		_closeButton.setSize(10, 10); //TODO
@@ -34,8 +40,25 @@ public class ScoreBoard extends JFrame{
 			};
 		});
 		this.add( _closeButton);
+		//initialize the scoreboard file
+		_scoreFile = new File( _fileName);
+		if( !_scoreFile.exists() ){
+			System.out.println("CREATING A NEW SCOREBOARD FILE");
+			try {
+				_scoreFile.createNewFile();
+			} catch (IOException e) {
+				System.out.println("ERROR CREATING FILE: CHECK USER FILE PERMISSIONS");
+				e.printStackTrace();
+			}
+		}
+		else{
+			System.out.println( _scoreFile.getAbsolutePath());
+			System.out.println("LOADING OLD SCOREBOARD FILE");
+			this.loadScoreFile();
+		}
 	}
 	
+
 	/**
 	 * Construct a ScoreBoard keeping the userTopNum amount of scores
 	 * @param userTopNum must be >0 and <100
@@ -43,9 +66,9 @@ public class ScoreBoard extends JFrame{
 	public ScoreBoard(int userTopNum){
 		this();
 		if( userTopNum < 0 || userTopNum > MAX_TOP_NUM_PLAYERS){
-			topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
+			_topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
 		}
-		else topNumPlayers = userTopNum;
+		else _topNumPlayers = userTopNum;
 	}
 	
 	/**
@@ -55,7 +78,7 @@ public class ScoreBoard extends JFrame{
 	 * 
 	 */
 	public void addScorer(String name, int score){
-		if( TopList.size() <= topNumPlayers){
+		if( TopList.size() <= _topNumPlayers){
 			TopList.add( new Player( name, score));
 		}
 		else{
@@ -68,6 +91,7 @@ public class ScoreBoard extends JFrame{
 			}
 		}
 		this.sort();
+		this.writeToFile();
 	}
 	
 	/**
@@ -84,7 +108,7 @@ public class ScoreBoard extends JFrame{
 	 */
 	public void promptScorer(int score) {
 		this.showToUser();
-		if( TopList.size() <= topNumPlayers){
+		if( TopList.size() <= _topNumPlayers){
 			InputBox inbox = new InputBox();
 			inbox.promptName();
 			this.addScorer( inbox.getName() , score);
@@ -100,8 +124,38 @@ public class ScoreBoard extends JFrame{
 			}
 		}
 		this.sort();
+		this.writeToFile();
 	}
 
+	/*
+	 * write the list of score to the file
+	 * @throws FileNotFoundException e
+	 */
+	private void writeToFile(){
+		String total = "";
+		for( Player p : TopList){
+			total += p.getName() + " " +  p.getScore() + "\n";
+		}
+		PrintWriter overWriter = null;
+		try {
+			overWriter = new PrintWriter(_scoreFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		overWriter.print(total);
+		overWriter.close();
+	}
+	
+	/*
+	 * load a previously existing score file
+	 */
+	private void loadScoreFile() {
+		// use a .split at " "
+		// strings[0] = name
+		// strings[1].toInt = score
+		// call sort
+	}
+	
 	/*
 	 * sort the list from hightest to lowest 
 	 */
@@ -136,6 +190,9 @@ public class ScoreBoard extends JFrame{
 		}
 		public int getScore() {
 			return _score;
+		}
+		public String getName(){
+			return _name;
 		}
 	}
 	

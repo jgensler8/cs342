@@ -28,13 +28,15 @@ public class Main {
 		initMenuBar(menuBar);
 		frame.setJMenuBar( menuBar);
 		
-		//configure the bomb panel
-		BombPanel bombpanel = new BombPanel();
-		container.add( bombpanel);
-		
 		ScoreBoard scoreboard = new ScoreBoard();
 		scoreboard.addScorer("Jeff", 20);
-		scoreboard.promptScorer(30);
+		scoreboard.addScorer("Jeff", 30);
+		scoreboard.addScorer("Jeff", 40);
+		
+		//configure the bomb panel
+		BombPanel bombpanel = new BombPanel();
+		bombpanel.setScoreBoard(scoreboard);
+		container.add( bombpanel);
 		
 		//configure the frame
 		frame.setSize(400, 400);

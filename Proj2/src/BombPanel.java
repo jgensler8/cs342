@@ -6,7 +6,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 public class BombPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -21,9 +20,9 @@ public class BombPanel extends JPanel{
 	private int _solvedTiles;
 	private int _totalSolvableTiles;
 	private BombButton[][] _field;
-	private Timer _timer; //TODO get this to work
 	private ScoreBoard _scoreBoard;
-	
+	private Boolean _isFirstClick;
+	private long _startTime;
 	
 	/**
 	 * Initializes panel to have DEFAULT_HEIGHT and DEFAULT_WIDTH size (10, each)
@@ -34,8 +33,10 @@ public class BombPanel extends JPanel{
 		_width = DEFAULT_WIDTH;
 		_numBombs = DEFAULT_NUM_BOMBS;
 		_totalSolvableTiles = _height * _width - _numBombs;
+		_isFirstClick = true;
 		this.setLayout( new GridLayout( _height, _width));
 		initBombArray();
+		_startTime = System.nanoTime(); //this is done defensively
 	}
 	/**
 	 * Initializes panel to have userWidth and userHeight size with userNumBombs bombs
@@ -59,8 +60,10 @@ public class BombPanel extends JPanel{
 		else
 			_numBombs = userNumBombs;
 		_totalSolvableTiles = _height * _width - _numBombs;
+		_isFirstClick = true;
 		this.setLayout( new GridLayout( _height, _width));
 		initBombArray();
+		_startTime = System.nanoTime(); //this is done defensively
 	}
 	
 	/**
@@ -81,7 +84,9 @@ public class BombPanel extends JPanel{
 	 * @return time, time since first button click to completion of bomb field
 	 */
 	public int getCompletionTime(){
-		return 1;
+		int time = (int)((System.nanoTime() - _startTime)/1000);
+		System.out.println( time );
+		return time;
 	}
 	
 	/**
@@ -209,9 +214,10 @@ public class BombPanel extends JPanel{
 	 * launch if the game is over and the user has won
 	 */
 	private void concludeWin(){
+		
 		this.revealBoard();
 		System.out.println("YOU HAVE WON!");
-		//_scoreBoard.promptInput( this.getCompletionTime() );
+		_scoreBoard.promptScorer( this.getCompletionTime() );
 	}
 	
 	/*
@@ -286,6 +292,7 @@ public class BombPanel extends JPanel{
 					}
 				}
 				else if( SwingUtilities.isLeftMouseButton(arg0) ){
+					resolveFirstClickFromButton();
 					//System.out.println("left mouse click");
 					if( _isBomb){
 						_wasExploded = true;
@@ -298,6 +305,7 @@ public class BombPanel extends JPanel{
 					}
 				}
 			}
+
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
@@ -415,6 +423,16 @@ public class BombPanel extends JPanel{
 			}
 		}
 		
+		/*
+		 * resolve 
+		 */
+		private void resolveFirstClickFromButton() {
+			if( _isFirstClick){
+				_startTime = System.nanoTime();
+				_isFirstClick = false;
+			}
+		}
+			
 		/*
 		 * try and set the icon
 		 */
