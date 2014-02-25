@@ -1,4 +1,4 @@
-import java.awt.FlowLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 
 public class ScoreBoard extends JFrame{
 	private static final long serialVersionUID = 1L;
@@ -21,8 +24,9 @@ public class ScoreBoard extends JFrame{
 	private final String _fileName = "SCORE_FILE.txt";
 	private int _topNumPlayers;
 	private File _scoreFile;
+	private JPanel _scorePanel;
 	private JButton _closeButton;
-	private JLabel _scoreOutput;
+	private JTextPane _scoreOutput;
 	
 	private ArrayList<Player> TopList = new ArrayList<Player>();
 	
@@ -32,6 +36,10 @@ public class ScoreBoard extends JFrame{
 	public ScoreBoard(){
 		super();
 		_topNumPlayers = DEFAULT_TOP_NUM_PLAYERS;
+		//init the panel
+		_scorePanel = new JPanel();
+		_scorePanel.setBackground( Color.WHITE);
+		_scorePanel.setLayout( new BoxLayout(_scorePanel, 1) );
 		//initialize the close button
 		_closeButton = new JButton();
 		_closeButton.setText("CLOSE");
@@ -41,11 +49,11 @@ public class ScoreBoard extends JFrame{
 				setVisible(false);
 			};
 		});
-		this.add( _closeButton);
+		_scorePanel.add( _closeButton);
 		//init the text view to display top scores
-		_scoreOutput = new JLabel();
-		_scoreOutput.setSize(200,200);
-		this.add(_scoreOutput);
+		_scoreOutput = new JTextPane();
+		_scoreOutput.setSize(100,250);
+		_scorePanel.add(_scoreOutput);
 		//initialize the scoreboard file
 		_scoreFile = new File( _fileName);
 		if( !_scoreFile.exists() ){
@@ -62,6 +70,8 @@ public class ScoreBoard extends JFrame{
 			System.out.println("LOADING OLD SCOREBOARD FILE");
 			this.loadScoreFile();
 		}
+		this.setSize(100, 200);
+		this.add( _scorePanel);
 	}
 	
 
@@ -106,7 +116,6 @@ public class ScoreBoard extends JFrame{
 	public void showToUser(){
 		this._scoreOutput.setText( this.getScoreString() );
 		this.setVisible(true);
-		this.setAlwaysOnTop(true);
 	}
 	
 	/**
@@ -138,7 +147,7 @@ public class ScoreBoard extends JFrame{
 	 * @return the concatenation of the high scorers on the list;
 	 */
 	private String getScoreString(){
-		String total = "";
+		String total = "USERNAME: SCORE\n";
 		for( Player p : TopList){
 			total += p.getName() + " " +  p.getScore() + "\n";
 		}
@@ -215,8 +224,9 @@ public class ScoreBoard extends JFrame{
 	 */
 	private class InputBox extends JFrame{
 		private static final long serialVersionUID = 1L;
-		private String name;
+		private String name = "EMPTY";
 		private Boolean _validName;
+		private JPanel _mainPanel;
 		private JLabel _label;
 		private JTextField _input;
 		private JButton _commit;
@@ -229,16 +239,22 @@ public class ScoreBoard extends JFrame{
 		 */
 		public InputBox(){
 			super();
-			this.setLayout( new FlowLayout() );
-			this.setSize(100, 200);
+			this.setSize(100, 100);
 			this.setAlwaysOnTop(true);
 			_validName = false;
+			//init the panel
+			_mainPanel = new JPanel();
+			_mainPanel.setLayout( new BoxLayout(_mainPanel, 1) );
+			//_mainPanel.setBackground( Color.White);
+			//init the label
 			_label = new JLabel();
 			_label.setText("Enter your name below:");
-			this.add( _label);
+			_mainPanel.add( _label);
+			//init the text field
 			_input = new JTextField();
 			_input.setSize(100, 200);
-			this.add(_input);
+			_mainPanel.add(_input);
+			//init the input button
 			_commit = new JButton();
 			_commit.addActionListener( new ActionListener(){
 				public void actionPerformed(ActionEvent arg0) {
@@ -250,7 +266,8 @@ public class ScoreBoard extends JFrame{
 			});
 			_commit.setSize(200, 200);
 			_commit.setText("SUBMIT");
-			this.add( _commit);
+			_mainPanel.add( _commit);
+			this.add(_mainPanel);
 		}
 		
 		/*
@@ -258,7 +275,7 @@ public class ScoreBoard extends JFrame{
 		 */
 		public void promptName(){
 			this.setVisible(true);
-			while( !_validName);
+			//while( !_validName);
 			this.setVisible(false);
 		}
 		

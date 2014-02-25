@@ -32,6 +32,7 @@ public class Main {
 		scoreboard.addScorer("Jeff", 20);
 		scoreboard.addScorer("Jeff", 30);
 		scoreboard.addScorer("Jeff", 40);
+		scoreboard.promptScorer(20);
 		
 		//configure the bomb panel
 		BombPanel bombpanel = new BombPanel();
