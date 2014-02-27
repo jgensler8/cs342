@@ -43,7 +43,7 @@ public class ScoreBoard extends JFrame{
 		//initialize the close button
 		_closeButton = new JButton();
 		_closeButton.setText("CLOSE");
-		_closeButton.setSize(10, 10); //TODO
+		_closeButton.setSize(10, 10);
 		_closeButton.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
@@ -107,7 +107,7 @@ public class ScoreBoard extends JFrame{
 			}
 		}
 		this.sort();
-		this.writeToFile();
+		this.writeToScoreFile();
 	}
 	
 	/**
@@ -115,6 +115,7 @@ public class ScoreBoard extends JFrame{
 	 */
 	public void showToUser(){
 		this._scoreOutput.setText( this.getScoreString() );
+		//this.setBounds(x, y, width, height) //TODO this makes it appear in the center of the screen
 		this.setVisible(true);
 	}
 	
@@ -125,22 +126,20 @@ public class ScoreBoard extends JFrame{
 	public void promptScorer(int score) {
 		this.showToUser();
 		if( TopList.size() <= _topNumPlayers){
-			InputBox inbox = new InputBox();
-			inbox.promptName();
-			this.addScorer( inbox.getName() , score);
+			InputBox inbox = new InputBox(score);
+			inbox.promptBox();
 		}
 		else{
 			for(int playerIndex = 0; playerIndex < TopList.size(); ++playerIndex){
 				if( score > TopList.get(playerIndex).getScore() ){
-					InputBox inbox = new InputBox();
-					inbox.promptName();
-					this.addScorer( inbox.getName() , score);
+					InputBox inbox = new InputBox(score);
+					inbox.promptBox();
 					break;
 				}
 			}
 		}
 		this.sort();
-		this.writeToFile();
+		this.writeToScoreFile();
 	}
 
 	/*
@@ -149,7 +148,7 @@ public class ScoreBoard extends JFrame{
 	private String getScoreString(){
 		String total = "USERNAME: SCORE\n";
 		for( Player p : TopList){
-			total += p.getName() + " " +  p.getScore() + "\n";
+			total += p.getName() + ": " +  p.getScore() + "\n";
 		}
 		return total;
 	}
@@ -158,7 +157,7 @@ public class ScoreBoard extends JFrame{
 	 * write the list of score to the file
 	 * @throws FileNotFoundException e
 	 */
-	private void writeToFile(){
+	private void writeToScoreFile(){
 		PrintWriter overWriter = null;
 		try {
 			overWriter = new PrintWriter(_scoreFile);
@@ -173,10 +172,11 @@ public class ScoreBoard extends JFrame{
 	 * load a previously existing score file
 	 */
 	private void loadScoreFile() {
+		//TODO
 		// use a .split at " "
 		// strings[0] = name
 		// strings[1].toInt = score
-		// call sort
+		// call an addScorer for each name read in
 	}
 	
 	/*
@@ -191,7 +191,7 @@ public class ScoreBoard extends JFrame{
 	 */
 	public static final Comparator<Player> playerComparatorDesc = new Comparator<Player>(){
 		public int compare(Player A, Player B){
-			return A.getScore() - B.getScore();
+			return A.getScore() - B.getScore(); //TODO
 		}	
 	};
 		
@@ -225,23 +225,24 @@ public class ScoreBoard extends JFrame{
 	private class InputBox extends JFrame{
 		private static final long serialVersionUID = 1L;
 		private String name = "EMPTY";
-		private Boolean _validName;
+		private int _userScore;
 		private JPanel _mainPanel;
 		private JLabel _label;
 		private JTextField _input;
 		private JButton _commit;
 		
-		/*
+		/**
 		 * contains 3 elements
 		 * label to show what user has to do
 		 * text field to enter the text
 		 * button to commit the text
+		 * @param score, the score that is associated with the user name we are prompting for
 		 */
-		public InputBox(){
+		public InputBox(int score){
 			super();
 			this.setSize(100, 100);
 			this.setAlwaysOnTop(true);
-			_validName = false;
+			_userScore = score;
 			//init the panel
 			_mainPanel = new JPanel();
 			_mainPanel.setLayout( new BoxLayout(_mainPanel, 1) );
@@ -258,9 +259,10 @@ public class ScoreBoard extends JFrame{
 			_commit = new JButton();
 			_commit.addActionListener( new ActionListener(){
 				public void actionPerformed(ActionEvent arg0) {
-					if( _input.getText() != ""){
+					if( !_input.getText().isEmpty() ){
 						name = _input.getText();
-						_validName = true;
+						addScorer( name, _userScore);
+						closeBox();
 					}
 				}
 			});
@@ -270,20 +272,18 @@ public class ScoreBoard extends JFrame{
 			this.add(_mainPanel);
 		}
 		
-		/*
+		/**
 		 * open the box and don't close until you get a name
 		 */
-		public void promptName(){
+		public void promptBox(){
 			this.setVisible(true);
-			//while( !_validName);
-			this.setVisible(false);
 		}
 		
 		/*
-		 * return the name that has been read
+		 * close the input box
 		 */
-		public String getName(){
-			return name;
+		private void closeBox(){
+			this.setVisible(false);
 		}
 	}
 

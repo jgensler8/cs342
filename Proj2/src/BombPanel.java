@@ -1,4 +1,6 @@
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -6,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 public class BombPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -14,6 +17,7 @@ public class BombPanel extends JPanel{
 	private final int MAX_WIDTH = 100;
 	private final int MAX_HEIGHT = 100;
 	private final int DEFAULT_NUM_BOMBS = 10;
+	private final int DELAY = 999; // 999 milliseconds
 	private int _width;
 	private int _height;
 	private int _numBombs;
@@ -22,7 +26,8 @@ public class BombPanel extends JPanel{
 	private BombButton[][] _field;
 	private ScoreBoard _scoreBoard;
 	private Boolean _isFirstClick;
-	private long _startTime;
+	private int _totalTime;
+	private Timer _timer;
 	
 	/**
 	 * Initializes panel to have DEFAULT_HEIGHT and DEFAULT_WIDTH size (10, each)
@@ -34,9 +39,17 @@ public class BombPanel extends JPanel{
 		_numBombs = DEFAULT_NUM_BOMBS;
 		_totalSolvableTiles = _height * _width - _numBombs;
 		_isFirstClick = true;
+		_totalTime = 0;
 		this.setLayout( new GridLayout( _height, _width));
 		initBombArray();
-		_startTime = System.nanoTime(); //this is done defensively
+		_timer = new Timer( DELAY, new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				++_totalTime;
+				if( hasWon() ){
+					System.out.println("You've won (from the timer)");
+				}
+			}
+		});
 	}
 	/**
 	 * Initializes panel to have userWidth and userHeight size with userNumBombs bombs
@@ -61,9 +74,18 @@ public class BombPanel extends JPanel{
 			_numBombs = userNumBombs;
 		_totalSolvableTiles = _height * _width - _numBombs;
 		_isFirstClick = true;
+		_totalTime = 0;
 		this.setLayout( new GridLayout( _height, _width));
 		initBombArray();
-		_startTime = System.nanoTime(); //this is done defensively
+		_timer = new Timer( DELAY, new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				++_totalTime;
+				if( hasWon() ){
+					_timer.stop();
+					System.out.println("You've won (from the timer)" + _totalTime);
+				}
+			}
+		});
 	}
 	
 	/**
@@ -84,7 +106,7 @@ public class BombPanel extends JPanel{
 	 * @return time, time since first button click to completion of bomb field
 	 */
 	public int getCompletionTime(){
-		int time = (int)((System.nanoTime() - _startTime)/1000);
+		int time = _timer.getDelay();
 		System.out.println( time );
 		return time;
 	}
@@ -214,7 +236,7 @@ public class BombPanel extends JPanel{
 	 * launch if the game is over and the user has won
 	 */
 	private void concludeWin(){
-		
+		//_timer.getDelay(); //TODO
 		this.revealBoard();
 		System.out.println("YOU HAVE WON!");
 		_scoreBoard.promptScorer( this.getCompletionTime() );
@@ -428,7 +450,7 @@ public class BombPanel extends JPanel{
 		 */
 		private void resolveFirstClickFromButton() {
 			if( _isFirstClick){
-				_startTime = System.nanoTime();
+				_timer.start();
 				_isFirstClick = false;
 			}
 		}
