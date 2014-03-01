@@ -84,7 +84,7 @@ public class BombPanel extends JPanel{
 				++_totalTime;
 				if( hasWon() ){
 					_timer.stop();
-					System.out.println("You've won (from the timer)" + _totalTime);
+					//System.out.println("You've won (from the timer)" + _totalTime);
 				}
 			}
 		});
