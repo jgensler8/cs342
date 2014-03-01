@@ -1,9 +1,13 @@
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 public class Main {
 	/**
@@ -23,16 +27,24 @@ public class Main {
 	private static void initFrame( JFrame frame){
 		Container container = frame.getContentPane();
 		
+		ScoreBoard scoreboard = new ScoreBoard();
+		scoreboard.addScorer("BEAT ME", 20);
+		scoreboard.addScorer("BEAT ME", 30);
+		scoreboard.addScorer("BEAT ME", 40);
+		scoreboard.addScorer("BEAT ME", 40);
+		scoreboard.addScorer("BEAT ME", 40);
+		scoreboard.addScorer("BEAT ME", 40);
+		scoreboard.addScorer("BEAT ME", 1);
+		scoreboard.addScorer("BEAT ME", 1);
+		scoreboard.addScorer("BEAT ME", 1);
+		scoreboard.addScorer("BEAT ME", 1);
+		scoreboard.addScorer("BEAT ME", 1);
+		scoreboard.addScorer("BEAT ME", 1);
+		
 		//configure the menu bar
 		JMenuBar menuBar = new JMenuBar();
-		initMenuBar(menuBar);
+		initMenuBar(menuBar, frame, scoreboard);
 		frame.setJMenuBar( menuBar);
-		
-		ScoreBoard scoreboard = new ScoreBoard();
-		scoreboard.addScorer("Jeff", 20);
-		scoreboard.addScorer("Jeff", 30);
-		scoreboard.addScorer("Jeff", 40);
-		scoreboard.promptScorer(20);
 		
 		//configure the bomb panel
 		BombPanel bombpanel = new BombPanel();
@@ -46,21 +58,72 @@ public class Main {
 	/*
 	 * initialize components in the passed menuBar
 	 */
-	private static void initMenuBar( JMenuBar menuBar){
-		JMenu gameMenu = new JMenu("GAME");
-		JMenuItem startGameMenuItem = new JMenuItem("Reset");
-		//TODO maybe make a "resetEvent"
-		gameMenu.add(startGameMenuItem);
-		
-		//see write up for what these are supposed to do/accomplish
-		//TODO jmenuitem topten not sure how this will be done... don't quite have a timer working yet either
-		//TODO jmenuitem exit
-		
-		//TODO jmenu help
-		//TODO jmenuitem help
-		//TODO jmenuitem about
-		
-		menuBar.add(gameMenu);
+	private static void initMenuBar( JMenuBar menuBar, final JFrame frame, final ScoreBoard scoreboard){
+        JMenu game = new JMenu("Game");
+        JMenu help = new JMenu("Help");
+
+        JMenuItem resetMenuItem = new JMenuItem("Reset");
+        JMenuItem exitMenuItem = new JMenuItem("Exit");
+        JMenuItem helpMenuItem = new JMenuItem("Help");
+        JMenuItem toptenMenuItem = new JMenuItem("Top Ten");
+        JMenuItem aboutMenuItem = new JMenuItem("About");
+
+        //TODO maybe make a "resetEvent"
+        //add drop down menu items
+        game.add(resetMenuItem);
+        game.add(toptenMenuItem);
+        game.add(exitMenuItem);
+
+        help.add(helpMenuItem);
+        help.add(aboutMenuItem);
+
+        //action/event listeners for drop down menu item standard format.
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                System.exit(0);
+            }
+        });
+
+        aboutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                Component frame = null;
+                JOptionPane.showMessageDialog(frame, "Authors: Jeff Gensler and Karl Consing", "About", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+
+        helpMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                Component frame = null;
+                JOptionPane.showMessageDialog(frame, "Guess the squares where the mines are! Use left click to guess\n" +
+                		"and right click to mark the spaces", "Help", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+
+        resetMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.getContentPane().removeAll();
+				BombPanel bombpanel = new BombPanel();
+				bombpanel.setScoreBoard(scoreboard);
+				frame.getContentPane().add( bombpanel);
+				frame.getContentPane().validate();
+				//frame.getContentPane().revalidate();
+				frame.getContentPane().repaint();
+			}
+        });
+
+        toptenMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scoreboard.showToUser();
+			}
+        });
+
+		menuBar.add(game);
+		menuBar.add(help);
 	}
 	
 	/*

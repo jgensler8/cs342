@@ -44,9 +44,11 @@ public class BombPanel extends JPanel{
 		initBombArray();
 		_timer = new Timer( DELAY, new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				System.out.println(_totalTime);
 				++_totalTime;
 				if( hasWon() ){
 					System.out.println("You've won (from the timer)");
+					_timer.stop();
 				}
 			}
 		});
@@ -106,9 +108,7 @@ public class BombPanel extends JPanel{
 	 * @return time, time since first button click to completion of bomb field
 	 */
 	public int getCompletionTime(){
-		int time = _timer.getDelay();
-		System.out.println( time );
-		return time;
+		return _totalTime;
 	}
 	
 	/**
@@ -116,6 +116,13 @@ public class BombPanel extends JPanel{
 	 */
 	public void setScoreBoard(ScoreBoard userBoard){
 		_scoreBoard = userBoard;
+	}
+	
+	/**
+	 * stop the internal timer. Used when the board is being reset
+	 */
+	public void stopTimer(){
+		_timer.stop();
 	}
 	
 	/*
@@ -236,9 +243,8 @@ public class BombPanel extends JPanel{
 	 * launch if the game is over and the user has won
 	 */
 	private void concludeWin(){
-		//_timer.getDelay(); //TODO
+		_timer.stop();
 		this.revealBoard();
-		System.out.println("YOU HAVE WON!");
 		_scoreBoard.promptScorer( this.getCompletionTime() );
 	}
 	
@@ -246,6 +252,7 @@ public class BombPanel extends JPanel{
 	 * launch if the game is over and the user has lost
 	 */
 	private void concludeLoss(){
+		_timer.stop();
 		this.revealBoard();
 	}
 	

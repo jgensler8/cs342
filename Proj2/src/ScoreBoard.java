@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -70,7 +72,7 @@ public class ScoreBoard extends JFrame{
 			System.out.println("LOADING OLD SCOREBOARD FILE");
 			this.loadScoreFile();
 		}
-		this.setSize(100, 200);
+		this.setSize(100, 280);
 		this.add( _scorePanel);
 	}
 	
@@ -97,14 +99,9 @@ public class ScoreBoard extends JFrame{
 		if( TopList.size() <= _topNumPlayers){
 			TopList.add( new Player( name, score));
 		}
-		else{
-			for(int playerIndex = 0; playerIndex < TopList.size(); ++playerIndex){
-				if( score > TopList.get(playerIndex).getScore() ){
-					TopList.remove(playerIndex);
-					TopList.add( new Player( name, score));
-					break;
-				}
-			}
+		else if( TopList.get(_topNumPlayers).getScore() > score){
+			TopList.remove( _topNumPlayers);
+			TopList.add( new Player( name, score));
 		}
 		this.sort();
 		this.writeToScoreFile();
@@ -114,7 +111,7 @@ public class ScoreBoard extends JFrame{
 	 * show the scoreboard to the user
 	 */
 	public void showToUser(){
-		this._scoreOutput.setText( this.getScoreString() );
+		this._scoreOutput.setText( "USERNAME: SCORE\n" + this.getScoreString() );
 		//this.setBounds(x, y, width, height) //TODO this makes it appear in the center of the screen
 		this.setVisible(true);
 	}
@@ -124,19 +121,14 @@ public class ScoreBoard extends JFrame{
 	 * @param score
 	 */
 	public void promptScorer(int score) {
-		this.showToUser();
 		if( TopList.size() <= _topNumPlayers){
 			InputBox inbox = new InputBox(score);
 			inbox.promptBox();
 		}
-		else{
-			for(int playerIndex = 0; playerIndex < TopList.size(); ++playerIndex){
-				if( score > TopList.get(playerIndex).getScore() ){
-					InputBox inbox = new InputBox(score);
-					inbox.promptBox();
-					break;
-				}
-			}
+		else if( TopList.get(_topNumPlayers).getScore() > score){
+			TopList.remove( _topNumPlayers);
+			InputBox inbox = new InputBox(score);
+			inbox.promptBox(); //this will write the scoreboard after it gets the name
 		}
 		this.sort();
 		this.writeToScoreFile();
@@ -146,7 +138,7 @@ public class ScoreBoard extends JFrame{
 	 * @return the concatenation of the high scorers on the list;
 	 */
 	private String getScoreString(){
-		String total = "USERNAME: SCORE\n";
+		String total = "";
 		for( Player p : TopList){
 			total += p.getName() + ": " +  p.getScore() + "\n";
 		}
@@ -171,15 +163,49 @@ public class ScoreBoard extends JFrame{
 	/*
 	 * load a previously existing score file
 	 */
-	private void loadScoreFile() {
-		//TODO
-		// use a .split at " "
-		// strings[0] = name
-		// strings[1].toInt = score
-		// call an addScorer for each name read in
+	private void loadScoreFile(){
+		// *** CODE BELOW INSPIRED BY STACK OVERFLOW *** with more try catches etc
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader( new FileReader(_scoreFile));
+		} catch (FileNotFoundException e1) {
+			System.out.println("ERROR OPENING SCORE FILE");
+			e1.printStackTrace();
+		}
+		String wholeFileText = "";
+		try {
+	        StringBuilder sb = new StringBuilder();
+	        String line = reader.readLine();
+
+	        while (line != null) {
+	            sb.append(line);
+	            sb.append('\n');
+	            line = reader.readLine();
+	        }
+	        wholeFileText = sb.toString();
+	    } catch (IOException e) {
+	    	System.out.println("ERROR READING FROM SCORE FILE");
+			e.printStackTrace();
+		} finally {
+	        try {
+				reader.close();
+			} catch (IOException e) {
+				System.out.println("ERROR CLOSING INITIAL LOAD OF SCORE FILE");
+				e.printStackTrace();
+			}
+	    }
+		String[] splitString = wholeFileText.split("\n");
+		for( String s : splitString){
+			String[] subSplit = s.split(":");
+			String name = subSplit[0];
+			String scoreString = subSplit[1].replaceAll(" ", "").replaceAll("[\\t\\n\\r]","");
+			System.out.println("$" + scoreString + "$");
+			int score = Integer.parseInt( scoreString);
+			System.out.println("NAME:" + name + ":score:" + score + ":");
+		}
 	}
 	
-	/*
+	/* 
 	 * sort the list from hightest to lowest 
 	 */
 	private void sort() {
@@ -191,7 +217,7 @@ public class ScoreBoard extends JFrame{
 	 */
 	public static final Comparator<Player> playerComparatorDesc = new Comparator<Player>(){
 		public int compare(Player A, Player B){
-			return A.getScore() - B.getScore(); //TODO
+			return A.getScore() - B.getScore();
 		}	
 	};
 		
@@ -262,11 +288,12 @@ public class ScoreBoard extends JFrame{
 					if( !_input.getText().isEmpty() ){
 						name = _input.getText();
 						addScorer( name, _userScore);
-						closeBox();
+						closeBox(); //close this prompt box
+						showToUser(); //open the scoreboard so the user can see their score!
 					}
 				}
 			});
-			_commit.setSize(200, 200);
+			_commit.setSize(200, 250);
 			_commit.setText("SUBMIT");
 			_mainPanel.add( _commit);
 			this.add(_mainPanel);
