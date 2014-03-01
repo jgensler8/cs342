@@ -44,7 +44,7 @@ public class BombPanel extends JPanel{
 		initBombArray();
 		_timer = new Timer( DELAY, new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(_totalTime);
+				//System.out.println(_totalTime);
 				++_totalTime;
 				if( hasWon() ){
 					System.out.println("You've won (from the timer)");
@@ -84,7 +84,7 @@ public class BombPanel extends JPanel{
 				++_totalTime;
 				if( hasWon() ){
 					_timer.stop();
-					//System.out.println("You've won (from the timer)" + _totalTime);
+					System.out.println("You've won (from the timer)" + _totalTime);
 				}
 			}
 		});

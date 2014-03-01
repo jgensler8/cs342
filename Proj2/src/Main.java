@@ -105,6 +105,7 @@ public class Main {
         resetMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				frame.getContentPane().removeAll();
 				BombPanel bombpanel = new BombPanel();
 				bombpanel.setScoreBoard(scoreboard);
