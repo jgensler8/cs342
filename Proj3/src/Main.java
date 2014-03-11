@@ -1,11 +1,24 @@
+import java.awt.Container;
 
-public class Main {
+import javax.swing.JFrame;
+
+
+public class Main{
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//first commit
+		//init the window for the user
+		JFrame window = new JFrame();
+		Container container = window.getContentPane();
+		
+		//add the game board
+		container.add(new BoardPanel("TESTPANEL"));
+		
+		//show the window to the user
+		window.setBounds(100, 100, 800, 800);
+		window.setVisible(true);
 	}
 
 	
