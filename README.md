@@ -6,4 +6,11 @@
 | 2 | Minesweeper |
 | 3 | Car Sliding Game |
 
-***
+**STEPS TO COMMIT**
+git add * //all files
+git add ../path/to/file/file.java etc
+
+git commit -m "commit message"
+
+git push origin adam
+                 ^ branch name
