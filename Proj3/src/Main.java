@@ -1,4 +1,5 @@
 import java.awt.Container;
+import java.awt.Graphics;
 
 import javax.swing.JFrame;
 
@@ -14,7 +15,9 @@ public class Main{
 		Container container = window.getContentPane();
 		
 		//add the game board
-		container.add(new BoardPanel("TESTPANEL"));
+		container.add(new BoardPanel("board1.txt"));
+		
+		Graphics g;
 		
 		//show the window to the user
 		window.setBounds(100, 100, 800, 800);
