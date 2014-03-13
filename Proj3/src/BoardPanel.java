@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -26,64 +27,44 @@ import javax.swing.JPanel;
  */
 
 public class BoardPanel extends JPanel{
+	public static final int UP = 1;
+	public static final int DOWN = 2;
+	public static final int LEFT = 3;
+	public static final int RIGHT = 4;
+	
 	final private int SIZE = 800;
 	private int _width, _height;
 	/*
 	 * not sure why we might need this so i'll leave it for now
 	 */
-	private ArrayList<String> _pieceNames;
-	/*
-	 * when a button is clicked, we need the name of the "piece"
-	 * (which is really a sequence of pieces) so that each of its pieces
-	 * can be moved one location to the [left, right, up, down]
-	 * Because each tile will have a name and if a board "car" is
-	 * 3 long, we will have 3 pieces in the hash table
-	 */
-	private Hashtable<String, Piece> _nameToPiece;
+	private ArrayList<Piece> _pieces;
+	
+	
 	
 	/*
 	 * construct a board panel from a file
 	 */
 	public BoardPanel( String fileName){
-		ArrayList<String> initList = readFile( fileName);
-		this.initBoardFromString( initList);
-		
-		/*
-		_pieceNames = new ArrayList<String>();
-		_nameToPiece = new Hashtable<String,Piece>();
-		
-		this.setSize(SIZE,SIZE);
-		this.setLayout( new GridLayout( _height, _width ));
-		for( int numRows = 0; numRows < _width; numRows++){
-			for( int numCols = 0; numCols < _height; numCols++){
-				String hashVal = getHash( numRows, numCols); //this won't be the case when we read from the file
-				Piece toAdd = new Piece( hashVal, numRows, numCols, false, false, false, false);
-				this.add( toAdd);
-				_nameToPiece.put( hashVal, toAdd);
-				
-				_pieceNames.add( hashVal );
-			}
-		}
-		*/
+		ArrayList<String> initList = readFileList( fileName);
+		this.initBoardFromList( initList);
 	}
 	
 	/*
 	 * construct a board panel from another board panel
 	 * (copying the passed panel)
 	 */
-	public BoardPanel( BoardPanel BP){
-		ArrayList<String> initList = BP.getBoardString();
-		this.initBoardFromString( initList);
+	public BoardPanel( ArrayList<String> initList){
+		this.initBoardFromList( initList);
 	}
 	
 	/*
 	 * convert this board to a string that can uniquely construct this board
 	 */
-	public ArrayList<String> getBoardString(){
+	public ArrayList<String> getBoardList(){
 		ArrayList<String> toReturn = new ArrayList<String>();
 		/*
 		toReturn.add( Board.toString);
-		for( Piece p : Pieces){
+		for( Piece p : _pieces){
 			toReturn.add(p.toString());
 		}
 		*/
@@ -94,7 +75,7 @@ public class BoardPanel extends JPanel{
 	 * @param file name
 	 * read the file and return its contents as a string
 	 */
-	private ArrayList<String> readFile( String fileName){
+	private ArrayList<String> readFileList( String fileName){
 		ArrayList<String> toReturn = new ArrayList<String>();
 		BufferedReader reader = null;
 		
@@ -128,7 +109,7 @@ public class BoardPanel extends JPanel{
 	/*
 	 * build the board from the string passed as an argument
 	 */
-	private void initBoardFromString( ArrayList<String> lines){
+	private void initBoardFromList( ArrayList<String> lines){
 		String line = lines.get(0);
 		String lineSplit[] = line.split("  "); //TWO SPACES
 		_height = Integer.parseInt( lineSplit[0]);
@@ -155,94 +136,112 @@ public class BoardPanel extends JPanel{
 	}
 	
 	/*
-	 * this is critical function
-	 * a piece calls this function when it realizes it should be moved in a particular direction
-	 * we must:
-	 *  - when we move it, successfully move the tiles over and generate a blank tile into the area where the car left
+	 * determines if the board is solved
+	 * the 'z' piece is in the final position
 	 */
-	private void controlMove( String name, int direction){
-		System.out.println( "TRYING TO MOVE: " + this._nameToPiece.get(name)._name );
+	private boolean isSolved() {
+		// TODO write code in this stub
+		// for( Piece p : this._pieces)
+		//   if( p.isFinalPiece() && p.isInFinalPosition() )
+		//		return true;
+		return false;
+	}
+
+	/*
+	 * 
+	 */
+	public ArrayList<String> solvePuzzle(){
+		ConcurrentLinkedQueue<ArrayList<String>> queue = new ConcurrentLinkedQueue<ArrayList<String>>();
+		ConcurrentLinkedQueue<ArrayList<String>> visited = new ConcurrentLinkedQueue<ArrayList<String>>();
+		ArrayList<String> toReturn = new ArrayList<String>();
+		
+		queue.add( this.getBoardList() );
+		visited.add( this.getBoardList() );
+		
+		while( !queue.isEmpty() ){
+			ArrayList<String> queueList = queue.poll();
+			BoardPanel queueBoard = new BoardPanel( queueList);
+			if( queueBoard.isSolved() ){ //TODO implement this function
+				toReturn = queueBoard.getBoardList();
+				break;
+			}
+			
+			//possible moves ("adjacent edges")
+			ArrayList<ArrayList<String>> possibleMoves = BoardPanel.getPossibleMoveLists( queueBoard);
+			for( ArrayList<String> possibleBoard : possibleMoves){ 
+				if( visited.contains( possibleBoard) ) //XXX this might be dangerous if it doesn't do what we think it does
+					break;
+				else{
+					visited.add( possibleBoard);
+					queue.add( possibleBoard);
+				}
+			}
+		}
+		//ERROR THIS BOARD CANT BE SOLVED, TODO
+		// maybe changes this to Boolean instead of returning the solved board
+		// IF the board can be solved, store its solution in a member variable of
+		// *this* (the board the user was using) (this shouldd work because of scope)
+		return toReturn;
 	}
 	
 	/*
-	 * get the hash value that our piece(s) will be at in the tables
+	 * get a list of 
 	 */
-	private String getHash( int height, int width){
-		return Integer.toString(height*100 + width);
+	private static ArrayList<ArrayList<String>> getPossibleMoveLists(BoardPanel board) {
+		ArrayList<ArrayList<String>> toReturn = new ArrayList<ArrayList<String>>();
+		for( Piece p : board._pieces){
+			if( board.simulateMove( p, BoardPanel.LEFT) != null )
+				toReturn.add( board.simulateMove( p, BoardPanel.LEFT ));
+			if( board.simulateMove( p, BoardPanel.RIGHT) != null)
+				toReturn.add( board.simulateMove( p, BoardPanel.RIGHT ));
+			if( board.simulateMove( p, BoardPanel.UP) != null)
+				toReturn.add( board.simulateMove( p, BoardPanel.UP ));
+			if( board.simulateMove( p, BoardPanel.DOWN) != null)
+				toReturn.add( board.simulateMove( p, BoardPanel.DOWN ));
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * simulate the move of a specific piece in a specific direction.
+	 * the directions are determined by the ones IN THIS CLASS.
+	 */
+	private ArrayList<String> simulateMove(Piece p, int direction){
+		BoardPanel simulated = new BoardPanel( this.getBoardList() );
+		
+		// this instruction here is tentative because the panel is
+		// more likely to know where the piece can move instead of the
+		// piece
+		if( p.canMove(direction)) //TODO actually move the piece too
+			return simulated.getBoardList();
+		else
+			return null;
+	}
+
+	/*
+	 * show the user
+	 */
+	public void showHint(){
+		//TODO
 	}
 	
 	private class Piece extends JPanel{
 		private String _name;
-		private Boolean _leftNeighbor, _rightNeighbor;
-		private Boolean _northNeighbor, _southNeighbor;
-		private Boolean _canMoveVert, _canMoveHoriz;
+		private Boolean _canMoveHoriz;
 		private int _x, _y;
+		private int _height, _width;
 		
 		/*
 		 * construct a piece
 		 */
-		public Piece( String name, int x, int y, Boolean leftNeighbor, Boolean rightNeighbor, Boolean northNeighbor, Boolean southNeighbor){
-			this.setLayout( new FlowLayout());
-			_name = name;
-			_x = x;
-			_y = y;
-			_canMoveVert = true;
-			_canMoveHoriz = true;
-			_leftNeighbor = leftNeighbor; //change to up neighbor as well
-			_rightNeighbor = rightNeighbor;
-			_northNeighbor = northNeighbor;
-			_southNeighbor = southNeighbor;
-			if(!leftNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.LEFT) );
-			if(!northNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.NORTH) );
-			if(!southNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.SOUTH) );
-			if(!rightNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.RIGHT) );
+		public Piece( String name, int x, int y, int height, int width, Boolean canMoveHoriz){
+			//TODO 
 		}
-		
-		/*
-		 * used to move the piece left
-		 */
-		void moveInDirection( int direction){
-			if( direction == javax.swing.SwingConstants.NORTH && _canMoveVert && _y < 0 ){
-				controlMove( _name, direction);
-			}
-			else if( direction == javax.swing.SwingConstants.SOUTH && _canMoveVert && _y < _height ){
-				controlMove( _name, direction);
-			}
-			else if( direction == javax.swing.SwingConstants.LEFT && _canMoveHoriz && _x > 0 ){
-				controlMove( _name, direction);
-			}
-			else if( direction == javax.swing.SwingConstants.RIGHT && _canMoveHoriz && _x < _width ){
-				controlMove( _name, direction);
-			}
-		}
-		
-		private class ArrowKey extends JButton{
-			int _direction;
-			
-			/*
-			 * construct an arrow key to make the piece move in a certain direction
-			 */
-			public ArrowKey( int direction){
-				_direction = direction;
-				this.setActionCommand( _x + " " + _y + " " + _direction);
-				this.addActionListener( new ActionListener(){
-					public void actionPerformed(ActionEvent e)
-		            {
-						System.out.println( e.getActionCommand() );
-						moveInDirection(_direction);
-		            }
-				});
-				
-				switch(direction){
-				case LEFT: this.setText("<");
-					break;
-				case RIGHT: this.setText(">");
-					break;
-				case NORTH: this.setText("^");
-					break;
-				case SOUTH: this.setText("V");
-				}
-			}
+
+		public boolean canMove(int direction){
+			//TODO
+			return false;
 		}
 	}
 }
