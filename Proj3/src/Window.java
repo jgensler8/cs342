@@ -1,15 +1,13 @@
 import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.border.Border;
-
+import javax.swing.border.*;
+import java.awt.event.*;
 
 
 
 public class Window extends JFrame {
-
-	private JPanel contentPane;
+	private final int width = 700, height = 700, offset = 100;	// Offset used for sizing components
+	private int time, moveCount;
 
 	/**
 	 * Launch the application.
@@ -27,40 +25,122 @@ public class Window extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Window() {
+
+		time = 0;
+		moveCount = 0;
+		
+		  //////////////////////////////
+		 //      WINDOW SETTINGS     //
+		//////////////////////////////
+		
+		this.setTitle("Rush Hour");
+		this.setBounds(0, 0, width, height);		// Set size of window (3rd and 4th args)
+		this.setLocationRelativeTo(null);	// Center the window on the screen
+		this.setResizable(false);					// Keep size of the window fixed
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setBounds(100, 100, 450, 300);
 
-		contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
+		  ////////////////////////
+		 //      MENU BAR      //
+		////////////////////////
+		
+		JMenuBar menuBar = new JMenuBar();
+		this.setJMenuBar(menuBar);
 
-		// ADD RESET BUTTON
-		//##################
+		 // Game Menu
+		/////////////
+		
+		JMenu gameMenu = new JMenu("Game");
+		menuBar.add(gameMenu);
+		
+		JMenuItem restart = new JMenuItem("Restart");
+		JMenuItem hint = new JMenuItem("Hint");
+		JMenuItem exit = new JMenuItem("Exit");
+		gameMenu.add(restart);
+		gameMenu.add(hint);
+		gameMenu.add(exit);
 
+		 // Help Menu
+		/////////////
+		
+		JMenu helpMenu = new JMenu("Help");
+		menuBar.add(helpMenu);
+
+		JMenuItem about = new JMenuItem("About");
+		JMenuItem mntmHelp = new JMenuItem("Help");
+		helpMenu.add(about);
+		helpMenu.add(mntmHelp);
+
+		  ////////////////////////////
+		 //      CONTENT PANE      //
+		////////////////////////////
+		
+		JPanel contentPane = new JPanel();
+		contentPane.setBackground(new Color(143, 188, 143));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(null);
+		this.setContentPane(contentPane);
+
+		 // Game Controls (Restart, Hint, Level Select, time, #moves
+		////////////////////////////////////////////////////////////
+		
 		JPanel btnPanel = new JPanel();
-		contentPane.add(btnPanel, BorderLayout.NORTH);
-		btnPanel.setBackground(new Color(128, 207, 255));
+		btnPanel.setBounds(width-offset, 0, offset, height-offset);	// dock 100 pixels left of the right border
+		btnPanel.setLayout(new GridLayout(9, 1, 0, 0));
+		btnPanel.setBackground(new Color(240, 255, 240));
+		contentPane.add(btnPanel, BorderLayout.EAST);
 
-		JButton resetButton = new JButton("Reset");
-		btnPanel.add(resetButton);
+		JButton restartBtn = new JButton("Restart");
+		btnPanel.add(restartBtn);
 
-		// ADD PANEL TO HOLD MAZE
-		//########################
+		JButton hintBtn = new JButton("Hint");
+		btnPanel.add(hintBtn);
+
+		 // Levels Menu
+		///////////////
+
+		LevelButton levelBtn = new LevelButton(10);	// Will bring up a menu with 0-9
+		btnPanel.add(levelBtn);
 		
-		// Create the panel where maze will be displayed
-		JPanel maze = new JPanel();
-		maze.setLayout(null);
-		contentPane.add(maze);
+		 // Game Information Display
+		////////////////////////////
 		
-		Border mazeBorder = BorderFactory.createLineBorder(new Color(255, 176, 128), 3);
-		maze.setBackground(new Color(255, 200, 170));
-		maze.setBorder(mazeBorder);
+		// Add empty space between levels button and time label
+		Component separator1 = Box.createRigidArea(new Dimension(20, 20));
+		btnPanel.add(separator1);
+		
+		// Time information
+		JLabel timeLbl = new JLabel("Time");
+		timeLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		btnPanel.add(timeLbl);
+		
+		JLabel currTimeLbl = new JLabel("START TIME");
+		currTimeLbl.setForeground(SystemColor.controlHighlight);
+		currTimeLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		btnPanel.add(currTimeLbl);
+		
+		// Add empty space between time display and moves label
+		Component separator2 = Box.createRigidArea(new Dimension(20, 20));
+		btnPanel.add(separator2);
+		
+		// Information about number of moves
+		JLabel movesLbl = new JLabel("Moves");
+		movesLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		btnPanel.add(movesLbl);
+		
+		JLabel nMovesLbl = new JLabel("NMOVES");
+		nMovesLbl.setForeground(SystemColor.controlHighlight);
+		nMovesLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		btnPanel.add(nMovesLbl);
 
-		Car c = new Car("Z", 100, 10, 100, 100);
-		maze.add(c);
+		 // Gameplay Window
+		///////////////////
+		
+		// TODO Add input file as parameter
+		GamePanel gamePanel = new GamePanel(width-offset, width-offset);	// Change this to have the dimensions as specified in input file
+		
+		// TODO rectangular grid would require some multiple of offset (width-offset, width-2*offset) for 4x3
+		gamePanel.setBounds(0, 0, width-offset, width-offset);	// Create square grid
+		contentPane.add(gamePanel, BorderLayout.CENTER);
 	}
 }

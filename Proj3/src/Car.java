@@ -1,5 +1,4 @@
-import java.util.Timer;
-import java.util.TimerTask;
+import java.awt.Point;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -7,46 +6,63 @@ import javax.swing.event.*;
 
 
 public class Car extends JButton implements MouseInputListener {
+	boolean vertical;	// 0 for horizontal, 1 for vertical
 	int width, height;
 	int xPos, yPos;
 	String name;
-	
-	Timer timer = new Timer();
-	TimerTask task = new MyTimerTask();
-	
-	private class MyTimerTask extends TimerTask {
-		public void run() {	
-			setSize(++width, ++height);
-		}
-	}
-	
-	public Car(String nm, int wid, int hgt, int x, int y) {
+
+	public Car(String nm, int x, int y, int wid, int hgt, boolean vert) {
 		name = nm;
-		width = wid;
-		height = hgt;
 		xPos = x;
 		yPos = y;
-		
-		setSize(wid, hgt);
-		setLocation(x, y);
-		
-		addMouseListener(this);
+		width = wid;
+		height = hgt;
+		vertical = vert;
+
+		setText(name);
+		setBounds(xPos, yPos, width, height);	// Location and size of button in panel	
+		addMouseListener(this);	// Add mouse listeners specified below
+		addMouseMotionListener(this);	// Allow for dragging/move event
 	}
 
 
-	
-	@Override public void mouseClicked(MouseEvent e) {
+	Point clickOrigin, currentPos;
 
+	@Override public void mouseClicked(MouseEvent e) {
+		/*clickOrigin = getMousePosition();
+		
+		if(clickOrigin.x < width/2)
+			setBounds(xPos-=50, yPos, width, height);
+		else if(clickOrigin.x > width/2)
+			setBounds(xPos+=50, yPos, width, height);
+		*/
 	}
 	@Override public void mouseEntered(MouseEvent e) {}
 	@Override public void mouseExited(MouseEvent e) {}
 	@Override public void mousePressed(MouseEvent e) {
-		timer.scheduleAtFixedRate(task, 0, 1000);
+		clickOrigin = e.getPoint();	// Reference point for the mouseDragged event
 	}
-	@Override public void mouseReleased(MouseEvent e) {
-		task.cancel();
-	}
-	@Override public void mouseDragged(MouseEvent arg0) {
+	@Override public void mouseReleased(MouseEvent e) {}
+	@Override public void mouseDragged(MouseEvent e) {/*
+		currentPos = e.getPoint();	// Get coordinate of event (relative to panel)
+
+		// x/y +/- 15 sets a threshold. This fixed an error
+		// Where the button would keep bouncing back and forth
+		//
+		// Dragging mouse vertically/horizontally. Shift button by 25
+		if(vertical) {
+			if(currentPos.y < clickOrigin.y-15 && yPos > 0)
+				setBounds(xPos, yPos-=25, width, height);
+			else if(currentPos.y > clickOrigin.y+15 && yPos < 500) // change to width of panel - width of button
+				setBounds(xPos, yPos+=25, width, height);
+		}
+		else {
+			if(currentPos.x < clickOrigin.x-15 && xPos > 0)
+				setBounds(xPos-=25, yPos, width, height);
+			else if(currentPos.x > clickOrigin.x+15 && xPos < 500) // change to width of panel - width of button
+				setBounds(xPos+=25, yPos, width, height);	
+		}*/
 	}
 	@Override public void mouseMoved(MouseEvent arg0) {}
+
 }
