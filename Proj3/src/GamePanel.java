@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 import javax.swing.JPanel;
 import javax.swing.JViewport;
@@ -18,9 +21,6 @@ import javax.swing.event.MouseInputListener;
 /*
  * (0,0) (1,0)
  * (1,0)
- * 
- * 
- * 
  */
 
 public class GamePanel extends JPanel{
@@ -32,17 +32,22 @@ public class GamePanel extends JPanel{
 	public static final int BUTTON_SIZE = 80;
 	private int _winWidth, _winHeight;
 	private JViewport _field;
-	/*
-	 * not sure why we might need this so i'll leave it for now
-	 */
 	private ArrayList<Piece> _pieces;
+	/*
+	 * the board that will get reset when the a reset button is clicked
+	 */
+	private ArrayList<String> _resetBoard;
+	/*
+	 * a stack that will contain the boards that will lead to the solution
+	 */
+	private Stack<ArrayList<String>> _solutionBoards;
 	
 	/*
 	 * initialize the attributes of this GamePanel
 	 */
 	private GamePanel(){
 		super();
-		_field = new JViewport();
+		this._field = new JViewport();
 		this.setBackground( new Color(255, 255, 240));
 		this._pieces = new ArrayList<Piece>();
 		this.setLayout(null);
@@ -55,11 +60,8 @@ public class GamePanel extends JPanel{
 		this();
 		ArrayList<String> initList = readFileList( fileName);
 		this.initBoardFromList( initList);
-		
-		ArrayList<String> solved = this.solvePuzzle();
-		if( solved != null){
-			System.out.println( solved);
-		}
+		this._resetBoard = new ArrayList<String>(this.getBoardList());
+		this._solutionBoards = new Stack<ArrayList<String>>();
 	}
 	
 	/*
@@ -80,7 +82,46 @@ public class GamePanel extends JPanel{
 		for( Piece p : _pieces){
 			toReturn.add(p.toString());
 		}
-		return toReturn; //TODO 
+		return toReturn;
+	}
+	
+	/*
+	 * reset the board to the initial state
+	 */
+	public void resetBoard(){
+		//XXX
+		this.removeAll();
+		this._pieces.clear();
+		this.initBoardFromList(_resetBoard);
+	}
+	
+	/*
+	 * called to disable movement of the pieces in the panel
+	 */
+	public void disableButtonMovement() {
+		for(Piece p : this._pieces){
+			p.setImmovable();
+		}
+	}
+	
+	/*
+	 * show the solution path and to the final state
+	 */
+	public void showSolution(){
+		this.solvePuzzle();
+		
+		//because we need to show where the player started from
+		this._solutionBoards.add( this.getBoardList());
+		
+		GamePanelSolutionBoard fullSolutionPopUp = new GamePanelSolutionBoard( this._solutionBoards );
+	}
+
+	/*
+	 * show the solution path and to the final state
+	 */
+	public void showHint(){
+		//creates a hint solution board using a specific constructor
+		GamePanelSolutionBoard hintPopUp = new GamePanelSolutionBoard( this.solvePuzzle() );
 	}
 	
 	/*
@@ -90,14 +131,12 @@ public class GamePanel extends JPanel{
 	private ArrayList<String> readFileList( String fileName){
 		ArrayList<String> toReturn = new ArrayList<String>();
 		BufferedReader reader = null;
-		
 		//open the file
 		try {
 			reader = new BufferedReader( new FileReader( "boards/" + fileName ));
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		}
-		
 		//read the file
 		try {
 			while( reader.ready()){
@@ -107,7 +146,6 @@ public class GamePanel extends JPanel{
 			System.out.println("ERROR READING FILE LINE");
 			e1.printStackTrace();
 		}
-		
 		//close the file
         try {
 			reader.close();
@@ -126,7 +164,7 @@ public class GamePanel extends JPanel{
 		String lineSplit[] = line.split("  "); //TWO SPACES
 		_winHeight = Integer.parseInt( lineSplit[0]);
 		_winWidth = Integer.parseInt( lineSplit[1] );
-		_field.setBounds(0,0, (this._winHeight+1)*GamePanel.BUTTON_SIZE, (this._winWidth+1)*this.BUTTON_SIZE);
+		_field.setBounds(0,0, (this._winHeight+1)*GamePanel.BUTTON_SIZE, (this._winWidth+1)*GamePanel.BUTTON_SIZE);
 		
 		//read in the cars
 		int posX, posY;
@@ -166,7 +204,47 @@ public class GamePanel extends JPanel{
 		this.add(_field); //adding the field last moves it to the back
 		this.validate();
 	}
-	
+
+	/*
+	 * BFS of the possible boards from the current state of the user's game panel
+	 * *** returns the next move to make get the nearest solution *** (used by hint button)
+	 */
+	private ArrayList<String> solvePuzzle(){
+		this._solutionBoards.clear();	//make sure there aren't any boards left over from last time 
+		Queue<ArrayList<String>> 				queue 		= new LinkedList<ArrayList<String>>();
+		Hashtable<String, ArrayList<String>> 	visited		= new Hashtable<String, ArrayList<String>>();
+		queue.add( this.getBoardList() );
+		visited.put( this.getBoardList().toString(), this.getBoardList() );
+		int counter = 0;
+		
+		while( !queue.isEmpty() ){
+			System.out.println(counter + " " + queue.size() + " " + visited.size());
+			ArrayList<String> queueList = queue.poll();			//grab the first board list out of the queue
+			GamePanel queueBoard = new GamePanel( queueList);	//instantiate a board the board list
+			if( queueBoard.isSolved() ){
+				ArrayList<String> backtrackList = queueList;
+				ArrayList<String> currentList = queueList; 
+				System.out.println("FOUND THE SOLUTION!");
+				do{
+					this._solutionBoards.push(currentList);					//record the board we have as a solution
+					currentList = backtrackList; 							//move back through the solutions
+					backtrackList = visited.get(currentList.toString()); 	//get the board that got me here
+				}while( backtrackList != currentList); 						//because the start of the graph is delimited by the start hashed to itself
+				this._solutionBoards.pop();									//the top board on our list is the current board, but we don't want this
+				return this._solutionBoards.peek();
+			}
+			ArrayList<ArrayList<String>> possibleBoards = queueBoard.getPossibleMoveLists();	//possible moves ("adjacent edges" of the graph)
+			for( ArrayList<String> possibleBoardList : possibleBoards){
+				if( possibleBoardList != null && !visited.contains( possibleBoardList) ){
+					visited.put( possibleBoardList.toString(), queueList);	//key is where a possible move path, value is the board that got me here
+					queue.add( possibleBoardList);							//make sure we hit this board when its turn is up in the queue
+				}
+			}
+			counter++;
+		}
+		return null;
+	}
+		
 	/*
 	 * determines if the board is solved
 	 * the 'z' piece is in the final position
@@ -176,40 +254,6 @@ public class GamePanel extends JPanel{
 		if( p.isInWinningPosition() )
 			return true;
 		return false;
-	}
-
-	/*
-	 * 
-	 */
-	public ArrayList<String> solvePuzzle(){
-		Queue<ArrayList<String>> queue = new LinkedList<ArrayList<String>>();
-		Hashtable<String, ArrayList<String>> visited = new Hashtable<String, ArrayList<String>>();
-		
-		ArrayList<String> toReturn = new ArrayList<String>();
-		
-		//initialize the queue for BFS
-		queue.add( this.getBoardList() );
-		visited.put( this.getBoardList().toString(), this.getBoardList() );
-		int counter = 0;
-		while( !queue.isEmpty() ){
-			System.out.println(counter + " " + queue.size() + " " + visited.size());
-			ArrayList<String> queueList = queue.poll(); //grab the first board
-			GamePanel queueBoard = new GamePanel( queueList); //create a board with the item from the list
-			if( queueBoard.isSolved() ){
-				System.out.println("FOUND THE SOLUTION!");
-				return queueBoard.getBoardList();
-			}
-			//possible moves ("adjacent edges")
-			ArrayList<ArrayList<String>> possibleBoards = queueBoard.getPossibleMoveLists();
-			for( ArrayList<String> possibleBoard : possibleBoards){
-				if( possibleBoard != null && !visited.contains( possibleBoard) ){
-					visited.put( possibleBoard.toString(), possibleBoard);
-					queue.add( possibleBoard);
-				}
-			}
-			counter++;
-		}
-		return null;
 	}
 	
 	/*
@@ -238,18 +282,21 @@ public class GamePanel extends JPanel{
 		}
 		else return null;
 	}
-
-	/*
-	 * show the user
-	 */
-	public void showHint(){
-		//TODO
-	}
 	
+	
+	
+	/*
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
 	private class Piece extends JViewport implements MouseInputListener{
 		private static final long serialVersionUID = 1L;
 		private String _name;
 		private Boolean _vertical;
+		private Boolean _horizontal;
 		private Boolean _isWinningPiece;
 		private Point _currentDragPos;
 		
@@ -260,9 +307,9 @@ public class GamePanel extends JPanel{
 			super();
 			this._name = name;
 			this._vertical = vertical;
+			this._horizontal = !vertical;
 			this._isWinningPiece = isFinalPiece;
 			this._currentDragPos = new Point();
-			
 			//this.setText( this._name);
 			this.setBackground( new Color(
 					(int)((Math.random()*1000) % 255),
@@ -298,39 +345,49 @@ public class GamePanel extends JPanel{
 		}
 
 		/*
+		 * disable any movement that can happen with the buttons
+		 */
+		public void setImmovable(){
+			//not working for some reason? >.< TODO
+			this._vertical = false;
+			this._horizontal = false;
+		}
+		
+		/*
 		 * check to see if this piece can move in a particular direction
 		 */
 		public boolean canFit(int direction){
 			Rectangle newPosition = new Rectangle( this.getBounds());
 			switch(direction){
 			case UP:
-				if( !this._vertical || this.getY() - BUTTON_SIZE < 0 ) return false;
-				newPosition.setLocation( this.getX(), this.getY() - BUTTON_SIZE);
+				if( this._horizontal || this.getY() - BUTTON_SIZE < 0 ) return false;
+				if( this._vertical) newPosition.setLocation( this.getX(), this.getY() - BUTTON_SIZE);
 				break;
 			case DOWN: 
-				if( !this._vertical || this.getY() + BUTTON_SIZE >= _field.getBounds().getMaxY() ) return false;
-				newPosition.setLocation( this.getX(), this.getY() + BUTTON_SIZE);
+				if( this._horizontal || this.getY() + BUTTON_SIZE >= _field.getBounds().getMaxY() ) return false;
+				if( this._vertical) newPosition.setLocation( this.getX(), this.getY() + BUTTON_SIZE);
 				break;
 			case LEFT:
 				if( this._vertical || this.getX() - BUTTON_SIZE < 0 ) return false;
-				newPosition.setLocation( this.getX() - BUTTON_SIZE, this.getY() );
+				if( this._horizontal) newPosition.setLocation( this.getX() - BUTTON_SIZE, this.getY() );
 				break;
 			case RIGHT:
 				if( this._vertical || this.getX() + BUTTON_SIZE >= _field.getBounds().getMaxX() ) return false;
-				newPosition.setLocation( this.getX() + BUTTON_SIZE, this.getY() );
+				if( this._horizontal) newPosition.setLocation( this.getX() + BUTTON_SIZE, this.getY() );
 				break;
 			}
 			//verify that the space we are moving to reflects our start state
 			//System.out.println( this.getBounds() + " MOVING TO " + newPosition.getBounds());
 			for( Piece p : _pieces){
 				if( p._name != this._name){
-					if( p.getBounds().contains( newPosition.getLocation())){ //TODO this doesn't work when bottom corners match
-							//System.out.println( p._name + " contains where this item will move" + p.getLocation());
-							return false;
+					if( p.getBounds().contains( newPosition.getLocation())){
+						//TODO this doesn't work when bottom corners match
+						//System.out.println( p._name + " contains where this item will move" + p.getLocation());
+						return false;
 					}
 					if(newPosition.getBounds().contains( p.getLocation() )){
-							//System.out.println("I will contain another item");
-							return false;
+						//System.out.println("I will contain another item");
+						return false;
 					}
 				}
 			}

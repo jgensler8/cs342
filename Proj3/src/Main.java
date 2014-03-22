@@ -1,7 +1,11 @@
 import java.awt.Container;
-import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 
 public class Main{
@@ -16,55 +20,55 @@ public class Main{
 		Container container = window.getContentPane();
 		
 		//add the game board
-		container.add(new GamePanel("board1.txt"));
-		window.setContentPane(container);
+		final GamePanel game = new GamePanel("board1.txt");
+		container.add( game);
 		window.pack();
 		
+		//add the menu bars
+		addMenuBars(window, game);
+		
 		//show the window to the user
-		window.setBounds(100, 100, 800, 800);
+		window.setBounds( 100,100,400,400);
 		window.setVisible(true);
 	}
-
 	
 	/*
-	 * classes: board ( piece)
-	 * 
-	 * board{
-	 *   int ySize, xSize
-	 * 
-	 *  public board( filename ){
-	 *  	get size from file
-	 *  	while( get pieces from file)
-	 *  }
-	 *  
-	 *  public board( board){
-	 *  	use this as a clone
-	 *  }
-	 *  vs WHAT DO WE DO HERE
-	 *  clone(){
-	 *  	return copy of board
-	 *  }
-	 *  im leaning toward the constructor
-	 *
-	 *	should we do some sort of threading here? problem is finding if we have gotten a certain board before
-	 *	also what happens if we have found a solution in each thread?
-	 *	we have to stop all other threads and report the solution to main!
-	 *	(probs not the easiest to do)
-	 *  dfs( board){
-	 *  	create a queue
-	 *  	find ALL possible moves (should we separate move up by 1 and move up by 2?)
-	 *  	^^ that answer is yes because bfs will "expand" naturally
-	 *  
-	 *  	check that we haven't gotten this board before 
-	 *  	remember that this is a graph problem and we dont want
-	 *  	to be hopping between two solution moving a peice up and down and up and down
-	 * 
-	 * 		while( queue not empty)
-	 * 			copy current board and make move
-	 * 			pass to dfs
-	 *  }
-	 *  
-	 *  
 	 * 
 	 */
+	public static void addMenuBars( JFrame window, final GamePanel game){
+		JMenuBar menuBar = new JMenuBar();
+		
+		// Game Menu
+		JMenu gameMenu = new JMenu("Game");
+		JMenuItem restartItem = new JMenuItem("Restart");
+		restartItem.addActionListener( new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				game.resetBoard();
+			}
+		});
+		JMenuItem hintItem = new JMenuItem("Hint");
+		hintItem.addActionListener( new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				game.showHint();
+			}
+		});
+		JMenuItem solveItem = new JMenuItem("Solve");
+		hintItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				game.showSolution();
+			}
+		});
+		JMenuItem exitItem = new JMenuItem("Exit");
+		gameMenu.add( restartItem);
+		gameMenu.add( hintItem);
+		gameMenu.add( solveItem);
+		gameMenu.add( exitItem);
+		
+		//add the menus to the menu bar
+		menuBar.add(gameMenu);
+		//add the menu bar to the window
+		window.setJMenuBar(menuBar);
+	}
 }
