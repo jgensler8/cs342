@@ -56,7 +56,10 @@ public class GamePanel extends JPanel{
 		ArrayList<String> initList = readFileList( fileName);
 		this.initBoardFromList( initList);
 		
-		this.solvePuzzle();
+		ArrayList<String> solved = this.solvePuzzle();
+		if( solved != null){
+			System.out.println( solved);
+		}
 	}
 	
 	/*
@@ -214,15 +217,11 @@ public class GamePanel extends JPanel{
 	 */
 	private ArrayList<ArrayList<String>> getPossibleMoveLists() {
 		ArrayList<ArrayList<String>> toReturn = new ArrayList<ArrayList<String>>();
-		for( Piece p : this._pieces){
-			if( this.simulateMove( p, LEFT) != null )
-				toReturn.add( this.simulateMove( p, LEFT ));
-			if( this.simulateMove( p, RIGHT) != null)
-				toReturn.add( this.simulateMove( p, RIGHT ));
-			if( this.simulateMove( p, UP) != null)
-				toReturn.add( this.simulateMove( p, UP ));
-			if( this.simulateMove( p, DOWN) != null)
-				toReturn.add( this.simulateMove( p, DOWN ));
+		for( int pieceIndex = 0; pieceIndex < this._pieces.size() ; pieceIndex++){
+			toReturn.add( this.simulateMove( pieceIndex, LEFT ));
+			toReturn.add( this.simulateMove( pieceIndex, RIGHT ));
+			toReturn.add( this.simulateMove( pieceIndex, UP ));
+			toReturn.add( this.simulateMove( pieceIndex, DOWN ));
 		}
 		return toReturn;
 	}
@@ -231,14 +230,13 @@ public class GamePanel extends JPanel{
 	 * simulate the move of a specific piece in a specific direction.
 	 * the directions are determined by the ones IN THIS CLASS.
 	 */
-	private ArrayList<String> simulateMove(Piece p, int direction){
+	private ArrayList<String> simulateMove(int pieceIndex, int direction){
 		GamePanel simulated = new GamePanel( this.getBoardList() );
-		if( p.canFit(direction)){
-			p.doMove(direction);
+		if(simulated._pieces.get(pieceIndex).canFit(direction)){
+			simulated._pieces.get(pieceIndex).doMove(direction);
 			return simulated.getBoardList();
 		}
-		else
-			return null;
+		else return null;
 	}
 
 	/*
@@ -276,6 +274,13 @@ public class GamePanel extends JPanel{
 		}
 		
 		/*
+		 * get the name of this piece
+		 */
+		public String getName(){
+			return this._name;
+		}
+		
+		/*
 		 * convert the button into a string
 		 * this can be used to instantiate a board
 		 */
@@ -299,19 +304,19 @@ public class GamePanel extends JPanel{
 			Rectangle newPosition = new Rectangle( this.getBounds());
 			switch(direction){
 			case UP:
-				if( this.getY() - BUTTON_SIZE < 0 ) return false;
+				if( !this._vertical || this.getY() - BUTTON_SIZE < 0 ) return false;
 				newPosition.setLocation( this.getX(), this.getY() - BUTTON_SIZE);
 				break;
 			case DOWN: 
-				if( this.getY() + BUTTON_SIZE >= _field.getBounds().getMaxY() ) return false;
+				if( !this._vertical || this.getY() + BUTTON_SIZE >= _field.getBounds().getMaxY() ) return false;
 				newPosition.setLocation( this.getX(), this.getY() + BUTTON_SIZE);
 				break;
 			case LEFT:
-				if( this.getX() - BUTTON_SIZE < 0 ) return false;
+				if( this._vertical || this.getX() - BUTTON_SIZE < 0 ) return false;
 				newPosition.setLocation( this.getX() - BUTTON_SIZE, this.getY() );
 				break;
 			case RIGHT:
-				if( this.getX() + BUTTON_SIZE >= _field.getBounds().getMaxX() ) return false;
+				if( this._vertical || this.getX() + BUTTON_SIZE >= _field.getBounds().getMaxX() ) return false;
 				newPosition.setLocation( this.getX() + BUTTON_SIZE, this.getY() );
 				break;
 			}
@@ -361,18 +366,14 @@ public class GamePanel extends JPanel{
 			this._currentDragPos.setLocation( this.getX()+e.getX(), this.getY()+e.getY());
 			//System.out.println( this._currentDragPos);
 			if( _field.contains( this._currentDragPos)){
-				if(this._vertical) { //this piece can move vertical
-					if(this._currentDragPos.y > this.getBounds().getMaxY() && canFit(DOWN))
-						this.doMove(DOWN);
-					else if(this._currentDragPos.y < this.getBounds().getMinY() && canFit(UP))
-						this.doMove(UP);
-				}
-				else{ //this piece can't move vertical (horizontal)
-					if(this._currentDragPos.x > this.getBounds().getMaxX() && canFit(RIGHT))
-						this.doMove(RIGHT);
-					else if(this._currentDragPos.x < this.getBounds().getMinX() && canFit(LEFT))
-						this.doMove(LEFT);
-				}
+				if(this._currentDragPos.y > this.getBounds().getMaxY() && canFit(DOWN))
+					this.doMove(DOWN);
+				else if(this._currentDragPos.y < this.getBounds().getMinY() && canFit(UP))
+					this.doMove(UP);
+				else if(this._currentDragPos.x > this.getBounds().getMaxX() && canFit(RIGHT))
+					this.doMove(RIGHT);
+				else if(this._currentDragPos.x < this.getBounds().getMinX() && canFit(LEFT))
+					this.doMove(LEFT);
 			}
 		}
 		@Override public void mouseMoved(MouseEvent e) {}
