@@ -12,12 +12,13 @@ public class Main{
 	public static void main(String[] args) {
 		//init the window for the user
 		JFrame window = new JFrame();
+		window.setResizable(false);
 		Container container = window.getContentPane();
 		
 		//add the game board
-		container.add(new BoardPanel("board1.txt"));
-		
-		Graphics g;
+		container.add(new GamePanel("board1.txt"));
+		window.setContentPane(container);
+		window.pack();
 		
 		//show the window to the user
 		window.setBounds(100, 100, 800, 800);
