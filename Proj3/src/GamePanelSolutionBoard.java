@@ -17,27 +17,31 @@ private static final long serialVersionUID = 1L;
 		this.setVisible(true);
 	}
 	
-	/*
+	/**
 	 * constructor for a hint
 	 */
 	public GamePanelSolutionBoard(ArrayList<String> hintList){
 		this();
 		Container contentPane = this.getContentPane();
 		
+		//set content and boundary
 		GamePanel hintBoard = new GamePanel( hintList );	//instantiate a board panel
-		hintBoard.disableButtonMovement();				//disable its item's movement
+		this.setBounds( hintBoard.getBounds() );
 		
 		contentPane.add( hintBoard );
-		this.setBounds( hintBoard.getBounds() );
 	}
 	
-	/*
+	/**
 	 * constructor for a full solution
 	 */
 	public GamePanelSolutionBoard(Stack<ArrayList<String>> solutionStack){
 		this();
 		Container contentPane = this.getContentPane();
 		
+		//set boundary
+		GamePanel temp = new GamePanel( solutionStack.peek());
+		this.setBounds( temp.getBounds() );
+		//set content
 		JTabbedPane tabView = new JTabbedPane();
 		tabView.addTab("Current", null, new GamePanel( solutionStack.pop()));
 		for( int boardIndex = 1; !solutionStack.isEmpty(); boardIndex++){

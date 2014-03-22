@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -53,7 +51,7 @@ public class GamePanel extends JPanel{
 		this.setLayout(null);
 	}
 	
-	/*
+	/**
 	 * construct a board panel from a file
 	 */
 	public GamePanel( String fileName){
@@ -64,7 +62,7 @@ public class GamePanel extends JPanel{
 		this._solutionBoards = new Stack<ArrayList<String>>();
 	}
 	
-	/*
+	/**
 	 * construct a board panel from another board panel
 	 * (copying the passed panel)
 	 */
@@ -73,7 +71,7 @@ public class GamePanel extends JPanel{
 		this.initBoardFromList( initList);
 	}
 	
-	/*
+	/**
 	 * convert this board to a string that can uniquely construct this board
 	 */
 	public ArrayList<String> getBoardList(){
@@ -85,29 +83,34 @@ public class GamePanel extends JPanel{
 		return toReturn;
 	}
 	
-	/*
-	 * reset the board to the initial state
+
+	/**
+	 * reset the board AND initialize with a new boardList
 	 */
 	public void resetBoard(){
-		//XXX
 		this.removeAll();
+		this.revalidate();
+		this.repaint();
 		this._pieces.clear();
-		this.initBoardFromList(_resetBoard);
+		this.initBoardFromList( this._resetBoard);
 	}
 	
-	/*
-	 * called to disable movement of the pieces in the panel
+	/**
+	 * reset the board AND initialize with a new boardList
 	 */
-	public void disableButtonMovement() {
-		for(Piece p : this._pieces){
-			p.setImmovable();
-		}
+	public void resetBoard(ArrayList<String> boardList){
+		this.removeAll();
+		this.revalidate();
+		this.repaint();
+		this._pieces.clear();
+		this.initBoardFromList( boardList);
 	}
 	
-	/*
+	/**
 	 * show the solution path and to the final state
 	 */
 	public void showSolution(){
+		System.out.println("SHOWING SOLUTION");
 		this.solvePuzzle();
 		
 		//because we need to show where the player started from
@@ -116,44 +119,13 @@ public class GamePanel extends JPanel{
 		GamePanelSolutionBoard fullSolutionPopUp = new GamePanelSolutionBoard( this._solutionBoards );
 	}
 
-	/*
+	/**
 	 * show the solution path and to the final state
 	 */
 	public void showHint(){
+		System.out.println("SHOWING HINT");
 		//creates a hint solution board using a specific constructor
 		GamePanelSolutionBoard hintPopUp = new GamePanelSolutionBoard( this.solvePuzzle() );
-	}
-	
-	/*
-	 * @param file name
-	 * read the file and return its contents as a string
-	 */
-	private ArrayList<String> readFileList( String fileName){
-		ArrayList<String> toReturn = new ArrayList<String>();
-		BufferedReader reader = null;
-		//open the file
-		try {
-			reader = new BufferedReader( new FileReader( "boards/" + fileName ));
-		} catch (FileNotFoundException e2) {
-			e2.printStackTrace();
-		}
-		//read the file
-		try {
-			while( reader.ready()){
-				toReturn.add(reader.readLine());
-			}
-		} catch (IOException e1) {
-			System.out.println("ERROR READING FILE LINE");
-			e1.printStackTrace();
-		}
-		//close the file
-        try {
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("ERROR CLOSING FILE");
-			e.printStackTrace();
-		}
-        return toReturn;
 	}
 	
 	/*
@@ -202,9 +174,42 @@ public class GamePanel extends JPanel{
 			}
 		}
 		this.add(_field); //adding the field last moves it to the back
-		this.validate();
+		this.revalidate();
+		this.repaint();
 	}
 
+	/*
+	 * @param file name
+	 * read the file and return its contents as a string
+	 */
+	private ArrayList<String> readFileList( String fileName){
+		ArrayList<String> toReturn = new ArrayList<String>();
+		BufferedReader reader = null;
+		//open the file
+		try {
+			reader = new BufferedReader( new FileReader( "boards/" + fileName ));
+		} catch (FileNotFoundException e2) {
+			e2.printStackTrace();
+		}
+		//read the file
+		try {
+			while( reader.ready()){
+				toReturn.add(reader.readLine());
+			}
+		} catch (IOException e1) {
+			System.out.println("ERROR READING FILE LINE");
+			e1.printStackTrace();
+		}
+		//close the file
+        try {
+			reader.close();
+		} catch (IOException e) {
+			System.out.println("ERROR CLOSING FILE");
+			e.printStackTrace();
+		}
+        return toReturn;
+	}
+	
 	/*
 	 * BFS of the possible boards from the current state of the user's game panel
 	 * *** returns the next move to make get the nearest solution *** (used by hint button)
@@ -221,7 +226,8 @@ public class GamePanel extends JPanel{
 			System.out.println(counter + " " + queue.size() + " " + visited.size());
 			ArrayList<String> queueList = queue.poll();			//grab the first board list out of the queue
 			GamePanel queueBoard = new GamePanel( queueList);	//instantiate a board the board list
-			if( queueBoard.isSolved() ){
+			
+			if( queueBoard.isSolved() ){									//we are at the solution
 				ArrayList<String> backtrackList = queueList;
 				ArrayList<String> currentList = queueList; 
 				System.out.println("FOUND THE SOLUTION!");
@@ -233,6 +239,8 @@ public class GamePanel extends JPanel{
 				this._solutionBoards.pop();									//the top board on our list is the current board, but we don't want this
 				return this._solutionBoards.peek();
 			}
+			
+			//we are not the solution, so enumerate possible moves
 			ArrayList<ArrayList<String>> possibleBoards = queueBoard.getPossibleMoveLists();	//possible moves ("adjacent edges" of the graph)
 			for( ArrayList<String> possibleBoardList : possibleBoards){
 				if( possibleBoardList != null && !visited.contains( possibleBoardList) ){
@@ -300,7 +308,7 @@ public class GamePanel extends JPanel{
 		private Boolean _isWinningPiece;
 		private Point _currentDragPos;
 		
-		/*
+		/**
 		 * constructor for the winning piece
 		 */
 		public Piece( String name, int x, int y, int height, int width, Boolean vertical, Boolean isFinalPiece){
@@ -311,23 +319,28 @@ public class GamePanel extends JPanel{
 			this._isWinningPiece = isFinalPiece;
 			this._currentDragPos = new Point();
 			//this.setText( this._name);
-			this.setBackground( new Color(
-					(int)((Math.random()*1000) % 255),
-					(int)((Math.random()*1000) % 255),
-					(int)((Math.random()*1000) % 255)) );
+			if( isFinalPiece){
+				this.setBackground( new Color( 255, 0, 0));
+			}
+			else{
+				this.setBackground( new Color(
+						(int)((Math.random()*1000) % 50),
+						(int)((Math.random()*1000) % 255),
+						(int)((Math.random()*1000) % 255)) );	
+			}
 			this.setBounds( x*BUTTON_SIZE, y*BUTTON_SIZE, width*BUTTON_SIZE, height*BUTTON_SIZE);
 			addMouseListener(this);
 			addMouseMotionListener(this);
 		}
 		
-		/*
+		/**
 		 * get the name of this piece
 		 */
 		public String getName(){
 			return this._name;
 		}
 		
-		/*
+		/**
 		 * convert the button into a string
 		 * this can be used to instantiate a board
 		 */
@@ -337,23 +350,14 @@ public class GamePanel extends JPanel{
 				+ "  " + (this._vertical ? "v" : "h");
 		}
 		
-		/*
+		/**
 		 * check to see if this piece is in the winning position
 		 */
 		public Boolean isInWinningPosition(){
 			return ( this._isWinningPiece && (this.getBounds().getMaxX() == _field.getBounds().getMaxX()));
 		}
 
-		/*
-		 * disable any movement that can happen with the buttons
-		 */
-		public void setImmovable(){
-			//not working for some reason? >.< TODO
-			this._vertical = false;
-			this._horizontal = false;
-		}
-		
-		/*
+		/**
 		 * check to see if this piece can move in a particular direction
 		 */
 		public boolean canFit(int direction){
@@ -394,7 +398,7 @@ public class GamePanel extends JPanel{
 			return true;
 		}
 		
-		/*
+		/**
 		 * move the piece in a given direction
 		 */
 		protected void doMove(int direction){
