@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class GamePanelLevelStorage {
@@ -47,7 +48,8 @@ public class GamePanelLevelStorage {
 		try {
 			reader = new BufferedReader( new FileReader( "boards/" + fileName ));
 		} catch (FileNotFoundException e2) {
-			e2.printStackTrace();
+			JOptionPane.showMessageDialog( new JLabel(), "That file doesn't exist!");
+			//e2.printStackTrace();
 		}
 		//read the file
 		try {
@@ -65,8 +67,12 @@ public class GamePanelLevelStorage {
 			System.out.println("ERROR CLOSING FILE");
 			e.printStackTrace();
 		}
-        
-        this._levels.put(fileName, toAdd);
+        //test the file and see if any piece intersect any of the other peices
+        GamePanel g = new GamePanel(toAdd);
+        if( g.validateBoard() )
+        	this._levels.put(fileName, toAdd);
+        else
+    		JOptionPane.showMessageDialog( new JLabel(), "You've entered a board that contains errors!");
 	}
 	
 	/**
@@ -74,10 +80,13 @@ public class GamePanelLevelStorage {
 	 */
 	public ArrayList<String> getLevel(){
 		String levelName = JOptionPane.showInputDialog("Enter a Level to load:");
-		if( levelName != null){
+		if( levelName != null && this._levels.get(levelName) != null){
 			return this._levels.get(levelName);
 		}
-		else return null;
+		else{
+			JOptionPane.showMessageDialog( new JLabel(), "Sorry, you haven't loaded this level. Use the 'Load Level' option.");
+			return null;
+		}
 	}
 	
 }

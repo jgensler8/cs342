@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.event.MouseInputListener;
@@ -21,13 +22,14 @@ import javax.swing.event.MouseInputListener;
  * (1,0)
  */
 
-public class GamePanel extends JPanel{
+public class GamePanel extends JPanel implements ColorSelector, BoardFileNameList{
 	private static final long serialVersionUID = 1L;
 	public static final int UP = 1;
 	public static final int DOWN = 2;
 	public static final int LEFT = 3;
 	public static final int RIGHT = 4;
 	public static final int BUTTON_SIZE = 80;
+	private int _currentBoardNumber; //the current board 
 	private int _winWidth, _winHeight;
 	private JViewport _field;
 	private ArrayList<Piece> _pieces;
@@ -130,6 +132,7 @@ public class GamePanel extends JPanel{
 	
 	/*
 	 * build the board from the string passed as an argument
+	 * assumes there is at least one line in the array list
 	 */
 	private void initBoardFromList( ArrayList<String> lines){
 		String line = lines.get(0);
@@ -159,13 +162,13 @@ public class GamePanel extends JPanel{
 			switch(direction){
 			case 'v':
 			case 'V':
-				Piece toAddV = new Piece( name, posX, posY, height, width, true, isWinningPiece);
+				Piece toAddV = new Piece( name, posX, posY, height, width, true, isWinningPiece, ColorSelector.Colors[lineIndex]);
 				this.add( toAddV);
 				this._pieces.add( toAddV);
 				break;
 			case 'h': 
 			case 'H':
-				Piece toAddH = new Piece( name, posX, posY, height, width, false, isWinningPiece);
+				Piece toAddH = new Piece( name, posX, posY, height, width, false, isWinningPiece, ColorSelector.Colors[lineIndex]);
 				this.add( toAddH);
 				this._pieces.add( toAddH);
 				break;
@@ -291,7 +294,39 @@ public class GamePanel extends JPanel{
 		else return null;
 	}
 	
+	/*
+	 * Notify the user that they've won and load the next board (if available)
+	 */
+	private void notifyUserWin(){
+		JOptionPane.showMessageDialog(this, "Contgrats! You've Won!");
+		++this._currentBoardNumber;
+		if(this._currentBoardNumber >= BoardFileNameList.FileNames.size()){
+			JOptionPane.showMessageDialog(this, "OH WOW! You've solved all of the boards!");
+		}
+		else{
+			String nextBoardFileName = BoardFileNameList.FileNames.get(this._currentBoardNumber);
+			this.resetBoard(this.readFileList(nextBoardFileName));	
+		}
+	}
 	
+	/*
+	 * validate board
+	 */
+	public Boolean validateBoard(){
+		//pieces that intersect
+		for(Piece starter : this._pieces){
+			for(Piece target : this._pieces){
+				if( starter.getName() != target.getName() && starter.getBounds().intersects(target.getBounds())) return false;
+			}
+		}
+		//no pieces at all
+		if(this._pieces.size() == 0) return false;
+		//pieces are contained INSIDE of the board (they don't extend over the edge)
+		for(Piece starter : this._pieces){
+			if( !this._field.getBounds().contains(starter.getBounds())) return false;
+		}
+		return true;
+	}
 	
 	/*
 	 * 
@@ -311,7 +346,7 @@ public class GamePanel extends JPanel{
 		/**
 		 * constructor for the winning piece
 		 */
-		public Piece( String name, int x, int y, int height, int width, Boolean vertical, Boolean isFinalPiece){
+		public Piece( String name, int x, int y, int height, int width, Boolean vertical, Boolean isFinalPiece, Color pieceColor){
 			super();
 			this._name = name;
 			this._vertical = vertical;
@@ -323,10 +358,7 @@ public class GamePanel extends JPanel{
 				this.setBackground( new Color( 255, 0, 0));
 			}
 			else{
-				this.setBackground( new Color(
-						(int)((Math.random()*1000) % 50),
-						(int)((Math.random()*1000) % 255),
-						(int)((Math.random()*1000) % 255)) );	
+				this.setBackground( pieceColor);	
 			}
 			this.setBounds( x*BUTTON_SIZE, y*BUTTON_SIZE, width*BUTTON_SIZE, height*BUTTON_SIZE);
 			addMouseListener(this);
@@ -362,7 +394,7 @@ public class GamePanel extends JPanel{
 		 */
 		public boolean canFit(int direction){
 			Rectangle newPosition = new Rectangle( this.getBounds());
-			switch(direction){
+			switch(direction){ //anticipate the *new* position for the piece
 			case UP:
 				if( this._horizontal || this.getY() - BUTTON_SIZE < 0 ) return false;
 				if( this._vertical) newPosition.setLocation( this.getX(), this.getY() - BUTTON_SIZE);
@@ -380,17 +412,11 @@ public class GamePanel extends JPanel{
 				if( this._horizontal) newPosition.setLocation( this.getX() + BUTTON_SIZE, this.getY() );
 				break;
 			}
-			//verify that the space we are moving to reflects our start state
+			//verify that this new space we are moving to reflects our start state
 			//System.out.println( this.getBounds() + " MOVING TO " + newPosition.getBounds());
 			for( Piece p : _pieces){
 				if( p._name != this._name){
-					if( p.getBounds().contains( newPosition.getLocation())){
-						//TODO this doesn't work when bottom corners match
-						//System.out.println( p._name + " contains where this item will move" + p.getLocation());
-						return false;
-					}
-					if(newPosition.getBounds().contains( p.getLocation() )){
-						//System.out.println("I will contain another item");
+					if( p.getBounds().intersects(newPosition)){ //for all pieces that are not ourself, we will not intersect with them
 						return false;
 					}
 				}
@@ -436,6 +462,7 @@ public class GamePanel extends JPanel{
 				else if(this._currentDragPos.x < this.getBounds().getMinX() && canFit(LEFT))
 					this.doMove(LEFT);
 			}
+			if(this.isInWinningPosition()) notifyUserWin();
 		}
 		@Override public void mouseMoved(MouseEvent e) {}
 	}
