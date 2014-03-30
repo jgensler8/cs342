@@ -59,7 +59,8 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 	public GamePanel( String fileName){
 		this();
 		ArrayList<String> initList = readFileList( fileName);
-		this.initBoardFromList( initList);
+		if( false == this.initBoardFromList( initList))
+			JOptionPane.showMessageDialog(this, "Error Initializing from file! This board may contain errors.");
 		this._resetBoard = new ArrayList<String>(this.getBoardList());
 		this._solutionBoards = new Stack<ArrayList<String>>();
 	}
@@ -113,11 +114,12 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 	 */
 	public void showSolution(){
 		System.out.println("SHOWING SOLUTION");
-		this.solvePuzzle();
-		
+		if( null == this.solvePuzzle() ){
+			JOptionPane.showMessageDialog(this, "UHOH! This board can't be solved!");
+			return;
+		}
 		//because we need to show where the player started from
 		this._solutionBoards.add( this.getBoardList());
-		
 		GamePanelSolutionBoard fullSolutionPopUp = new GamePanelSolutionBoard( this._solutionBoards );
 	}
 
@@ -126,15 +128,19 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 	 */
 	public void showHint(){
 		System.out.println("SHOWING HINT");
+		if( null == this.solvePuzzle() ){
+			JOptionPane.showMessageDialog(this, "UHOH! This board can't be solved!");
+			return;
+		}
 		//creates a hint solution board using a specific constructor
-		GamePanelSolutionBoard hintPopUp = new GamePanelSolutionBoard( this.solvePuzzle() );
+		GamePanelSolutionBoard hintPopUp = new GamePanelSolutionBoard( this._solutionBoards.peek() );
 	}
 	
 	/*
 	 * build the board from the string passed as an argument
 	 * assumes there is at least one line in the array list
 	 */
-	private void initBoardFromList( ArrayList<String> lines){
+	private Boolean initBoardFromList( ArrayList<String> lines){
 		String line = lines.get(0);
 		String lineSplit[] = line.split("  "); //TWO SPACES
 		_winHeight = Integer.parseInt( lineSplit[0]);
@@ -147,12 +153,17 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 		char direction;
 		String name;
 		Boolean isWinningPiece = false;
+		Boolean foundWinningPiece = false;
 		for(int lineIndex = 1; lineIndex < lines.size(); lineIndex++){
-			name = "P" + lineIndex;
-			if( lineIndex == 1) isWinningPiece = true;
-			else isWinningPiece = false;
 		    line = lines.get(lineIndex);
-			lineSplit = line.split("  "); //TWO SPACES
+			lineSplit = line.split("  ");					//TWO SPACES
+			if( lineSplit.length <= 4) continue;		//VALIDATE THE BOARD
+			name = "P" + lineIndex;
+			if( !foundWinningPiece){
+				isWinningPiece = true;
+				foundWinningPiece = true;
+			}
+			else isWinningPiece = false;
 			posX = Integer.parseInt( lineSplit[0]);
 			posY = Integer.parseInt( lineSplit[1]);
 			height = Integer.parseInt( lineSplit[2]);
@@ -173,12 +184,14 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 				this._pieces.add( toAddH);
 				break;
 			default:
-				//this.add( new Piece( name, posX, posY, height, width, false)); 
+				return false;							//INVALID BOARD
 			}
 		}
 		this.add(_field); //adding the field last moves it to the back
+		this._resetBoard = this.getBoardList();
 		this.revalidate();
 		this.repaint();
+		return true;
 	}
 
 	/*
@@ -229,6 +242,11 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 			System.out.println(counter + " " + queue.size() + " " + visited.size());
 			ArrayList<String> queueList = queue.poll();			//grab the first board list out of the queue
 			GamePanel queueBoard = new GamePanel( queueList);	//instantiate a board the board list
+
+			if( (counter % 100) == 0){
+				int z = 0;
+				z++;
+			}
 			
 			if( queueBoard.isSolved() ){									//we are at the solution
 				ArrayList<String> backtrackList = queueList;
@@ -246,7 +264,7 @@ public class GamePanel extends JPanel implements ColorSelector, BoardFileNameLis
 			//we are not the solution, so enumerate possible moves
 			ArrayList<ArrayList<String>> possibleBoards = queueBoard.getPossibleMoveLists();	//possible moves ("adjacent edges" of the graph)
 			for( ArrayList<String> possibleBoardList : possibleBoards){
-				if( possibleBoardList != null && !visited.contains( possibleBoardList) ){
+				if( possibleBoardList != null && !visited.contains( possibleBoardList) && !visited.containsKey(possibleBoardList.toString())){
 					visited.put( possibleBoardList.toString(), queueList);	//key is where a possible move path, value is the board that got me here
 					queue.add( possibleBoardList);							//make sure we hit this board when its turn is up in the queue
 				}

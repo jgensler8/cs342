@@ -18,7 +18,6 @@ public class Main{
 	public static void main(String[] args) {
 		//init the window for the user
 		JFrame window = new JFrame();
-		window.setResizable(false);
 		Container container = window.getContentPane();
 		
 		//initialize the level storage
