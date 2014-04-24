@@ -1,0 +1,19 @@
+package NameBuilder;
+
+Namepublic interface NameBuilder_AnimalNames {
+	public final String _AnimalNames[] = { "Aardvark", "Albatross",
+			"Alligator", "Alpaca", "Ant", "Babooon", "Bat", "Bear", "Bee",
+			"Buffalo", "Camel", "Cat", "Caterpillar", "Cheetah", "Chicken",
+			"Clam", "Crab", "Crane", "Deer", "Dinosaur", "Dog", "Dolfin",
+			"Eagle", "Finch", "Fish", "Falcon", "Frog", "Giraffe",
+			"Giant-Panda", "Goat", "Goose", "Hawk", "Hedgehog", "Horse",
+			"Hyena", "Jackal", "Jellyfish", "Kudu", "Koala", "Lemur", "Llama",
+			"Lion", "Lobster", "Mallard", "Meerkat", "Mole", "Moose", "Monkey",
+			"Mongoose", "Newt", "Narwhal", "Octopus", "Owl", "Oyster",
+			"Panther", "Pelican", "Parrot", "Pidgeon", "Polar-Bear", "Rabbit",
+			"Salmon", "Sea-Lion", "Sardine", "Spider", "Squirrel", "Swallow",
+			"Swan", "Turtle", "Viper", "Walrus", "Wombat", "Wolf", "Yak",
+			"Zebra",
+
+			"Shark", "Velociraptor" };
+}

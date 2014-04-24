@@ -1,0 +1,37 @@
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		//first commit
+	}
+
+	
+	/*
+	 * classes: board ( piece)
+	 * 
+	 * board{
+	 *   int ySize, xSize
+	 * 
+	 *  public board( filename ){
+	 *  	get size from file
+	 *  	while( get pieces from file)
+	 *  }
+	 *  
+	 *  public board( board){
+	 *  	use this as a clone
+	 *  }
+	 *  vs
+	 *  clone(){
+	 *  	return copy of board
+	 *  }
+	 *
+	 *  dfs{
+	 *  
+	 *  }
+	 *  
+	 * 
+	 */
+}

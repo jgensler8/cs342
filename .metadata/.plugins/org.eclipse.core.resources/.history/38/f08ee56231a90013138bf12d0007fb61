@@ -1,0 +1,164 @@
+import java.awt.Event;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+
+public class BoardPanel extends JPanel{
+	final private int SIZE = 800;
+	private int _width, _height;
+	/*
+	 * not sure why we might need this so i'll leave it for now
+	 */
+	private ArrayList<String> _pieceNames;
+	/*
+	 * when a button is clicked, we need the name of the "piece"
+	 * (which is really a sequence of pieces) so that each of its pieces
+	 * can be moved one location to the [left, right, up, down]
+	 * Because each tile will have a name and if a board "car" is
+	 * 3 long, we will have 3 pieces in the hash table
+	 */
+	private Hashtable<Integer, Piece> _nameToPiece;
+	
+	/*
+	 * construct a board panel from a file
+	 */
+	public BoardPanel( String fileName){
+		/*
+		String initString = readFile( fileName);
+		this.initBoardFromString( initString);
+		*/
+		_width = 7;
+		_height = 7;
+		_pieceNames = new ArrayList<String>();
+		_nameToPiece = new Hashtable<Integer,Piece>();
+		
+		this.setSize(SIZE,SIZE);
+		this.setLayout( new GridLayout( _height, _width ));
+		for( int numRows = 0; numRows < _width; numRows++){
+			for( int numCols = 0; numCols < _height; numCols++){
+				int hashVal = numRows*100 + numCols;
+				Piece toAdd = new Piece( Integer.toString( hashVal), numRows, numCols, false, false, false, false);
+				this.add( toAdd);
+				_nameToPiece.put( hashVal, toAdd);
+				
+				_pieceNames.add( Integer.toString( hashVal) );
+			}
+		}
+	}
+	
+	/*
+	 * construct a board panel from another board panel
+	 * (copying the passed panel)
+	 */
+	public BoardPanel( BoardPanel BP){
+		String initString = BP.getBoardString();
+		this.initBoardFromString( initString);
+	}
+	
+	/*
+	 * convert this board to a string that can uniquely construct this board
+	 */
+	public String getBoardString(){
+		return "TODO"; 
+	}
+	
+	/*
+	 * @param file name
+	 * read the file and return its contents as a string
+	 */
+	private String readFile( String s){
+		return "TODO";
+	}
+	
+	/*
+	 * build the board from the string passed as an argument
+	 */
+	private void initBoardFromString(String s){
+		//TODO
+	}
+	
+	/*
+	 * this is critical function
+	 * a piece calls this function when it realizes it should be moved in a particular direction
+	 * we must:
+	 *  - when we move it, successfully move the tiles over and generate a blank tile into the area where the car left
+	 */
+	private void controlMove( String name, int direction){
+		//System.out.println( this._nameToPiece.get(name) );
+	}
+	
+	private class Piece extends JPanel{
+		private String _name;
+		private Boolean _leftNeighbor, _rightNeighbor;
+		private Boolean _northNeighbor, _southNeighbor;
+		private Boolean _canMoveVert, _canMoveHoriz;
+		private int _x, _y;
+		
+		/*
+		 * construct a piece
+		 */
+		public Piece( String name, int x, int y, Boolean leftNeighbor, Boolean rightNeighbor, Boolean northNeighbor, Boolean southNeighbor){
+			this.setLayout( new FlowLayout());
+			_name = name;
+			_x = x;
+			_y = y;
+			_leftNeighbor = leftNeighbor; //change to up neighbor as well
+			_rightNeighbor = rightNeighbor;
+			_northNeighbor = northNeighbor;
+			_southNeighbor = southNeighbor;
+			if(!leftNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.LEFT) );
+			if(!northNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.NORTH) );
+			if(!southNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.SOUTH) );
+			if(!rightNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.RIGHT) );
+		}
+		
+		/*
+		 * used to move the piece left
+		 */
+		void moveInDirection( int direction){
+			if( (direction == javax.swing.SwingConstants.NORTH || direction == javax.swing.SwingConstants.SOUTH) &&_canMoveVert && ( _x < _width && _x > 0) ){
+				controlMove( _name, direction);
+			}
+			else if( (direction == javax.swing.SwingConstants.LEFT || direction == javax.swing.SwingConstants.RIGHT) &&_canMoveHoriz && ( _y > 0 && _y < _width) ){
+				controlMove( _name, direction);
+			}
+		}
+		
+		private class ArrowKey extends JButton{
+			int _direction;
+			
+			/*
+			 * construct an arrow key to make the piece move in a certain direction
+			 */
+			public ArrowKey( int direction){
+				_direction = direction;
+				this.setActionCommand( _x + " " + _y + " " + _direction);
+				this.addActionListener( new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+		            {
+						System.out.println( e.getActionCommand() );
+						if( )
+						moveInDirection(_direction);
+		            }
+				});
+				
+				switch(direction){
+				case LEFT: this.setText("<");
+					break;
+				case RIGHT: this.setText(">");
+					break;
+				case NORTH: this.setText("^");
+					break;
+				case SOUTH: this.setText("V");
+				}
+			}
+		}
+	}
+}

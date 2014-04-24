@@ -1,0 +1,13 @@
+1395291962935	Rename field '_width'
+1395291973624	Rename field '_height'
+1395292452761	Rename local variable 'toAdd'
+1395437637003	Rename type 'BoardPanel'
+1395438556710	Rename field '_currentPosition'
+1395444260047	Rename method 'hasSpace'
+1395445414075	Rename local variable 'possibleMoves'
+1395511032970	Delete element
+1395511050219	Delete element
+1395511058176	Delete element
+1395511066231	Delete element
+1395511076745	Delete element
+1395520584145	Rename local variable 'toReturn'

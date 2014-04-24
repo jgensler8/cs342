@@ -1,0 +1,12 @@
+import javax.swing.JButton;
+
+
+public class BoardPanel {
+	
+	
+	
+	private class Piece extends JButton{
+		public 
+		
+	}
+}

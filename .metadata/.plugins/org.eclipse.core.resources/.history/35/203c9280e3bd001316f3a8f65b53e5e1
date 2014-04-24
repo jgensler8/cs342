@@ -1,0 +1,10 @@
+package NameBuilder;
+
+public interface NameBuilder_Adjectives {
+	String _adjectives[] = {
+			"Happy",
+			"Confused",
+			"Dazed",
+			"Light-Headed"
+	};
+}
