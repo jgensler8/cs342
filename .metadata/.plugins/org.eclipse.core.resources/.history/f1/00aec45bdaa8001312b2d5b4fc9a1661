@@ -1,0 +1,110 @@
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+
+public class BoardPanel extends JPanel{
+	final private int SIZE = 500;
+	private int _width, _height;
+	
+	/*
+	 * construct a board panel from a file
+	 */
+	public BoardPanel( String fileName){
+		/*
+		String initString = readFile( fileName);
+		this.initBoardFromString( initString);
+		*/
+		_width = 5;
+		_height = 5;
+		
+		this.setSize(SIZE,SIZE);
+		this.setLayout( new GridLayout(_width, _height));
+		this.add( new Piece("TESTNAME", false, false) );
+		this.add( new Piece("TESTNAME", false, false) );
+		this.add( new Piece("TESTNAME", false, false) );
+		this.add( new Piece("TESTNAME", false, false) );
+		this.add( new Piece("TESTNAME", false, false) );
+		
+		}
+	
+	/*
+	 * construct a board panel from another board panel
+	 * (copying the passed panel)
+	 */
+	public BoardPanel( BoardPanel BP){
+		String initString = BP.getBoardString();
+		this.initBoardFromString( initString);
+	}
+	
+	/*
+	 * convert this board to a string that can uniquely construct this board
+	 */
+	public String getBoardString(){
+		return "TODO"; 
+	}
+	
+	/*
+	 * @param file name
+	 * read the file and return its contents as a string
+	 */
+	private String readFile( String s){
+		return "TODO";
+	}
+	
+	/*
+	 * build the board from the string passed as an argument
+	 */
+	private void initBoardFromString(String s){
+		//TODO
+	}
+	
+	private class Piece extends JPanel{
+		private String _name;
+		private Boolean _leftNeighbor, _rightNeighbor;
+		private Boolean _canMoveVert, _canMoveHoriz;
+		
+		/*
+		 * contruct a piece
+		 */
+		public Piece(String name, Boolean leftNeighbor, Boolean rightNeighbor){
+			this.setLayout( new FlowLayout());
+			_name = name;
+			_leftNeighbor = leftNeighbor;
+			_rightNeighbor = rightNeighbor;
+			if(!leftNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.LEFT));
+			this.add( new ArrowKey( javax.swing.SwingConstants.NORTH));
+			this.add( new ArrowKey( javax.swing.SwingConstants.SOUTH));
+			if(!rightNeighbor) this.add( new ArrowKey( javax.swing.SwingConstants.RIGHT));
+		}
+		
+		/*
+		 * used to move the piece
+		 */
+		void swap(Piece toSwap){
+			
+		}
+		
+		private class ArrowKey extends JButton{
+			int _direction;
+			
+			/*
+			 * construct an arrow key to make the piece move in a certain direction
+			 */
+			public ArrowKey( int direction){
+				_direction = direction;
+				switch(direction){
+				case LEFT: this.setText("<");
+					break;
+				case RIGHT: this.setText(">");
+					break;
+				case NORTH: this.setText("^");
+					break;
+				case SOUTH: this.setText("V");
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,7 @@
+
+public interface Directions {
+	final int LEFT = 1;
+	final int RIGHT = 3;
+	final int UP = 2;
+	final int DOWN = 4;
+}

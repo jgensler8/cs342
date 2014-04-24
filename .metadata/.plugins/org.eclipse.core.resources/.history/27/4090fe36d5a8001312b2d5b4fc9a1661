@@ -1,0 +1,49 @@
+import javax.swing.JButton;
+
+
+public class BoardPanel {
+	private int _width, _height;
+	
+	public BoardPanel( String fileName){
+		this._width = 
+	}
+	
+	public BoardPanel( BoardPanel BP){
+		
+	}
+	
+	/*
+	 * read the file
+	 */
+	private String readFile( String){
+		
+	}
+	
+	/*
+	 * build the board from the string read in
+	 */
+	private void initBoardFromString(String s){
+		
+	}
+	
+	/*
+	 * 
+	 */
+	p
+	
+	
+	
+	private class Piece extends JButton{
+		private Boolean leftNeighbor, rightNeighbor;
+		private Boolean canMoveVert, canMoveHoriz;
+		
+		
+		public Piece(){
+			
+		}
+		
+		void swap(Piece toSwap){
+			
+		}
+	}
+}

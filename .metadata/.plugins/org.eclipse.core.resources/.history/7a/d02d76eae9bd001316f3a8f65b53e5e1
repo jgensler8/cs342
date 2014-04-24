@@ -1,0 +1,13 @@
+package NameBuilder;
+
+public interface NameBuilder_AnimalNames {
+	public final String _AnimalNames[] = {
+			"Aardvark",
+			"Cheetah",
+			"Mongoose",
+			"Pidgeon",
+			"Shark",
+			"Velociraptor",
+			"Tortouise"
+	};
+}

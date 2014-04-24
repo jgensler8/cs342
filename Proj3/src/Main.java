@@ -1,53 +1,114 @@
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-public class Main {
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
+
+public class Main{
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//first commit
+		//init the window for the user
+		JFrame window = new JFrame();
+		Container container = window.getContentPane();
+		
+		//initialize the level storage
+		GamePanelLevelStorage storage = new GamePanelLevelStorage();
+		
+		//add the game board
+		final GamePanel game = new GamePanel("board1.txt");
+		container.add( game);
+		window.pack();
+		
+		//add the menu bars
+		addMenuBars(window, game, storage);
+		
+		//show the window to the user
+		window.setBounds( 100,100,400,400);
+		window.setVisible(true);
 	}
-
 	
-	/*
-	 * classes: board ( piece)
-	 * 
-	 * board{
-	 *   int ySize, xSize
-	 * 
-	 *  public board( filename ){
-	 *  	get size from file
-	 *  	while( get pieces from file)
-	 *  }
-	 *  
-	 *  public board( board){
-	 *  	use this as a clone
-	 *  }
-	 *  vs WHAT DO WE DO HERE
-	 *  clone(){
-	 *  	return copy of board
-	 *  }
-	 *  im leaning toward the constructor
-	 *
-	 *	should we do some sort of threading here? problem is finding if we have gotten a certain board before
-	 *	also what happens if we have found a solution in each thread?
-	 *	we have to stop all other threads and report the solution to main!
-	 *	(probs not the easiest to do)
-	 *  dfs( board){
-	 *  	create a queue
-	 *  	find ALL possible moves (should we separate move up by 1 and move up by 2?)
-	 *  	^^ that answer is yes because bfs will "expand" naturally
-	 *  
-	 *  	check that we haven't gotten this board before 
-	 *  	remember that this is a graph problem and we dont want
-	 *  	to be hopping between two solution moving a peice up and down and up and down
-	 * 
-	 * 		while( queue not empty)
-	 * 			copy current board and make move
-	 * 			pass to dfs
-	 *  }
-	 *  
-	 *  
-	 * 
+	/**
+	 * initialze the menu bars in the main window
 	 */
+	public static void addMenuBars( JFrame window, final GamePanel game, final GamePanelLevelStorage storage){
+		JMenuBar menuBar = new JMenuBar();
+		
+		// *********************************** Game Menu
+		JMenu gameMenu = new JMenu("Game");
+		JMenuItem restartItem = new JMenuItem("Restart");
+		restartItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				game.resetBoard();
+			}
+		});
+		JMenuItem hintItem = new JMenuItem("Hint");
+		hintItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				game.showHint();
+			}
+		});
+		JMenuItem solveItem = new JMenuItem("Solve");
+		solveItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				game.showSolution(); 
+			}
+		});
+		JMenuItem exitItem = new JMenuItem("Exit");
+		gameMenu.add( restartItem);
+		gameMenu.add( hintItem);
+		gameMenu.add( solveItem);
+		gameMenu.add( exitItem);
+		
+		// ************************************Help Menu
+		final JMenu helpMenu = new JMenu("Help");
+		JMenuItem aboutItem = new JMenuItem("About");
+		aboutItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog( helpMenu, "Created by Adam Perez and Jeff Gensler");
+			}
+		});
+		JMenuItem helpItem = new JMenuItem("Help");
+		helpItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog( helpMenu, "TRY AND GET THE RED BOX TO THE OTHER SIDE THAT IT STARTS OUT IN");
+			}
+		});
+		helpMenu.add(aboutItem);
+		helpMenu.add(helpItem);
+		
+		// **************************************** Level Select Menu
+		final JMenu levelSelectMenu = new JMenu("Level Select");
+		JMenuItem addLevelItem = new JMenuItem("Add Level");
+		addLevelItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				storage.addFile();
+			}
+		});
+		JMenuItem loadLevelItem = new JMenuItem("Load Level");
+		loadLevelItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> levelList = storage.getLevel();
+				if( levelList != null) game.resetBoard( levelList);
+			}
+		});
+		levelSelectMenu.add( addLevelItem);
+		levelSelectMenu.add( loadLevelItem);
+		
+		
+		//add the menus to the menu bar
+		menuBar.add(gameMenu);
+		menuBar.add(helpMenu);
+		menuBar.add(levelSelectMenu);
+		//add the menu bar to the window
+		window.setJMenuBar(menuBar);
+	}
 }

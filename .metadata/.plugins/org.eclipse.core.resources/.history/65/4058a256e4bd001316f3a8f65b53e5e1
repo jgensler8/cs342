@@ -1,0 +1,74 @@
+package NameBuilder;
+
+import java.util.Hashtable;
+
+
+public class NameBuilder implements NameBuilder_Adjectives, NameBuilder_AnimalNames{
+	public final int DEFAULT_MAX_LEN = 128;
+	private int _maxNameLen;
+	private Hashtable<String, Boolean> _generatedNames;
+	
+	/**
+	 * construct a NameBuilder
+	 */
+	public NameBuilder(){
+		this._maxNameLen = this.DEFAULT_MAX_LEN;
+		this._generatedNames = new Hashtable<String,Boolean>();
+	}
+	/**
+	 * @param userLen    The maximum length this NameBuilder should generate.
+	 * Must be greater than or equal to 10 but less than DEFAULT_MAX_LEN
+	 */
+	public NameBuilder(int userLen){
+		this();
+		this._maxNameLen = (userLen < 10 || userLen > this.DEFAULT_MAX_LEN) ? this.DEFAULT_MAX_LEN : userLen ; 
+	}
+	
+	/**
+	 * Generate a name and do not record the name for future use
+	 */
+	public String generateName(){
+		return this.buildName();
+	}
+	/**
+	 * Generate a name and record. Will guarantee a unique name.
+	 */
+	public String generateUniqueName(){
+		String temp = this.buildName();
+		while(!this._generatedNames.contains(temp)){
+			temp = this.buildName();
+		}
+		this._generatedNames.put(temp, true);
+		return temp;
+	}
+	
+	/*
+	 * build a name
+	 */
+	private String buildName(){
+		return this.getAdjective() + this.getAnimalName() + this.getInt();
+	}
+	
+	/*
+	 * get a random Adjective
+	 */
+	private String getAdjective(){
+		int random = (int)Math.random() % _Adjectives.length;
+		return _Adjectives[random];
+	}
+	
+	/*
+	 * get a random Animal Name
+	 */
+	private String getAnimalName(){
+		int random = (int)Math.random()*1000 % _AnimalNames.length;
+		return _AnimalNames[random];
+	}
+	
+	/*
+	 * get a random Integer
+	 */
+	private int getInt(){
+		return (int)Math.random()*100;
+	}
+}

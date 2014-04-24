@@ -1,0 +1,104 @@
+package NameBuilder;
+
+import java.util.Hashtable;
+
+
+public class NameBuilder implements NameBuilder_Adjectives, NameBuilder_AnimalNames{
+	public final int DEFAULT_MAX_LEN = 128;		//the default maximum length a name that can be returned
+	public final int DEFAULT_THRES_LEN = 40;	//length of when to choose a short name versus a long name
+	
+	private int _maxNameLen;							//the actual maximum length a name that can be returned
+	private Hashtable<String, Boolean> _generatedNames;	//hash of all the names generated
+	
+	/**
+	 * construct a NameBuilder
+	 */
+	public NameBuilder(){
+		this._maxNameLen = this.DEFAULT_MAX_LEN;
+		this._generatedNames = new Hashtable<String,Boolean>();
+	}
+	/**
+	 * @param userLen    The maximum length this NameBuilder should generate.
+	 * Must be greater than or equal to 10 but less than DEFAULT_MAX_LEN
+	 */
+	public NameBuilder(int userLen){
+		this();
+		this._maxNameLen = (userLen < 10 || userLen > this.DEFAULT_MAX_LEN) ? this.DEFAULT_MAX_LEN : userLen ; 
+	}
+	
+	/**
+	 * Generate a name and do not record the name for future use
+	 */
+	public String generateName(){
+		if( this._maxNameLen < this.DEFAULT_THRES_LEN){
+			return this.buildShortName();
+		}
+		else{
+			return this.buildLongName();
+		}
+	}
+	/**
+	 * Generate a name and record. Will guarantee a unique name.
+	 */
+	public String generateUniqueName(){
+		if( this._maxNameLen < this.DEFAULT_THRES_LEN){
+			String temp = this.buildShortName();
+			System.out.println(temp);
+			while(this._generatedNames.contains(temp) || temp.length() > this._maxNameLen){
+				temp = this.buildShortName();
+				System.out.println(temp);
+			}
+			System.out.println("DONE");
+			this._generatedNames.put(temp, true);
+			return temp;
+		}
+		else{
+			String temp = this.buildLongName();
+			System.out.println(temp);
+			while(this._generatedNames.contains(temp) || temp.length() > this._maxNameLen){
+				temp = this.buildLongName();
+				System.out.println(temp);
+			}
+			System.out.println("DONE");
+			this._generatedNames.put(temp, true);
+			return temp;
+		}
+	}
+	
+	/*
+	 * build a short name
+	 */
+	private String buildShortName(){
+		return this.getAnimalName() + this.getInt();
+	}
+	
+	/*
+	 * build a long name
+	 */
+	private String buildLongName(){
+		return this.getAdjective() + this.getAnimalName() + this.getInt();
+	}
+	
+	/*
+	 * get a random Adjective
+	 */
+	private String getAdjective(){
+		int random = (int)(Math.random()*1000) % _Adjectives.length;
+		return _Adjectives[random];
+	}
+	
+	/*
+	 * get a random Animal Name
+	 */
+	private String getAnimalName(){
+		int random = (int)(Math.random()*1000) % _AnimalNames.length;
+		return _AnimalNames[random];
+	}
+	
+	/*
+	 * get a random Integer
+	 */
+	private String getInt(){
+		return Integer.toString( (int)(Math.random()*1000));
+	}
+}

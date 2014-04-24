@@ -1,0 +1,18 @@
+import NameBuilder.NameBuilder;
+
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		NameBuilder builder = new NameBuilder();
+		
+		int len = 50;
+		for(int x = 0 ; x < len; x++ )
+			System.out.println(builder.generateUniqueName());
+	}
+
+}

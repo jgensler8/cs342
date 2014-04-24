@@ -1,0 +1,9 @@
+1394512385364	Delete element
+1394596206387	Rename local variable 'sizeLine'
+1394596215609	Rename local variable 'sizeLineSplit'
+1394721931034	Rename field '_pieceNames'
+1394722175732	Rename method 'readFile'
+1394722192652	Rename method 'getBoardString'
+1394722219668	Rename method 'initBoardFromString'
+1394725555215	Rename method 'getPossibleMoves'
+1394725568479	Rename method 'getPossibleMoveStrings'

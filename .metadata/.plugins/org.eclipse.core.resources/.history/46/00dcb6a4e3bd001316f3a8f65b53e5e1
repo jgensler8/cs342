@@ -1,0 +1,5 @@
+package NameBuilder;
+
+public interface NameBuilder_AnimalNames {
+	public final String _AnimalNames
+}
