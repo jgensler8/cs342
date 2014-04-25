@@ -17,18 +17,6 @@ public class GamePanel extends JPanel{
 	 * Construct the game pane, creating the players and their hands.
 	 */
 	public GamePanel(ArrayList<String> PlayerAddresses){
-		//initialze the decks
-		this._drawDeck = new Deck();
-		this._drawDeck.initPhaseTen();
-		this._discardDeck = new Deck();
-		
-		//initialize the players
-		this._players = new ArrayList<Player>();
-		for(int playerIndex = 0; playerIndex < PlayerAddresses.size(); playerIndex++){
-			this._players.add(playerIndex, new Player( PlayerAddresses.get(playerIndex) ) );
-			this._players.get(playerIndex).addCards( this._drawDeck.draw(5) );
-		}
-		
 		//init the board (done with swt designer)
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -86,17 +74,26 @@ public class GamePanel extends JPanel{
 		
 		JLabel lblNewLabel_2 = new JLabel("Discard Pile and Draw Pile");
 		DeckDiscard.add(lblNewLabel_2);
-		
+	}
 	
-		//// *** fill the Contents of the board
-		// fill the other players hands
-		for(int playerIndex = 0; playerIndex < PlayerAddresses.size(); playerIndex++){
-			OpponentsHands.addTab("Player " + (playerIndex+1), this._players.get(playerIndex).getHand().render() );
-		}
-		// fill our hand
-		MyHand.add( this._players.get(0).getHand().render());
+	/*
+	 * 
+	 */
+	public void setTable(){
 		
-		JLabel lblNewLabel_3 = new JLabel("My Hand");
-		MyHand.add(lblNewLabel_3);
+	}
+	
+	/*
+	 * 
+	 */
+	public void setMyHand(){
+		
+	}
+	
+	/*
+	 * 
+	 */
+	public void setOthersInfo(){
+		
 	}
 }

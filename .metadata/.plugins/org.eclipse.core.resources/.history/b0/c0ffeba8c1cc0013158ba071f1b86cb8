@@ -1,0 +1,11 @@
+package Game;
+
+import java.util.*;
+
+public class Game {
+	ArrayList<Player> _players;
+	Deck _draw;
+	Deck _discard;
+	Table _table;
+	
+}

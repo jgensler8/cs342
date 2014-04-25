@@ -1,0 +1,12 @@
+package Game;
+
+import java.io.Serializable;
+import java.util.*;
+
+public class Game implements Serializable{
+	ArrayList<Player> _players;
+	Deck _draw;
+	Deck _discard;
+	Table _table;
+	
+}

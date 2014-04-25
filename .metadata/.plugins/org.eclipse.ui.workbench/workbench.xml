@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="12" version="2.0">
+<workbench progressCount="14" version="2.0">
 <workbenchAdvisor/>
-<window height="1054" maximized="true" width="940" x="929" y="24">
+<window height="1054" width="932" x="65" y="126">
 <fastViewData fastViewLocation="1024"/>
 <perspectiveBar>
 <itemSize x="160"/>
@@ -13,13 +13,13 @@
 <coolItem id="additions" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.jdt.ui.JavaElementCreationActionSet" itemType="typeToolBarContribution" x="76" y="30"/>
 <coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="76" y="30"/>
-<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="124" y="30"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="68" y="30"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="184" y="30"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.jdt.ui.ClassFileEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
-<coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
@@ -28,66 +28,10 @@
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-<part id="1"/>
-<part id="2"/>
-<part id="3"/>
-<part id="4"/>
-<part id="5"/>
-<part id="6"/>
-<part id="7"/>
-<part id="8"/>
-<part id="9"/>
-<part id="10"/>
-</presentation>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Player.java" partName="Player.java" path="/home/user/Documents/cs342/proj4-5/src/Game/Player.java" title="Player.java" tooltip="proj4-5/src/Game/Player.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/Game/Player.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="14" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Hand.java" partName="Hand.java" path="/home/user/Documents/cs342/proj4-5/src/Game/Hand.java" title="Hand.java" tooltip="proj4-5/src/Game/Hand.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/Game/Hand.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="125" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Card.java" partName="Card.java" path="/home/user/Documents/cs342/proj4-5/src/Game/Card.java" title="Card.java" tooltip="proj4-5/src/Game/Card.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/Game/Card.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="267" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ChatPanel.java" partName="ChatPanel.java" path="/home/user/Documents/cs342/proj4-5/src/ChatPanel.java" title="ChatPanel.java" tooltip="proj4-5/src/ChatPanel.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/ChatPanel.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="3804" selectionTopPixel="2142"/>
-</editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ChatServer.java" partName="ChatServer.java" path="/home/user/Documents/cs342/proj4-5/src/ChatServer.java" title="ChatServer.java" tooltip="proj4-5/src/ChatServer.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/ChatServer.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="196" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CardAttributes.java" partName="CardAttributes.java" path="/home/user/Documents/cs342/proj4-5/src/Game/CardAttributes.java" title="CardAttributes.java" tooltip="proj4-5/src/Game/CardAttributes.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/Game/CardAttributes.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="309" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Deck.java" partName="Deck.java" path="/home/user/Documents/cs342/proj4-5/src/Game/Deck.java" title="Deck.java" tooltip="proj4-5/src/Game/Deck.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/Game/Deck.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="14" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GamePanel.java" partName="GamePanel.java" path="/home/user/Documents/cs342/proj4-5/src/Game/GamePanel.java" title="GamePanel.java" tooltip="proj4-5/src/Game/GamePanel.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/Game/GamePanel.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="246" selectionTopPixel="68"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="NameBuilder.java" partName="NameBuilder.java" path="/home/user/Documents/cs342/proj4-5/src/NameBuilder/NameBuilder.java" title="NameBuilder.java" tooltip="proj4-5/src/NameBuilder/NameBuilder.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/NameBuilder/NameBuilder.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1039" selectionTopPixel="280"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="NameBuilder_AnimalNames.java" partName="NameBuilder_AnimalNames.java" path="/home/user/Documents/cs342/proj4-5/src/NameBuilder/NameBuilder_AnimalNames.java" title="NameBuilder_AnimalNames.java" tooltip="proj4-5/src/NameBuilder/NameBuilder_AnimalNames.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/NameBuilder/NameBuilder_AnimalNames.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="21" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="NameBuilder_Adjectives.java" partName="NameBuilder_Adjectives.java" path="/home/user/Documents/cs342/proj4-5/src/NameBuilder/NameBuilder_Adjectives.java" title="NameBuilder_Adjectives.java" tooltip="proj4-5/src/NameBuilder/NameBuilder_Adjectives.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/proj4-5/src/NameBuilder/NameBuilder_Adjectives.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="925" selectionTopPixel="0"/>
-</editor>
 </editors>
 <views>
 <view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
@@ -96,8 +40,7 @@
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
 <expanded>
-<category IMemento.internal.id="Errors (4 items)"/>
-<category IMemento.internal.id="Errors"/>
+<category IMemento.internal.id="Errors (2 items)"/>
 </expanded>
 <columnWidths org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="1141" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.resourceField="105" org.eclipse.ui.ide.severityAndDescriptionField="350"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
@@ -108,6 +51,9 @@
 </viewState>
 </view>
 <view id="org.eclipse.debug.ui.DebugView" partName="Debug">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
 <viewState/>
 </view>
 <view id="org.eclipse.jdt.ui.PackageExplorer" partName="Package Explorer">
@@ -139,9 +85,6 @@
 </customFilters>
 </viewState>
 </view>
-<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
-<viewState/>
-</view>
 <view id="org.eclipse.ui.views.TaskList" partName="Tasks">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.completionField" categoryGroup="none" markerContentGenerator="org.eclipse.ui.ide.tasksGenerator" partName="Tasks">
 <columnWidths org.eclipse.ui.ide.completionField="40" org.eclipse.ui.ide.descriptionField="350" org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="801" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.priorityField="35" org.eclipse.ui.ide.resourceField="105"/>
@@ -160,7 +103,7 @@
 </view>
 <view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc"/>
 </views>
-<perspectives activePart="org.eclipse.jdt.ui.CompilationUnitEditor" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
+<perspectives activePart="org.eclipse.jdt.ui.PackageExplorer" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
 <alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
@@ -418,184 +361,12 @@
 </perspective>
 </perspectives>
 <workingSets/>
-<navigationHistory>
-<editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Client.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Player.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Card.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/ChatPanel.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/ChatServer.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Deck.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/GamePanel.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Game/Player.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Game/Hand.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Game/CardAttributes.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Game/Deck.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Game/GamePanel.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/Game/Card.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/NameBuilder/NameBuilder.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/NameBuilder/NameBuilder_AnimalNames.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/proj4-5/src/NameBuilder/NameBuilder_Adjectives.java"/>
-</editors>
-<item historyLabel="Deck.java" index="5">
-<position info="not_deleted" x="1215" y="0"/>
-</item>
-<item historyLabel="GamePanel.java" index="6">
-<position info="not_deleted" x="2016" y="0"/>
-</item>
-<item historyLabel="Player.java" index="1">
-<position info="not_deleted" x="143" y="0"/>
-</item>
-<item historyLabel="Client.java" index="0">
-<position info="not_deleted" x="3870" y="0"/>
-</item>
-<item historyLabel="Player.java" index="7">
-<position info="not_deleted" x="144" y="0"/>
-</item>
-<item historyLabel="Hand.java" index="8">
-<position info="not_deleted" x="673" y="0"/>
-</item>
-<item historyLabel="CardAttributes.java" index="9">
-<position info="not_deleted" x="309" y="0"/>
-</item>
-<item historyLabel="Deck.java" index="10">
-<position info="not_deleted" x="1215" y="0"/>
-</item>
-<item historyLabel="GamePanel.java" index="6">
-<position info="not_deleted" x="73" y="0"/>
-</item>
-<item historyLabel="Client.java" index="0">
-<position info="not_deleted" x="117" y="0"/>
-</item>
-<item historyLabel="GamePanel.java" index="11">
-<position info="not_deleted" x="76" y="0"/>
-</item>
-<item historyLabel="Player.java" index="7">
-<position info="not_deleted" x="144" y="0"/>
-</item>
-<item historyLabel="Client.java" index="0">
-<position info="not_deleted" x="73" y="0"/>
-</item>
-<item historyLabel="Hand.java" index="8">
-<position info="not_deleted" x="673" y="0"/>
-</item>
-<item historyLabel="Card.java" index="2">
-<position info="not_deleted" x="72" y="0"/>
-</item>
-<item historyLabel="ChatPanel.java" index="3">
-<position info="not_deleted" x="7187" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="5388" y="0"/>
-</item>
-<item historyLabel="CardAttributes.java" index="9">
-<position info="not_deleted" x="309" y="0"/>
-</item>
-<item historyLabel="Deck.java" index="10">
-<position info="not_deleted" x="1215" y="0"/>
-</item>
-<item historyLabel="GamePanel.java" index="11">
-<position info="not_deleted" x="504" y="0"/>
-</item>
-<item historyLabel="Deck.java" index="10">
-<position info="not_deleted" x="108" y="0"/>
-</item>
-<item historyLabel="Card.java" index="2">
-<position info="not_deleted" x="72" y="0"/>
-</item>
-<item historyLabel="Card.java" index="12">
-<position info="not_deleted" x="267" y="0"/>
-</item>
-<item historyLabel="ChatPanel.java" index="3">
-<position info="not_deleted" x="250" y="0"/>
-</item>
-<item historyLabel="Deck.java" index="10">
-<position info="not_deleted" x="14" y="0"/>
-</item>
-<item historyLabel="Hand.java" index="8">
-<position info="not_deleted" x="125" y="0"/>
-</item>
-<item historyLabel="Player.java" index="7">
-<position info="not_deleted" x="14" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="475" y="0"/>
-</item>
-<item historyLabel="ChatPanel.java" index="3">
-<position info="not_deleted" x="3804" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="1462" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="2462" y="0"/>
-</item>
-<item historyLabel="NameBuilder_AnimalNames.java" index="14">
-<position info="not_deleted" x="902" y="0"/>
-</item>
-<item historyLabel="NameBuilder_Adjectives.java" index="15">
-<position info="not_deleted" x="925" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="2462" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="2570" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="49" y="0"/>
-</item>
-<item historyLabel="NameBuilder_AnimalNames.java" index="14">
-<position info="not_deleted" x="21" y="0"/>
-</item>
-<item historyLabel="NameBuilder_Adjectives.java" index="15">
-<position info="not_deleted" x="925" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="1507" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="49" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="1502" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="49" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="1462" y="0"/>
-</item>
-<item historyLabel="NameBuilder.java" index="13">
-<position info="not_deleted" x="1039" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="165" y="0"/>
-</item>
-<item historyLabel="Client.java" index="0">
-<position info="not_deleted" x="303" y="0"/>
-</item>
-<item historyLabel="GamePanel.java" index="11">
-<position info="not_deleted" x="246" y="0"/>
-</item>
-<item historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="196" y="0"/>
-</item>
-<item historyLabel="Client.java" index="0">
-<position info="not_deleted" x="3030" y="0"/>
-</item>
-<item active="true" historyLabel="ChatServer.java" index="4">
-<position info="not_deleted" x="196" y="0"/>
-</item>
-</navigationHistory>
+<navigationHistory/>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
 <workbenchWindowAdvisor/>
 <actionBarAdvisor/>
 <trimLayout>
-<trimArea IMemento.internal.id="16384">
-<trimItem IMemento.internal.id="left"/>
-</trimArea>
 <trimArea IMemento.internal.id="131072">
 <trimItem IMemento.internal.id="bottom"/>
 </trimArea>
@@ -610,6 +381,12 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Card.java" tooltip="proj4-5/src/Game/Card.java">
+<persistable path="/proj4-5/src/Game/Card.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Client.java" tooltip="proj4-5/src/Client.java">
+<persistable path="/proj4-5/src/Client.java"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="NameBuilder_Adjectives.java" tooltip="proj4-5/src/NameBuilder/NameBuilder_Adjectives.java">
 <persistable path="/proj4-5/src/NameBuilder/NameBuilder_Adjectives.java"/>
 </file>
@@ -624,9 +401,6 @@
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ChatPanel.java" tooltip="proj4-5/src/ChatPanel.java">
 <persistable path="/proj4-5/src/ChatPanel.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Client.java" tooltip="proj4-5/src/Client.java">
-<persistable path="/proj4-5/src/Client.java"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="NameBuilder.java" tooltip="CS342-Proj4-v3-Server-latest/src/NameBuilder.java">
 <persistable path="/CS342-Proj4-v3-Server-latest/src/NameBuilder.java"/>

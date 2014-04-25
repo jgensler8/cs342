@@ -1,0 +1,41 @@
+package Game;
+
+import java.io.*;
+import java.util.*;
+
+public class Game implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	ArrayList<Player> _players;
+	Deck _draw;
+	Deck _discard;
+	Table _table;
+	
+	//// *** moves of a player
+	
+	/**
+	 * called when a player wants to discard a card from their hand
+	 * @param player the name of the player that 
+	 */
+	public void discard( String player, Card card){
+		
+	}
+	
+	/**
+	 * called when a player wants to draw a card
+	 * @param player the player that wants to draw the card
+	 * @param deckType 1: draw deck 2: discard deck
+	 */
+	public void drawcard( String player, int deckType){
+		
+	}
+	
+	/**
+	 * called when a player wants to make a play with the selected cards
+	 */
+	public void makePlay( String player, ArrayList<Card> cards){
+		
+	}
+}

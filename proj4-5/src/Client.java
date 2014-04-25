@@ -113,7 +113,7 @@ public class Client{
 		InetAddress addr = null;
 		try {
 			addr = InetAddress.getByName(IP);
-			ChatServer server = new ChatServer(addr, port);
+			ServerAgent server = new ServerAgent(addr, port);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,6 +129,9 @@ public class Client{
 		System.out.println("Port: " + port);
 		
 		/*
+		 asdf
+		 
+		 ClientAgent = new ClientAgent
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				InetAddress addr = null;

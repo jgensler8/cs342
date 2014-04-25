@@ -12,6 +12,7 @@ public class Card extends JLabel implements CardAttributes{
 	private static final long serialVersionUID = 1L;
 	private int _type;
 	private int _color;
+	private int _use; //for use with table, either part of  straight (1) or collection (2) or not played (-1);
 	
 	/**
 	 * construct the card, validate its parameters
@@ -20,6 +21,7 @@ public class Card extends JLabel implements CardAttributes{
 	 * @param color should match those in CardAttributes Interface
 	 */
 	public Card(int type, int color){
+		this._use = -1;
 		//validate type
 		if( type < ONE || type > WILD){
 			this._type = -1;

@@ -1,0 +1,14 @@
+package Game;
+
+public class Table {
+	ArrayList < ArrayList<Hand> > _Plays;
+	
+	/*
+	 * construct a table
+	 */
+	public Table(int numPlayers){
+		
+	}
+	
+	
+}

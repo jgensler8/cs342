@@ -1,0 +1,16 @@
+package Game;
+
+import java.io.*;
+import java.util.*;
+
+public class Game implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	ArrayList<Player> _players;
+	Deck _draw;
+	Deck _discard;
+	Table _table;
+	
+}
