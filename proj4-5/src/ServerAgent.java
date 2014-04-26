@@ -10,29 +10,40 @@ public class ServerAgent {
 
 	static ArrayList<Socket> ClientSockets;
 	static ArrayList<String> ConnectedUsers;
+	ServerSocket _socket;
+	
 
 	/*
 	 *
 	 */
 	public ServerAgent(InetAddress address, int userPort) throws Exception {
-		ServerSocket socket = new ServerSocket(userPort, 1000, address);
-		Date d = new Date();
-		System.out.println("Chat Server started at :" + d.toString());
-
 		ClientSockets = new ArrayList<Socket>(); //store client sockets
 		ConnectedUsers = new ArrayList<String>(); //store client names
-
-		while (true) {
-			Socket clientSocket = socket.accept(); //blocking until connection
-			AcceptClient client = new AcceptClient(clientSocket); //when we have a client, accept it (in a thread)
-		}
+		Thread manager = new Thread( new AcceptManager(address, userPort) );
 	}
 
+	/*
+	 * 
+	 */
+	private class AcceptManager extends Thread{
+		public AcceptManager(InetAddress address, int userPort) throws Exception{
+			_socket = new ServerSocket(userPort, 1000, address);
+			Date d = new Date();
+			System.out.println("Chat Server started at :" + d.toString());
+			
+			while(true){
+				Socket clientSocket = _socket.accept();
+				AcceptClient client = new AcceptClient(clientSocket);
+			}
+		}
+	}
+	
+	
 	/*
 	 * This thread is instantiated when a new socket needs to be accepted
 	 * 
 	 */
-	class AcceptClient extends Thread {
+	private class AcceptClient extends Thread{
 		private Socket _clientSocket;
 		private DataInputStream _inStream;
 		private DataOutputStream _outStream;

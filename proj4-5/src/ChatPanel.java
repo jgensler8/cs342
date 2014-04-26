@@ -19,9 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ChatPanel extends JPanel implements Runnable, ActionListener, WindowListener,
-		KeyListener {
-
+public class ChatPanel extends JPanel implements ActionListener, WindowListener, KeyListener {
+	
 	/**
 	 * 
 	 */
@@ -52,26 +51,41 @@ public class ChatPanel extends JPanel implements Runnable, ActionListener, Windo
 	private Thread _daemon = null;
 	private DataOutputStream _outStream;
 	private DataInputStream _inStream;
+	
+	/**
+	 * observers
+	 */
+	private ArrayList<ClientAgent> _messageObservers;
+	private ArrayList<ClientAgent> _drawCardObservers;
+	private ArrayList<ClientAgent> _discardObservers;
+	private ArrayList<ClientAgent> _makePlayObservers;
+	private ArrayList<ClientAgent> _quitObservers;
+	
 
-	public ChatPanel(String buddy) throws Exception {
+	public ChatPanel(){
 		// initialize GUI Components
 		initializeGUI();
 		// initialize User and Socket Settings
-		
-		
-		/////////////initializeSettings("$REPLACE_TOKEN$", buddy);
+		this._messageObservers = new ArrayList<ClientAgent>();
+		this._drawCardObservers = new ArrayList<ClientAgent>();
+		this._discardObservers = new ArrayList<ClientAgent>();
+		this._makePlayObservers = new ArrayList<ClientAgent>();
 	}
 
+	/**
+	 * 
+	 */
 	public ChatPanel(String userName, String buddy, String hostname, int port) throws Exception {
 		this._serverHostname = hostname;
 		this._serverPort = port;
 		
 		// initialize GUI Components
 		initializeGUI();
-		// initialize User and Socket Settings
-		initializeSettings(userName, buddy);
 	}
 
+	/**
+	 * 
+	 */
 	public JFrame getFrame() {
 		return _chatZoo;
 	}
@@ -115,112 +129,38 @@ public class ChatPanel extends JPanel implements Runnable, ActionListener, Windo
 		this.add(_sendButton);
 	}
 
-	private void initializeSettings(String userName, String buddy)
-			throws Exception {
-		_userName = userName;
-		_buddy = buddy;
-		_soc = new Socket(this._serverHostname, this._serverPort);
-
-		_chatZoo.setTitle("CHATROOM ZOO - " + userName);
-
-		_inStream = new DataInputStream(_soc.getInputStream());
-		_outStream = new DataOutputStream(_soc.getOutputStream());
-		_outStream.writeUTF(userName);
-
-		_daemon = new Thread(this);
-		_daemon.start();
-	}
-
-	public void run() {
-		while (true) {
-			try {
-				String[] msgArray = _inStream.readUTF().split("\\|\\|");
-				if (msgArray.length > 1) {
-					if (msgArray[0].equals("$YOUR_NAME$")) {
-
-						_userName = msgArray[1];
-						_chatZoo.setTitle("CHATROOM ZOO - " + _userName);
-
-						_chatZoo.validate();
-						_chatZoo.repaint();
-
-					} else if (msgArray[0].equals("$DATA$")) {
-						_chatDisplay.append("\n" + msgArray[1]);
-					} else if (msgArray[0].equals("$ERROR$")) {
-						_chatDisplay.append("\n" + msgArray[1]);
-					} else if (msgArray[0].equals("$USERS$")) {
-						// Relay update list of online users to everyone
-						_outStream.writeUTF(formatMsgToSrv("$UPDATE$",
-								msgArray[1].trim()));
-					} else if (msgArray[0].equals("$UPDATE$")) {
-						// update list of online users
-
-						_userPanel.removeAll();
-						_userCheckboxes.clear();
-
-						// adds new check box for every user
-						String[] userArray = msgArray[1].trim().split("\\~");
-						for (String user : userArray) {
-
-							JCheckBox newCheckBox = new JCheckBox(user);
-							newCheckBox.setSelected(isBuddy(user));
-							if (user.equals(_userName))
-								newCheckBox.setEnabled(false);
-							newCheckBox.addActionListener(this);
-
-							_userPanel.add(newCheckBox);
-							_userCheckboxes.add(newCheckBox);
-						}
-
-						_userPanel.revalidate();
-						_userPanel.repaint();
-						_chatZoo.validate();
-						_chatZoo.repaint();
-
-					}
-				}
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
-
 	/**
-	 * Build a tokenize string that the server knows how to parse
-	 * 
-	 * @param msg
-	 *            Text from input box
-	 * @return Tokenize message to server
+	 * add an observer to be notified of the events given
+	 * @param agent , the agent to be notified of events
+	 * @param events , the list of events that the agent "subscribes" to
+	 * events:
+	 * 	100: user wants to send message
+	 *  101: user is quitting ?
+	 *  1: user wants to draw a card
+	 *  2: user wants to discard a card
+ 	 *  3: user wants to make a play
 	 */
-	private String formatMsgToSrv(String action, String msg) {
-		if (action.equals("$UPDATE$"))
-			return String.format("%s %s %s %s", action, _buddy, action, msg);
-		else
-			return String.format("%s %s %s %s", _userName, _buddy, action, msg);
-	}
-
-	private String formatMsgToSrv(String action) {
-		return formatMsgToSrv(action, "");
-	}
-
-	private void sendMessage() {
-		try {
-			String msg = _chatBox.getText().toString();
-			_outStream.writeUTF(formatMsgToSrv("$DATA$", msg));
-			_chatBox.setText("");
-		} catch (Exception ex) {
+	public void addObserver(ClientAgent agent, ArrayList<Integer> events){
+		for(int event : events){
+			if(event == 100)
+				this._messageObservers.add(agent);
+			else if( event == 101)
+				this._quitObservers.add(agent);
+			else if( event == 1)
+				this._drawCardObservers.add(agent);
+			else if( event == 2)
+				this._discardObservers.add(agent);
+			else if( event == 3)
+				this._makePlayObservers.add(agent);
 		}
-	}
-
-	private boolean isBuddy(String user) {
-		return _buddy.equals("$PUBLIC$") || _buddy.indexOf(user) != -1;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(_sendButton)) {
-			sendMessage();
+			for( ClientAgent agent : this._messageObservers){
+				agent.sendMessage("asdf");
+			}
 		} else if (_userCheckboxes.contains(e.getSource())) {
 			StringBuilder buddies = new StringBuilder();
 			String delim = "";
@@ -257,11 +197,8 @@ public class ChatPanel extends JPanel implements Runnable, ActionListener, Windo
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		try {
-			_outStream.writeUTF(formatMsgToSrv("$LOGOUT$"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for(ClientAgent agent: this._quitObservers){
+			//agent.quit();
 		}
 		_chatZoo.setVisible(false);
 		_chatZoo.dispose();
@@ -296,7 +233,9 @@ public class ChatPanel extends JPanel implements Runnable, ActionListener, Windo
 	public void keyPressed(KeyEvent e) {
 		if (e.getSource().equals(_chatBox)) {
 			if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-				sendMessage();
+				for(ClientAgent agent : this._messageObservers){
+					agent.sendMessage( this._chatBox.getText() );
+				}
 			}
 		}
 	}

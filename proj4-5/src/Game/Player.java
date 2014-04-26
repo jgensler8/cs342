@@ -6,8 +6,10 @@ import java.util.*;
 public class Player {
 	private Hand _hand;		//players hand of cards
 	private String _name;	//players name
+	private int _phase;		//phase the player is on
 	
 	public Player(String name){
+		this._phase = 0;
 		this._name = name;
 		this._hand = new Hand();
 	}

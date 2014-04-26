@@ -16,7 +16,7 @@ public class GamePanel extends JPanel{
 	/**
 	 * Construct the game pane, creating the players and their hands.
 	 */
-	public GamePanel(ArrayList<String> PlayerAddresses){
+	public GamePanel(){
 		//init the board (done with swt designer)
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();

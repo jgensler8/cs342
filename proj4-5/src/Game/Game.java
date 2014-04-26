@@ -59,6 +59,7 @@ public class Game implements Serializable{
 	 * called when a player wants to make a play with the selected cards
 	 */
 	public void makePlay( String player, ArrayList<Card> cards){
-		
+		//Azita's validation and phase storage 
+		//perhaps the phase that the player is on should be stored in the player class
 	}
 }

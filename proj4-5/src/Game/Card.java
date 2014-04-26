@@ -5,14 +5,36 @@ import javax.swing.JLabel;
 
 import Game.CardAttributes;
 
+/*
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * !!!!!!!!!!!!!!!!!!!!! I don't have pictures for wild or skip cards yet
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
 public class Card extends JLabel implements CardAttributes{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int _type;
-	private int _color;
-	private int _use; //for use with table, either part of  straight (1) or collection (2) or not played (-1);
+	private int _type;		//1,2,3,4,5,6,7,8,9,10,11,12, wild, skip
+	private int _color;		//blue, yellow, red, green
+	private int _use;		//for use with table, either part of  straight (1) or collection (2) or not played (-1);
 	
 	/**
 	 * construct the card, validate its parameters

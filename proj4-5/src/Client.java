@@ -9,7 +9,8 @@ import javax.swing.*;
 import Game.GamePanel;
 
 public class Client{
-	
+	static ChatPanel _chatPanel;
+	static GamePanel _gamePanel;
 	
 	/**
 	 * 
@@ -67,7 +68,7 @@ public class Client{
 		JMenuItem aboutItem = new JMenuItem("About");
 		aboutItem.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog( helpMenu, "Created by Azita, Jenny, and JEff");
+				JOptionPane.showMessageDialog( helpMenu, "Created by Azita, Jenny, and Jeff");
 			}
 		});
 		JMenuItem helpItem = new JMenuItem("Help");
@@ -87,20 +88,10 @@ public class Client{
 		window.getContentPane().setLayout( new GridLayout());
 		
 		//// *** Chat
-		
-		try {
-			//we should add a blank panel here and when the user TODO
-			//clicks a menu button, THEN we add the chatPanel to that blank panel
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		window.getContentPane().add( new ChatPanel() );
 		
 		//// *** Game
-		ArrayList<String> addresses = new ArrayList<String>();
-		addresses.add("192.168.0.1");
-		addresses.add("192.168.0.2");
-		addresses.add("192.168.0.3");
-		window.getContentPane().add( new GamePanel(addresses) );
+		window.getContentPane().add( new GamePanel() );
 	}
 	
 	/*
@@ -118,7 +109,7 @@ public class Client{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		startClient( IP, port);
+		//startClient( IP, port);
 	}
 	
 	/*
@@ -128,23 +119,15 @@ public class Client{
 		System.out.println("IP addr: " + IP);
 		System.out.println("Port: " + port);
 		
-		/*
-		 asdf
-		 
-		 ClientAgent = new ClientAgent
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				InetAddress addr = null;
-				try {
-					addr = InetAddress.getByName(IP);
-					ChatPanel p = new ChatPanel("$PUBLIC$");
-					p.getFrame().setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		*/
+		InetAddress addr = null;
+		try {
+			addr = InetAddress.getByName(IP);
+			ClientAgent server = new ClientAgent(addr, port, _chatPanel, _gamePanel);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		startClient( IP, port);
 	}
 	
 	public static class NetworkInput extends JPanel{
@@ -156,10 +139,10 @@ public class Client{
 		JTextField _port;
 		
 		public NetworkInput(){
-			this._ipAddress = new JTextField(5);
-			this._ipAddress.setText("123.123.123.123");
-		    this._port = new JTextField(5);
-		    this._port.setText("3000");
+			this._ipAddress = new JTextField(20);
+			this._ipAddress.setText("127.0.0.1");
+		    this._port = new JTextField(10);
+		    this._port.setText("9001");
 
 		    JPanel inputPanel = new JPanel();
 		    inputPanel.add(new JLabel("Ip Address (ex:'123.123.123.123'):"));
@@ -167,6 +150,7 @@ public class Client{
 		    inputPanel.add(Box.createHorizontalStrut(15)); // a spacer
 		    inputPanel.add(new JLabel("Port:"));
 		    inputPanel.add(this._port);
+		    this.add( inputPanel);
 		}
 		
 		/**
