@@ -29,6 +29,8 @@ public class ServerAgent {
 	private class AcceptManager extends Thread{
 		public AcceptManager(InetAddress address, int userPort) throws Exception{
 			_socket = new ServerSocket(userPort, 1000, address);
+			Date d = new Date();
+			System.out.println("Chat Server started at :" + d.toString());
 		}
 		
 		public void run(){

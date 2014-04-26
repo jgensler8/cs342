@@ -29,22 +29,12 @@ public class ServerAgent {
 	private class AcceptManager extends Thread{
 		public AcceptManager(InetAddress address, int userPort) throws Exception{
 			_socket = new ServerSocket(userPort, 1000, address);
-		}
-		
-		public void run(){
-			System.out.println("Chat Server started at :" + new Date().toString());
+			Date d = new Date();
+			System.out.println("Chat Server started at :" + d.toString());
+			
 			while(true){
-				Socket clientSocket = null;
-				try {
-					clientSocket = _socket.accept();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				try {
-					AcceptClient client = new AcceptClient(clientSocket);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				Socket clientSocket = _socket.accept();
+				AcceptClient client = new AcceptClient(clientSocket);
 			}
 		}
 	}
