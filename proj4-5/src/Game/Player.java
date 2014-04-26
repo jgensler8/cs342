@@ -28,15 +28,32 @@ public class Player implements Serializable{
     // player's socket connection to server
     private Socket _socket;
 
+    /**
+     * FOR USE ON THE SERVER
+     */
     public Player(String name) {
             init();
             _name = name;
     }
 
+    /**
+     * FOR USE ON THE SERVER
+     */
     public Player(String ID, String name) {
             init();
             _ID = ID;
             _name = name;
+    }
+    
+    /**
+     * FOR USE ON THE CLIENT
+     */
+    public Player(Player p){
+    	this._ID = p._ID;
+    	this._name = p._name;
+    	this._roomID = p._roomID;
+    	this._hand = p._hand;
+    	//this._socket = p._socket //The client doesn't really need the socket
     }
 
     /**

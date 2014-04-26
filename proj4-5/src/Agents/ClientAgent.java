@@ -8,45 +8,68 @@ import java.net.Socket;
 
 import Chat.ChatPanel;
 import Game.GamePanel;
+import Game.Player;
 
 public class ClientAgent {
 
-	private String _userName;
-	private String _buddy;
-	private Socket _soc;
+	private Player _myPlayer;
+	
+	private Socket _socket;
 	private ObjectInputStream _inStream;
 	private ObjectOutputStream _outStream;
-	private Thread _daemon;
+	private Thread _client;
+	
 	private ChatPanel _chatPanel;
 	private GamePanel _gamePanel;
+	private InetAddress _addr;
+	private int _port;
 
-	public ClientAgent(InetAddress addr, int port, ChatPanel chatPanel, GamePanel gamePanel) throws IOException{
+	public ClientAgent(InetAddress addr, int port, ChatPanel chatPanel, GamePanel gamePanel){
+		this._addr = addr;
+		this._port = port;
 		//init the connection to the panels
 		this._chatPanel = chatPanel;
 		this._gamePanel = gamePanel;
 		
-		//TODO
-		_userName = "SET ME UP WHEN I CONENCT TO SERVER";
-		
 		//init the connection
-		new AcceptClient(addr, port).start();
-		System.out.println("asdf");
+		this._client = new Thread( new AcceptClient() );
+		this._client.start();
 	}
 
-	private class AcceptClient extends Thread{
-		public AcceptClient(InetAddress addr, int port) throws IOException{
-			_soc = new Socket(addr, port);
-			_inStream = new ObjectInputStream(_soc.getInputStream());
-			_outStream = new ObjectOutputStream(_soc.getOutputStream());
+	private class AcceptClient implements Runnable{
+		public AcceptClient(){
+			try {
+				_socket = new Socket(_addr, _port);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		
 		public void run() {
+			try {
+				System.out.println("CLIENT THREAD: STARTING IO STREAMS");
+				_inStream = new ObjectInputStream(_socket.getInputStream());
+				_outStream = new ObjectOutputStream(_socket.getOutputStream());
+			
+                // introduce self to server
+				System.out.println("CLIENT THREAD: INTRODUCING TO SERVER");
+                Message message = new Message("", "", Message.PLAYER_JOINED, "");
+                _outStream.writeObject(message);
+                
+                //sever will give up identity which is stored in the body of the message from the server
+                Message identity = (Message) _inStream.readObject();
+                System.out.println("CLIENT THREAD: IDENTITY RECEIVED: " + identity);
+				_myPlayer = new Player( (Player)identity.getBody());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 			while (true) {
 				try {
-					Message message = (Message) _inStream.readObject();
-					
+					//Message message = (Message) _inStream.readObject();
+//					System.out.println(message);
 					//cool switch case with message
-					
-					System.out.println(message);
 					/*
 					String[] msgArray = _inStream.readUTF().split("\\|\\|");
 					if (msgArray.length > 1) {
@@ -74,8 +97,7 @@ public class ClientAgent {
 					ex.printStackTrace();
 				}
 			}
-		}	
-		
+		}
 	}
 
 	/**
@@ -86,7 +108,7 @@ public class ClientAgent {
 		try {
             // send message to server that client disconnected, so server can
             // notify other clients with the updated list of online users
-            _outStream.writeObject(new Message(this._userName, "", Message.PLAYER_EXITED, ""));
+            _outStream.writeObject(new Message(this._myPlayer, "", Message.PLAYER_EXITED, ""));
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
@@ -98,7 +120,9 @@ public class ClientAgent {
 	 */
 	public void sendMessage(String text) {
 		try {
-			_outStream.writeObject(new Message(this._userName, Message.ALL_USERS_IN_ROOM, Message.MESSAGE, text ));
+			Message message = new Message(this._myPlayer, Message.ALL_USERS_IN_ROOM, Message.TEXT, text );
+			System.out.println("CLIENT AGENT: MESSAGE TO SEND: " + message.toString() );
+			this._outStream.writeObject(message);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

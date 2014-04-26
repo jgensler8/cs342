@@ -18,19 +18,21 @@ public class Message implements Serializable {
 
         // unique identifier of admin as sender
         public final static String ADMIN = "$ADMIN$";
+        public final static String SERVER = "$SERVER$";
         // recipients
         public final static String ALL_USERS_IN_ROOM = "$ROOM_USERS$";
         public final static String USER = "$USER$";
         // common subjects
-        public final static String ROOM_ASSIGNMENT = "$ROOM$";
+        public final static String ROOM_ASSIGNMENT = "$ROOM$"; //XXX Perhaps we can just send the whole identity back
         public final static String PLAYER_JOINED = "$JOINED$";
         public final static String PLAYER_EXITED = "$EXITED$";
         public final static String START_GAME = "$START$";
 
-        public final static String MESSAGE = "$MESSAGE$";
+        public final static String TEXT = "$TEXT$";
         public final static String DRAWCARD= "$DRAWCARD$";
         public final static String DISCARD = "$DISCARD$";
         public final static String PLAYHAND = "$PLAYHAND$";
+        public final static String IDENTITY = "$IDENTITY$";
 
         // data members
         private Object _sender;
@@ -46,6 +48,8 @@ public class Message implements Serializable {
                 _recipient = recipient;
                 _subject = subject;
                 _body = body;
+                
+                //System.out.println("MESSAGE: DEBUG: sender:"+ sender + ":recipient:"+recipient+":subject:"+subject+":body:"+body);
         }
 
         /**
@@ -72,7 +76,7 @@ public class Message implements Serializable {
         /**
          * return string representation of instance for logging
          */
-        public String toString() {
+        public String toString() {       	
                 return "getSender: " + _sender.toString() + "\n&" + "getRecipient: "
                                 + _recipient.toString() + "\n&" + "getSubject: "
                                 + _subject.toString() + "\n&" + "getBody: " + _body.toString()

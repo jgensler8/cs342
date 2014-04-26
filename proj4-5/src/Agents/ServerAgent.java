@@ -16,39 +16,38 @@ public class ServerAgent {
     // maximum number of concurrent users allowed to be connected
     public static final int MAX_CONN = 100;
 
-	static ArrayList<Socket> _ClientSockets;	//store client sockets
-	static ArrayList<String> _ConnectedUsers;	//store client names
-	static ArrayList<Room> _Rooms;
-	ServerSocket _socket;
+	static ArrayList<Room> _rooms;
+	private ServerSocket _socket;
+	private NameBuilder _nameBuilder;
 	
-
 	/**
 	 * construct an agent to host the server and mediate the game and connections
 	 */
 	public ServerAgent(InetAddress address, int userPort){
-		_ClientSockets = new ArrayList<Socket>(); 
-		_ConnectedUsers = new ArrayList<String>(); 
-		_Rooms = new ArrayList<Room>();
+		_rooms = new ArrayList<Room>();
+		_nameBuilder = new NameBuilder();
 		
+		//start the server
 		Thread manager = new Thread( new AcceptManager() );
 		try {
 			_socket = new ServerSocket(userPort, MAX_CONN, address);
-			System.out.println("Chat Server started at :" + new Date().toString());
+			System.out.println("SERVER: STARTED AT:" + new Date().toString());
+			manager.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		manager.start();
 	}
 
 	/*
 	 * 
 	 */
-	private class AcceptManager extends Thread{
+	private class AcceptManager implements Runnable{
 		public void run(){
+			Socket clientSocket = null;
 			while(true){
-				Socket clientSocket = null;
 				try {
 					clientSocket = _socket.accept();
+					System.out.println("SERVER: GOT A CONNECTION");
 					AcceptClient client = new AcceptClient(clientSocket);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -71,19 +70,24 @@ public class ServerAgent {
 		AcceptClient(Socket clientSocket) throws Exception {
 			_clientSocket = clientSocket;
 
-            _inStream = new ObjectInputStream(_clientSocket.getInputStream());
             _outStream = new ObjectOutputStream(_clientSocket.getOutputStream());
+            _outStream.flush();
+            _inStream = new ObjectInputStream(_clientSocket.getInputStream());
 
             // read incoming serialized message from client
             Message message = (Message) _inStream.readObject();
             // build player object from sender
-            Player player = (Player) message.getSender();
+            
+            //XXX Why are we assuming the player knows who they are?
+            //Player player = (Player) message.getSender();
+            //XXX Rather, create a new player to assign to this new connection
+            Player player = new Player(_nameBuilder.generateUniqueName());
             player.setSocket(_clientSocket);
 
             // pointer to room that the player will be assigned to
             Room playerRoom = null;
             // find available room to play
-            for (Room room : _Rooms) {
+            for (Room room : _rooms) {
                     if (!room.isRoomFull()) {
                             playerRoom = room;
                             // assign player to new room
@@ -91,30 +95,38 @@ public class ServerAgent {
                             break;
                     }
             }
+
             // no room found?
             if (player.getRoomID().length() == 0) {
                     // create new room and make this player the owner
                     playerRoom = new Room(player);
                     // add room to list of rooms hosted by server
-                    _Rooms.add(playerRoom);
+                    _rooms.add(playerRoom);
                     // assign player to new room
                     player.setRoomID(playerRoom.getID());
             }
+
             // add player to new room
             playerRoom.addPlayer(player);
+            
             // notify user of room assignment
+            /*
             dispatchMessage(playerRoom, Message.ADMIN, Message.USER,
                             Message.ROOM_ASSIGNMENT, playerRoom.getID());
+            */
+            dispatchMessage(playerRoom, Message.SERVER, Message.USER,
+                    Message.IDENTITY, player);
+            
             // notify all users in room of new player
+			/* XXX
             dispatchMessage(playerRoom, Message.ADMIN,
                             Message.ALL_USERS_IN_ROOM, Message.PLAYER_JOINED,
                             playerRoom.getPlayers());
-
+*/
             updateInternalMessage(message.toString());
-
+            
             // start listening
             start();
-
 		}
 
 
@@ -126,10 +138,8 @@ public class ServerAgent {
          *            Content to display
          */
         private void updateInternalMessage(String msg) {
-        		System.out.println(msg);
-                //Date d = new Date(); //XXX
-                //_chatDisplay.insert(msg + "\nTime: " + d.toString()
-                //                + "\n-------------\n", 0);
+                Date d = new Date();
+        		System.out.println("SERVER THREAD: INTERNAL MESSAGE: " + msg + " AT " + d.toString() );
         }
 
         /**
@@ -177,7 +187,7 @@ public class ServerAgent {
          * @return room object
          */
         private Room getRoom(String roomID) {
-                for (Room room : _Rooms) {
+                for (Room room : _rooms) {
                         if (room.getID().equals(roomID)) {
                                 return room;
                         }
@@ -195,8 +205,11 @@ public class ServerAgent {
                         try {
                                 // read incoming serialized message from client
                                 Message message = (Message) _inStream.readObject();
+                                System.out.println(message);
+                                updateInternalMessage(message.toString());
+                                
                                 // build player object from sender
-                                Player player = (Player) message.getSender();
+                                //Player player = (Player) message.getSender();
 
                                 // check subject
                                 /*
@@ -217,12 +230,12 @@ public class ServerAgent {
                                 }
                                 */
 
-                                updateInternalMessage(message.toString());
-
                         } catch (Exception ex) {
                                 ex.printStackTrace();
                         }
                 }
         }
 	}
+	
+	
 }

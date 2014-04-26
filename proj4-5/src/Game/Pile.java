@@ -1,9 +1,11 @@
 package Game;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Pile implements CardAttributes{
-    private Stack<Card> _deck = null;
+public class Pile implements CardAttributes, Serializable{
+	private static final long serialVersionUID = 1L;
+	private Stack<Card> _deck = null;
     private Stack<Card> _discards = null;
 
 	/**
@@ -12,7 +14,7 @@ public class Pile implements CardAttributes{
 	public Pile(){
 		this._deck = new Stack<Card>();
 		this._discards = new Stack<Card>();
-		this.initPhaseTen();
+		//this.initPhaseTen();
 	}
 	
 	/**

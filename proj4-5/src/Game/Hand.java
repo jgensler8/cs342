@@ -13,6 +13,14 @@ import javax.swing.*;
  */
 
 public class Hand extends JPanel implements Serializable{
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private final static String DELIMITER = "*";
+	
 	private ArrayList<Card> _cards;
 	
 	/**

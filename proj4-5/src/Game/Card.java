@@ -1,5 +1,7 @@
 package Game;
 
+import java.io.Serializable;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -9,7 +11,7 @@ import Game.CardAttributes;
  * !!!!!!!!!!!!!!!!!!!!! I don't have pictures for wild or skip cards yet
  */
 
-public class Card extends JLabel implements CardAttributes{
+public class Card extends JLabel implements CardAttributes, Serializable{
 	private static final long serialVersionUID = 1L;
 	private int _rank;		//1,2,3,4,5,6,7,8,9,10,11,12, wild, skip
 	private int _color;		//blue, yellow, red, green

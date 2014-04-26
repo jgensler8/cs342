@@ -39,6 +39,11 @@ public class Client{
 		// *** Main Menu
 		JMenu mainMenu = new JMenu("Main");
 		JMenuItem exitItem = new JMenuItem("Exit");
+		exitItem.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 		JMenuItem clientItem = new JMenuItem("Run Client");
 		clientItem.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
@@ -89,6 +94,7 @@ public class Client{
 		window.setJMenuBar(menuBar);
 		
 
+		// space where the two panels will go
 		window.getContentPane().setLayout( new GridLayout());
 		
 		//// *** Chat
@@ -104,8 +110,7 @@ public class Client{
 	 * 
 	 */
 	private static void startServerClient(String IP, int port){
-		System.out.println("IP addr: " + IP);
-		System.out.println("Port: " + port);
+		System.out.println("CLIENT: STARTING SERVER AT " + IP + " on port " + port);
 		
 		InetAddress addr = null;
 		try {
@@ -122,6 +127,7 @@ public class Client{
 	 * 
 	 */
 	private static void startClient(String IP, int port){
+		System.out.println("CLIENT: STARTING CLIENT AT " + IP + " on port " + port);
 		InetAddress addr = null;
 		try {
 			addr = InetAddress.getByName(IP);
