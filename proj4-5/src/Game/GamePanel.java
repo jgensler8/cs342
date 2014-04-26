@@ -1,17 +1,15 @@
 package Game;
 
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
+
+import Agents.ClientAgent;
 
 public class GamePanel extends JPanel{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	ArrayList<Player> _players;
-	Deck _drawDeck;
-	Deck _discardDeck;
 	
 	/**
 	 * Construct the game pane, creating the players and their hands.
@@ -94,6 +92,15 @@ public class GamePanel extends JPanel{
 	 * 
 	 */
 	public void setOthersInfo(){
+		
+	}
+
+	/**
+	 * @param agent , the agent that will observe events
+	 * @param options , the list of options the observer wishes to listen to
+	 */
+	public void addObserver(ClientAgent agent, int[] options) {
+		// TODO Auto-generated method stub
 		
 	}
 }
