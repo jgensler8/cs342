@@ -1,10 +1,18 @@
 package Game;
 
+import java.io.Serializable;
 import java.util.*;
 
 import javax.swing.*;
 
-public class Hand extends JPanel{
+/**
+ * The Hand class holds a list of card and implements game rule logic.
+ * 
+ * @author Azita
+ * @author Jeff
+ */
+
+public class Hand extends JPanel implements Serializable{
 	private ArrayList<Card> _cards;
 	
 	/**
@@ -15,12 +23,18 @@ public class Hand extends JPanel{
 	}
 	
 	/**
-	 * add a card to the hand
 	 * @param the Card to add to the hand
 	 */
 	public void addCard(Card toAdd){
 		this._cards.add(toAdd);
 	}
+	
+	/**
+	 * @param cards , cards to be added to hand
+	 */
+    public void addCards(ArrayList<Card> cards) {
+    	this._cards.addAll(cards);
+    }
 	
 	/**
 	 * remove a card from the hand
@@ -40,4 +54,82 @@ public class Hand extends JPanel{
 		}
 		return this;
 	}
+	
+	/**
+     * static method used for validation when user "declares" to have a set
+     * 
+     * @param cards
+     *            list of cards declared as set
+     * @param n
+     *            number of cards that need to be in set
+     * @return true if cards are truly a set, otherwise return false
+     */
+    public static boolean isSet(ArrayList<Card> cards, int n) {
+            if (cards.size() != n)
+                    return false;
+            int rank = cards.get(0).getRank();
+            for (Card card : cards) {
+                    if (rank == Card.WILD) {
+                            rank = card.getRank(); // until we get first non-wild
+                            continue; // user can use can many wilds as they want
+                    }
+                    if (card.getRank() != rank && card.getRank() != Card.WILD)
+                            return false;
+            }
+            return true;
+    }
+
+    /**
+     * static method used for validation when user "declares" to have a run.
+     * Note: by the "game rules" the user is required to order the cards
+     * themselves!
+     * 
+     * @param cards
+     *            list of cards declared as a run
+     * @param n
+     *            number of cards that need to be in run
+     * @return true if cards are truly a run, otherwise return false
+     */
+    public static boolean isRun(ArrayList<Card> cards, int n) {
+            if (cards.size() != n)
+                    return false;
+            int rank = cards.get(0).getRank();
+            int offset = 0; // need running offset if first card was wild
+            for (int i = 0; i < n; i++) {
+                    if (rank == Card.WILD) {
+                            offset++; // need offset for i when checking for sequence
+                            rank = cards.get(i).getRank(); // until we get first non-wild
+                            continue; // user can use can many wilds as they want
+                    }
+                    if (cards.get(i).getRank() != (rank + i - offset)
+                                    && cards.get(i).getRank() != Card.WILD)
+                            return false;
+            }
+            return true;
+    }
+
+    /**
+     * static method used for validation when user "declares" to have a cards of
+     * the same color.
+     * 
+     * @param cards
+     *            list of cards declared as the same color
+     * @param n
+     *            number of cards that need to be the same color
+     * @return true if cards are truly the same color, otherwise return false
+     */
+    public static boolean isSameColor(ArrayList<Card> cards, int n) {
+            if (cards.size() != n)
+                    return false;
+            int color = cards.get(0).getColor();
+            for (Card card : cards) {
+                    if (color == Card.WILD) {
+                            color = card.getColor(); // until we get first non-wild
+                            continue; // user can use can many wilds as they want
+                    }
+                    if (card.getColor() != color && card.getColor() != Card.WILD)
+                            return false;
+            }
+            return true;
+    }
 }

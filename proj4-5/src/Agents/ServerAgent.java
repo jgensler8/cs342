@@ -1,13 +1,24 @@
 package Agents;
-import java.io.*;
-import java.net.*;
-import java.util.*;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
+
+import Game.Player;
 import NameBuilder.NameBuilder;
 
 public class ServerAgent {
-	static ArrayList<Socket> ClientSockets;
-	static ArrayList<String> ConnectedUsers;
+    // maximum number of concurrent users allowed to be connected
+    public static final int MAX_CONN = 100;
+
+	static ArrayList<Socket> _ClientSockets;	//store client sockets
+	static ArrayList<String> _ConnectedUsers;	//store client names
+	static ArrayList<Room> _Rooms;
 	ServerSocket _socket;
 	
 
@@ -15,11 +26,13 @@ public class ServerAgent {
 	 * construct an agent to host the server and mediate the game and connections
 	 */
 	public ServerAgent(InetAddress address, int userPort){
-		ClientSockets = new ArrayList<Socket>(); //store client sockets
-		ConnectedUsers = new ArrayList<String>(); //store client names
+		_ClientSockets = new ArrayList<Socket>(); 
+		_ConnectedUsers = new ArrayList<String>(); 
+		_Rooms = new ArrayList<Room>();
+		
 		Thread manager = new Thread( new AcceptManager() );
 		try {
-			_socket = new ServerSocket(userPort, 1000, address);
+			_socket = new ServerSocket(userPort, MAX_CONN, address);
 			System.out.println("Chat Server started at :" + new Date().toString());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -48,159 +61,168 @@ public class ServerAgent {
 	
 	
 	/*
-	 * This thread is instantiated when a new socket needs to be accepted
-	 * 
+	 * This thread is instantiated when a new socket (new client) needs to be accepted
 	 */
 	private class AcceptClient extends Thread{
 		private Socket _clientSocket;
-		private DataInputStream _inStream;
-		private DataOutputStream _outStream;
+		private ObjectInputStream _inStream;
+		private ObjectOutputStream _outStream;
 
 		AcceptClient(Socket clientSocket) throws Exception {
 			_clientSocket = clientSocket;
 
-			_inStream = new DataInputStream(_clientSocket.getInputStream());
-			_outStream = new DataOutputStream(_clientSocket.getOutputStream());
+            _inStream = new ObjectInputStream(_clientSocket.getInputStream());
+            _outStream = new ObjectOutputStream(_clientSocket.getOutputStream());
 
-			String userName = _inStream.readUTF(); //protocol
-			if (userName.equals("$REPLACE_TOKEN$")) { //do we have to generate a new client?
-				NameBuilder nb = new NameBuilder();
-				userName = nb.generateUniqueName();
-			}
-			for (String user : ConnectedUsers) {
-				if (user.toLowerCase().trim()
-						.equals(userName.toLowerCase().trim())) { //if we have duplicate name, reject client
-					_outStream.writeUTF("$ERROR$||Username " + userName
-							+ " is already taken");
-					return;
-				}
-			}
+            // read incoming serialized message from client
+            Message message = (Message) _inStream.readObject();
+            // build player object from sender
+            Player player = (Player) message.getSender();
+            player.setSocket(_clientSocket);
 
-			System.out.println("User Logged In :" + userName);
-			ConnectedUsers.add(userName);
-			ClientSockets.add(_clientSocket);
+            // pointer to room that the player will be assigned to
+            Room playerRoom = null;
+            // find available room to play
+            for (Room room : _Rooms) {
+                    if (!room.isRoomFull()) {
+                            playerRoom = room;
+                            // assign player to new room
+                            player.setRoomID(playerRoom.getID());
+                            break;
+                    }
+            }
+            // no room found?
+            if (player.getRoomID().length() == 0) {
+                    // create new room and make this player the owner
+                    playerRoom = new Room(player);
+                    // add room to list of rooms hosted by server
+                    _Rooms.add(playerRoom);
+                    // assign player to new room
+                    player.setRoomID(playerRoom.getID());
+            }
+            // add player to new room
+            playerRoom.addPlayer(player);
+            // notify user of room assignment
+            dispatchMessage(playerRoom, Message.ADMIN, Message.USER,
+                            Message.ROOM_ASSIGNMENT, playerRoom.getID());
+            // notify all users in room of new player
+            dispatchMessage(playerRoom, Message.ADMIN,
+                            Message.ALL_USERS_IN_ROOM, Message.PLAYER_JOINED,
+                            playerRoom.getPlayers());
 
-			// tell new user who's currently online
-			_outStream.writeUTF("$YOUR_NAME$||" + userName);
-			_outStream.writeUTF("$USERS$||" + getCommaDelimitedUsers());
+            updateInternalMessage(message.toString());
 
-			// start listening
-			start();
+            // start listening
+            start();
+
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see java.lang.Thread#run()
-		 * 
-		 * Parse messages and take actions
-		 * 
-		 * Message Actions:
-		 * * LOGOUT: remove the user from the List of sockets and the List of userNames
-		 * * UPDATE: 
-		 * 
-		 */
-		public void run() {
-			while (true) {
-				try {
-					StringBuilder msg;
 
-					//parse message into 3 tokens
-					// the user that sent the message
-					// the list of names that the message should be sent to
-					// the action of the message
-					String msgFromClient = new String();
-					msgFromClient = _inStream.readUTF();
-					StringTokenizer st = new StringTokenizer(msgFromClient);
-					String userName = st.nextToken();
-					String sendTo = st.nextToken();
-					String msgAction = st.nextToken();
-					int iCount = 0;
 
-					msg = new StringBuilder();
+        /**
+         * Internal message displayed on server GUI as update of activity
+         * 
+         * @param msg
+         *            Content to display
+         */
+        private void updateInternalMessage(String msg) {
+        		System.out.println(msg);
+                //Date d = new Date(); //XXX
+                //_chatDisplay.insert(msg + "\nTime: " + d.toString()
+                //                + "\n-------------\n", 0);
+        }
 
-					if (msgAction.equals("$LOGOUT$")) {
-						for (iCount = 0; iCount < ConnectedUsers.size(); iCount++) {
-							if (ConnectedUsers.get(iCount).equals(userName)) {
-								ConnectedUsers.remove(iCount);
-								ClientSockets.remove(iCount);
-								System.out.println("User " + userName
-										+ " Logged Out ...");
-								break;
-							}
-						}
-						notifyUsers("$PUBLIC$", "$UPDATE$" + "||"
-								+ getCommaDelimitedUsers());
-						break;
-					}
+        /**
+         * Create a message and send to recipient(s)
+         * 
+         * @param room
+         *            room to dispatch message within
+         * @param sender
+         *            indicate who is sender the message, typically the admin
+         * @param recipient
+         *            indicate who is receiving, either single user or everyone
+         *            in room
+         * @param subject
+         *            indicate subject of message
+         * @param message
+         *            message content
+         * @throws IOException
+         */
+        private void dispatchMessage(Room room, Object sender,
+                        Object recipient, Object subject, Object body)
+                        throws IOException {
+                // create message and serialize as text
+                Message message = new Message(sender, recipient, subject, body);
+                // String data = message.serialize();
+                // determine audience
+                if (recipient.equals(Message.USER)) {
+                        // send to single user
+                        _outStream.writeObject(message);
+                } else if (recipient.equals(Message.ALL_USERS_IN_ROOM)) {
+                        // send to all in room
+                        for (Player player : room.getPlayers()) {
 
-					if (msgAction.equals("$UPDATE$"))
-						msg.append(msgAction + "||");
-					else
-						msg.append(msgAction + "||" + userName + ":");
-					while (st.hasMoreTokens()) {
-						msg.append(" " + st.nextToken().replace("||", "|"));
-					}
+                                (new ObjectOutputStream(player.getSocket()
+                                                .getOutputStream())).writeObject(message);
+                        }
+                }
+        }
 
-					//see how many users we can send our message to
-					iCount = notifyUsers(sendTo, msg.toString());
+        /**
+         * loop through all rooms hosted on server and return room associated to
+         * given ID
+         * 
+         * @param roomID
+         *            unique identifier associated to room
+         * @return room object
+         */
+        private Room getRoom(String roomID) {
+                for (Room room : _Rooms) {
+                        if (room.getID().equals(roomID)) {
+                                return room;
+                        }
+                }
+                return null;
+        }
+        
+        /*
+         * there is a unique thread running for each player connected, and for
+         * as long as the user is connected the server will receive messages
+         * from the user here
+         */
+        public void run() {
+                while (true) {
+                        try {
+                                // read incoming serialized message from client
+                                Message message = (Message) _inStream.readObject();
+                                // build player object from sender
+                                Player player = (Player) message.getSender();
 
-					//hopefully we have sent the message to the available users
-					//otherwise, we (this) send out and say that we are not online
-					if (iCount == ConnectedUsers.size()
-							&& !sendTo.equals("$PUBLIC$")) {
-						_outStream.writeUTF("I am offline");
-					}
+                                // check subject
+                                /*
+                                switch (message.getSubject().toString()) {
+                                case Message.START_GAME:
+                                        Room room = getRoom(player.getRoomID());
+                                        if (room == null) {
+                                                // TODO: why wasn't room found?
+                                                break;
+                                        }
+                                        if (!room.isPlayerOwner(player)) {
+                                                // TODO: why wasn't player the owner?
+                                                break;
+                                        }
+                                        room.startGame();
+                                        // TODO: what else is needed?
+                                        break;
+                                }
+                                */
 
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
+                                updateInternalMessage(message.toString());
 
-		/*
-		 * loop through the users and send them the message
-		 * we either send the message to a user if:
-		 *  1) the message type is private AND their name is one of the ones given
-		 *  2) the message type is not private (public)
-		 */
-		private int notifyUsers(String sendTo, String msg) throws IOException {
-
-			int iCount = 0;
-			boolean isPrivate = !sendTo.equals("$PUBLIC$");
-
-			String[] users = sendTo.split(";");
-			for (String user : users) {
-				for (iCount = 0; iCount < ConnectedUsers.size(); iCount++) {
-					if (((ConnectedUsers.get(iCount).equals(user) && isPrivate) || !isPrivate)) {
-
-						Socket tmpSocket = (Socket) ClientSockets.get(iCount);
-						DataOutputStream tmpOutStream = new DataOutputStream(
-								tmpSocket.getOutputStream());
-						tmpOutStream.writeUTF(msg);
-
-						// if we chose to send a private message, no use in looping more
-						if (isPrivate)
-							break;
-
-					}
-				}
-			}
-
-			return iCount;
-		}
-
-		/*
-		 * generate a string of *connected* user
-		 */
-		private String getCommaDelimitedUsers() {
-			StringBuilder connectedUsers = new StringBuilder();
-			String delimiter = "";
-			for (Object user : ConnectedUsers) {
-				connectedUsers.append(delimiter);
-				connectedUsers.append(((String) user).replace("~", "^"));
-				delimiter = "~";
-			}
-			return connectedUsers.toString();
-		}
+                        } catch (Exception ex) {
+                                ex.printStackTrace();
+                        }
+                }
+        }
 	}
 }

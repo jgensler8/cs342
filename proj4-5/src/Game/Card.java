@@ -6,50 +6,27 @@ import javax.swing.JLabel;
 import Game.CardAttributes;
 
 /*
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  * !!!!!!!!!!!!!!!!!!!!! I don't have pictures for wild or skip cards yet
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  */
 
 public class Card extends JLabel implements CardAttributes{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private int _type;		//1,2,3,4,5,6,7,8,9,10,11,12, wild, skip
+	private int _rank;		//1,2,3,4,5,6,7,8,9,10,11,12, wild, skip
 	private int _color;		//blue, yellow, red, green
-	private int _use;		//for use with table, either part of  straight (1) or collection (2) or not played (-1);
 	
 	/**
 	 * construct the card, validate its parameters
 	 * 
-	 * @param type  should match those in CardAttributes Interface
+	 * @param rank  should match those in CardAttributes Interface
 	 * @param color should match those in CardAttributes Interface
 	 */
-	public Card(int type, int color){
-		this._use = -1;
+	public Card(int rank, int color){
 		//validate type
-		if( type < ONE || type > WILD){
-			this._type = -1;
+		if( rank < ONE || rank > WILD){
+			this._rank = -1;
 		}
 		else{
-			this._type = type;
+			this._rank = rank;
 		}
 		
 		//validate color
@@ -61,7 +38,7 @@ public class Card extends JLabel implements CardAttributes{
 		}
 		
 		//construct the path to the image that this card represents
-		String path = "Game/CardImages/"+ this._type;
+		String path = "Game/CardImages/"+ this._rank;
 		switch(this._color){
 		case BLUE: 
 			path += "_Blue.png";
@@ -90,8 +67,8 @@ public class Card extends JLabel implements CardAttributes{
 	/**
 	 * get the type of this card
 	 */
-	public int getType(){
-		return this._type;
+	public int getRank(){
+		return this._rank;
 	}
 	
 	/**

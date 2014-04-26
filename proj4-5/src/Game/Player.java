@@ -1,47 +1,107 @@
 package Game;
 
 
-import java.util.*;
+import java.io.Serializable;
+import java.net.Socket;
+import java.util.UUID;
 
-public class Player {
-	private Hand _hand;		//players hand of cards
-	private String _name;	//players name
-	private int _phase;		//phase the player is on
-	
-	public Player(String name){
-		this._phase = 0;
-		this._name = name;
-		this._hand = new Hand();
-	}
-	
-	/**
-	 * add a card to the players hand
-	 */
-	public void addCard(Card card){
-		this._hand.addCard(card);
-	}
-	
-	/**
-	 * add a list of cards to the hand
-	 */
-	public void addCards(ArrayList<Card> cards){
-		for(Card card : cards){
-			this._hand.addCard( card);	
-		}
-	}
-	
-	/**
-	 * remove a particular card from the player's hand
-	 */
-	public Card removeCard(int index){
-		return this._hand.removeCard(index);
-	}
-	
-	/**
-	 * return a copy of the player's hand
-	 * TODO
-	 */
-	public Hand getHand(){
-		return this._hand;
-	}
+/**
+ * The Player class maintains an identity of a player and their current game
+ * state.
+ * 
+ * @author Azita
+ * 
+ */
+public class Player implements Serializable{
+
+    // delimiter used for serialization - must be unique to class
+    private final static String DELIMITER = "#";
+
+    // Unique identifier of player
+    private String _ID;
+    // player's screen name
+    private String _name;
+    // room assigned to player
+    private String _roomID;
+    // cards in player's hand
+    private Hand _hand;
+    // player's socket connection to server
+    private Socket _socket;
+
+    public Player(String name) {
+            init();
+            _name = name;
+    }
+
+    public Player(String ID, String name) {
+            init();
+            _ID = ID;
+            _name = name;
+    }
+
+    /**
+     * helper method to class constructor
+     */
+    private void init() {
+            // generate random unique identifier
+            _ID = UUID.randomUUID().toString();
+            _hand = new Hand();
+            _roomID = "";
+    }
+
+    /**
+     * @return Player's Unique identifier
+     */
+    public String getID() {
+            return _ID;
+    }
+
+    /**
+     * assign socket connection between server and client
+     * 
+     * @param socket
+     *            socket connection
+     */
+    public void setSocket(Socket socket) {
+            _socket = socket;
+    }
+
+    /**
+     * return this client/player's connection to server
+     */
+    public Socket getSocket() {
+            return _socket;
+    }
+
+    /**
+     * assign player to a room
+     * 
+     * @param room
+     *            unique identifier of room
+     */
+    public void setRoomID(String roomID) {
+            _roomID = roomID;
+    }
+
+    /**
+     * @return unique identifier of room player is assigned to
+     */
+    public String getRoomID() {
+            return _roomID;
+    }
+
+    /**
+     * @return player's screen name
+     */
+    public String getName() {
+            return _name;
+    }
+
+    /**
+     * @return cards in player's possession
+     */
+    public Hand getHand() {
+            return _hand;
+    }
 }
+

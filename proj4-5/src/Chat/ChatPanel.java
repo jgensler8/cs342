@@ -164,6 +164,11 @@ public class ChatPanel extends JPanel implements ActionListener, WindowListener,
 	 */
 	public void appendToDisplay(String update){
 		this._chatDisplay.append(update);
+		this._userPanel.revalidate();
+        this._userPanel.repaint();
+        this._chatZoo.validate();
+        this._chatZoo.repaint();
+
 	}
 	
 	/**
@@ -190,7 +195,7 @@ public class ChatPanel extends JPanel implements ActionListener, WindowListener,
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(_sendButton)) {
 			for( ClientAgent agent : this._messageObservers){
-				agent.sendMessage(_sendButton.getText());
+				agent.sendMessage(_chatBox.getText());
 			}
 		} else if (_userCheckboxes.contains(e.getSource())) {
 			StringBuilder buddies = new StringBuilder();
@@ -229,7 +234,7 @@ public class ChatPanel extends JPanel implements ActionListener, WindowListener,
 	@Override
 	public void windowClosing(WindowEvent arg0) {
 		for(ClientAgent agent: this._quitObservers){
-			//agent.quit();
+			agent.quit();
 		}
 		_chatZoo.setVisible(false);
 		_chatZoo.dispose();
