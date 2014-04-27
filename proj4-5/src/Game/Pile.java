@@ -78,4 +78,11 @@ public class Pile implements Serializable{
 			return new Card(Card.BLANK, Card.BLANK).render();
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	public void returnCard( Card c){
+		this._discards.push( c);
+	}
 }

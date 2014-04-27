@@ -11,6 +11,7 @@ import Agents.ClientAgent;
 import Agents.ServerAgent;
 import Game.Card;
 import Game.Hand;
+import Game.PhasePanel;
 import Game.Pile;
 
 import java.awt.Color;
@@ -47,6 +48,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	public static final int SERVER_PORT = 9001;
 	//
 	static ClientAgent _agent;
+	int phaseNumber = 1;
 	
 	/**
 	 * GUI Components
@@ -72,6 +74,9 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private final JPanel tablePanel = new JPanel();
 	private JPanel phasePanel;
 	private JPanel handPanel;
+	private JPanel discardPart;
+	private JPanel drawPart;
+	private JPanel tablePart;
 	
 	/**
 	 * Main entry point of the program
@@ -114,6 +119,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		
 		Pile pile = new Pile();
 		pile.initPhaseTen();
+		//pile.returnCard( new Card(1,1) );
 		this.renderDiscard(pile);
 		this.renderDraw(pile);
 	}
@@ -143,7 +149,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		_gameFrame = new JFrame();
 		_gameFrame.setTitle("PHASE 10");
 		_gameFrame.getContentPane().setBackground(Color.BLACK);
-		_gameFrame.setBounds(1000, 1000, 1000, 1000);
+		_gameFrame.setBounds(1000, 1000, 1002, 708);
 		_gameFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		_gameFrame.addWindowListener(this);
 		_gameFrame.getContentPane().setLayout(null);
@@ -171,7 +177,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								chatPanel.add(_chatDisplay);
 								_chatDisplay.setEditable(false);
 								
-										_userPanel = new JPanel( new FlowLayout(FlowLayout.LEFT));
+										_userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 										_userPanel.setBackground(Color.WHITE);
 										_userPanel.setBounds(331, 97, 113, 210);
 										chatPanel.add(_userPanel);
@@ -187,23 +193,36 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								_gameFrame.getContentPane().add(tablePanel);
 								tablePanel.setLayout(null);
 								
-								JLabel lblNewLabel = new JLabel("Players");
-								lblNewLabel.setForeground(Color.WHITE);
-								lblNewLabel.setBounds(6, 21, 44, 16);
-								tablePanel.add(lblNewLabel);
-								
 								JLabel lblTable = new JLabel("Table");
 								lblTable.setForeground(Color.WHITE);
 								lblTable.setBounds(480, 6, 34, 16);
 								tablePanel.add(lblTable);
 								
-								JToggleButton tglbtnDiscard = new JToggleButton("Discard");
-								tglbtnDiscard.setBounds(334, 275, 75, 100);
-								tablePanel.add(tglbtnDiscard);
+								tablePart = new JPanel();
+								tablePart.setBackground(new Color(255, 0, 0));
+								tablePart.setBounds(6, 23, 508, 222);
+								tablePanel.add(tablePart);
 								
-								JToggleButton tglbtnDraw = new JToggleButton("Draw");
-								tglbtnDraw.setBounds(421, 275, 75, 100);
-								tablePanel.add(tglbtnDraw);
+								drawPart = new JPanel();
+								drawPart.setBackground(new Color(255, 0, 0));
+								drawPart.setBounds(439, 267, 75, 112);
+								tablePanel.add(drawPart);
+								
+								discardPart = new JPanel();
+								discardPart.setBackground(new Color(255, 0, 0));
+								discardPart.setBounds(352, 267, 75, 112);
+								tablePanel.add(discardPart);
+								
+								JLabel lblDiscard = new JLabel("Discard");
+								lblDiscard.setForeground(new Color(255, 255, 255));
+								lblDiscard.setBounds(365, 249, 48, 16);
+								tablePanel.add(lblDiscard);
+								
+								JLabel lblDraw = new JLabel("Draw");
+								lblDraw.setForeground(new Color(255, 255, 255));
+								lblDraw.setBackground(new Color(255, 0, 0));
+								lblDraw.setBounds(455, 249, 34, 16);
+								tablePanel.add(lblDraw);
 								
 								handPanel = new JPanel();
 								handPanel.setBackground(new Color(0, 128, 0));
@@ -219,17 +238,26 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								JButton btnSubmitPhase_1 = new JButton("Go to Phase Submission");
 								btnSubmitPhase_1.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent arg0) {
-										
 									}
 								});
 								btnSubmitPhase_1.setBounds(328, 234, 186, 29);
 								handPanel.add(btnSubmitPhase_1);
+								
+								JPanel handPart = new JPanel();
+								handPart.setBackground(new Color(0, 128, 0));
+								handPart.setBounds(6, 24, 508, 209);
+								handPanel.add(handPart);
 								
 								phasePanel = new JPanel();
 								phasePanel.setBackground(Color.YELLOW);
 								phasePanel.setBounds(6, 334, 460, 344);
 								_gameFrame.getContentPane().add(phasePanel);
 								phasePanel.setLayout(null);
+								
+								PhasePanel phaseContainer = new PhasePanel();
+								JPanel phasePart = phaseContainer.PhasePanel(phaseNumber);
+								phasePanel.add(phasePart);
+								
 								
 								JLabel lblNewLabel_1 = new JLabel("Phase Submission");
 								lblNewLabel_1.setForeground(Color.RED);
@@ -501,18 +529,16 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 * 
 	 */
 	private void renderDiscard(Pile pile){
-		Card c = pile.renderDiscard();
-		c.setSize( c.getPreferredSize());
-		this.tablePanel.add(c);
+		this.discardPart.removeAll();
+		this.discardPart.add( pile.renderDiscard() );
 	}
 	
 	/**
 	 * 
 	 */
 	private void renderDraw(Pile pile){
-		Card c = pile.renderDraw();
-		c.setSize( c.getPreferredSize());
-		this.tablePanel.add(c);
+		this.drawPart.removeAll();
+		this.drawPart.add( pile.renderDraw());
 	}
 	
 	public static class NetworkInput extends JPanel{
