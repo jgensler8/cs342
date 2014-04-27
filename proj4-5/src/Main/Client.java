@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -74,9 +75,12 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private final JPanel tablePanel = new JPanel();
 	private JPanel phasePanel;
 	private JPanel handPanel;
+	
 	private JPanel discardPart;
 	private JPanel drawPart;
 	private JPanel tablePart;
+	private JPanel handPart;
+	private JPanel phasePart;
 	
 	/**
 	 * Main entry point of the program
@@ -122,6 +126,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		//pile.returnCard( new Card(1,1) );
 		this.renderDiscard(pile);
 		this.renderDraw(pile);
+		
+		System.out.println( temp.cardSelected() );
 	}
 
 	/**
@@ -243,7 +249,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								btnSubmitPhase_1.setBounds(328, 234, 186, 29);
 								handPanel.add(btnSubmitPhase_1);
 								
-								JPanel handPart = new JPanel();
+								handPart = new JPanel();
 								handPart.setBackground(new Color(0, 128, 0));
 								handPart.setBounds(6, 24, 508, 209);
 								handPanel.add(handPart);
@@ -254,10 +260,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								_gameFrame.getContentPane().add(phasePanel);
 								phasePanel.setLayout(null);
 								
-								PhasePanel phaseContainer = new PhasePanel();
-								JPanel phasePart = phaseContainer.PhasePanel(phaseNumber);
+								phasePart = new JPanel();
 								phasePanel.add(phasePart);
-								
 								
 								JLabel lblNewLabel_1 = new JLabel("Phase Submission");
 								lblNewLabel_1.setForeground(Color.RED);
@@ -519,10 +523,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 * 
 	 */
 	private void renderHand(Hand hand){
-		//this.handPanel.handPart.clearAll()
-		//this.handPanel.handPart.add( hand.render(...))
-		
-		this.handPanel.add( hand.render( this.handPanel.getBackground() ) );
+		this.handPart.removeAll();
+		this.handPart.add( hand.render( this.handPanel.getBackground() ));
 	}
 	
 	/**

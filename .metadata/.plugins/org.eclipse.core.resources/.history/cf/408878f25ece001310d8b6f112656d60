@@ -1,0 +1,66 @@
+package Game;
+
+import java.awt.Color;
+import java.io.Serializable;
+import java.util.*;
+
+import javax.swing.*;
+
+public class PhasePanel extends JPanel{
+	private int p;
+	private Hand _myHand;
+	private JPanel phaseHandOnePanel;
+	private JPanel phaseHandTwoPanel;
+	private Hand phaseHandOne;
+	private Hand phaseHandTwo;
+	
+	
+	public PhasePanel(int whichPhase, Hand myHand) {
+		this.p = whichPhase;
+		this._myHand = myHand;
+		this.phaseHandOne = new Hand();
+		this.phaseHandTwo = new Hand();
+		
+		if (p == 4 || p == 5 || p == 6 || p == 8) {
+			JPanel phasePart = new JPanel();						
+			phasePart.setBackground(new Color(255, 255, 0));
+			phasePart.setBounds(6, 23, 448, 274);
+			this.add(phasePart);
+		}
+		else {
+			JPanel phasePartTwo = new JPanel();
+			phasePartTwo.setBackground(new Color(255, 255, 0));
+			phasePartTwo.setBounds(6, 25, 448, 281);
+			phasePartTwo.setLayout(null);
+			
+			phaseHandOnePanel = new JPanel();
+			phaseHandOnePanel.setBounds(0, 0, 448, 138);
+			phasePartTwo.add(phaseHandOnePanel);
+			phaseHandOnePanel.setBackground(new Color(255, 255, 0));
+			
+			phaseHandTwoPanel = new JPanel();
+			phaseHandTwoPanel.setBounds(0, 143, 448, 138);
+			phasePartTwo.add(phaseHandTwoPanel);
+			phaseHandTwoPanel.setBackground(Color.YELLOW);
+			
+			this.add(phasePartTwo);)
+		}
+	}
+	
+	/**
+	 * render the cards 
+	 */
+	public void render(){
+		
+	}
+	
+	public void addTo( int hand){
+		if(part == 1){
+			Card c = this._myHand.cardSelected();
+			this.phaseHandOne.clear;
+		}
+		else if( part == 2){
+			
+		}
+	}
+}

@@ -1,0 +1,41 @@
+package Game;
+
+import java.awt.Color;
+import java.io.Serializable;
+import java.util.*;
+
+import javax.swing.*;
+
+public class PhasePanel extends JPanel{
+	private int p;
+	
+	public JPanel PhasePanel(int whichPhase) {
+		p = whichPhase;
+		
+		if (p == 4 || p == 5 || p == 6 || p == 8) {
+			JPanel phasePart = new JPanel();						
+			phasePart.setBackground(new Color(255, 255, 0));
+			phasePart.setBounds(6, 23, 448, 274);
+			return phasePart;
+		}
+		else {
+			JPanel phasePartTwo = new JPanel();
+			phasePartTwo.setBackground(new Color(255, 255, 0));
+			phasePartTwo.setBounds(6, 25, 448, 281);
+			phasePartTwo.setLayout(null);
+			
+			JPanel phaseHandOne = new JPanel();
+			phaseHandOne.setBounds(0, 0, 448, 138);
+			phasePartTwo.add(phaseHandOne);
+			phaseHandOne.setBackground(new Color(255, 255, 0));
+			
+			JPanel phaseHandTwo = new JPanel();
+			phaseHandTwo.setBounds(0, 143, 448, 138);
+			phasePartTwo.add(phaseHandTwo);
+			phaseHandTwo.setBackground(Color.YELLOW);
+			
+			return phasePartTwo;
+		}
+	}
+	
+}

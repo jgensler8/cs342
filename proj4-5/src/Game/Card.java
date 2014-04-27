@@ -1,15 +1,21 @@
 package Game;
 
+import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.Serializable;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 /*
  * !!!!!!!!!!!!!!!!!!!!! I don't have pictures for wild or skip cards yet
  */
 
-public class Card extends JRadioButton implements Serializable{
+public class Card extends JRadioButton implements Serializable, MouseListener{
 	//types
 	public static final int ONE = 1;
 	public static final int TWO = 2;
@@ -34,10 +40,15 @@ public class Card extends JRadioButton implements Serializable{
 	public final static int GREEN = 3;
 	public final static int BLUE = 4;
 	
+	public final static Color SELECTED = java.awt.Color.ORANGE;
+	public final static Color UNSELECTED = java.awt.Color.DARK_GRAY;
+	public final static int BORDER_SIZE = 5;
+	
 	private static final long serialVersionUID = 1L;
 	private int _rank;		//1,2,3,4,5,6,7,8,9,10,11,12, wild, skip
 	private int _color;		//blue, yellow, red, green
 	private Hand _hand;
+	private boolean _selected;
 	
 	/**
 	 * construct the card, validate its parameters
@@ -78,25 +89,18 @@ public class Card extends JRadioButton implements Serializable{
 	}
 	
 	/**
-	 * 
-	 */
-	public void setHand(Hand containedBy){
-		this._hand = containedBy;
-	}
-	
-	/**
-	 * 
-	 */
-	public void onClick(){
-		this._hand.cardSelected(this);
-	}
-	
-	/**
 	 * @return 
 	 * 
 	 */
-	public Card render(){
+	public Card render(Hand containedBy){
+		if(containedBy != null){
+			_selected = false;
+			this.setBorder( BorderFactory.createLineBorder(UNSELECTED, BORDER_SIZE));
+			this.setBorderPainted(true);
+		}
+		
 		//construct the path to the image that this card represents
+		this._hand = containedBy;
 		String path = "Game/CardImages/"+ this._rank;
 		switch(this._color){
 		case BLUE: 
@@ -126,7 +130,64 @@ public class Card extends JRadioButton implements Serializable{
 			e.printStackTrace();
 		}
 		
+		this.addMouseListener(this);
+		
 		this.setSize( this.getPreferredSize() );
 		return this;
+	}
+
+	/**
+	 * 
+	 */
+	public void select(){
+		this.setBorder( BorderFactory.createLineBorder(SELECTED, BORDER_SIZE));
+		this._selected = true;
+	}
+	
+	/**
+	 * 
+	 */
+	public void unselect(){
+		this.setBorder( BorderFactory.createLineBorder(UNSELECTED, BORDER_SIZE));
+		this._selected = false;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public boolean isSelected(){
+		return this._selected;
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		if( this._hand != null){
+			this.select();
+			this._hand.unselectOthers(this);
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 	}
 }
