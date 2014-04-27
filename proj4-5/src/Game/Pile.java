@@ -65,25 +65,17 @@ public class Pile implements Serializable{
 	 * @return either blank card or the card on top
 	 */
 	public Card renderDraw(){
-		Card c = this._discards.peek();
-		if( c == null){
-			return new Card(-1,-1);
-		}
-		else{
-			return c;
-		}
+		return new Card(Card.DRAW,Card.DRAW).render();
 	}
 	
 	/**
 	 * @return either blank card or the card on top
 	 */
 	public Card renderDiscard(){
-		Card c = this._discards.peek();
-		if( c == null){
-			return new Card(-1,-1);
-		}
-		else{
-			return c;
+		try{
+			return this._discards.peek().render();
+		} catch( EmptyStackException e){
+			return new Card(Card.BLANK, Card.BLANK).render();
 		}
 	}
 }

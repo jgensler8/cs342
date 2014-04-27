@@ -439,6 +439,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 				//sendMessage();
 			}
 		}
+		
+		//System.out.println( this._hand.getSelection() );
 	}
 
 	@Override
@@ -500,14 +502,17 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 */
 	private void renderDiscard(Pile pile){
 		Card c = pile.renderDiscard();
-		this.tablePanel.tgl
+		c.setSize( c.getPreferredSize());
+		this.tablePanel.add(c);
 	}
 	
 	/**
 	 * 
 	 */
 	private void renderDraw(Pile pile){
-		//this.tablePanel.add( pile.renderDraw());
+		Card c = pile.renderDraw();
+		c.setSize( c.getPreferredSize());
+		this.tablePanel.add(c);
 	}
 	
 	public static class NetworkInput extends JPanel{

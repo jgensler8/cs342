@@ -152,7 +152,7 @@ public class Hand extends JPanel implements Serializable{
     }
 
     /**
-     * XXX todo
+     * get the card IN THE GUI that is selected
      */
 	public Card cardSelected(Card card) {
 		return (Card) this._group.getSelection();

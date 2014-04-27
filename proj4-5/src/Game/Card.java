@@ -27,6 +27,7 @@ public class Card extends JRadioButton implements Serializable{
 	public static final int WILD = 14;
 	
 	public static final int BLANK = -1;
+	public static final int DRAW = -2;
 	//colors
 	public final static int YELLOW = 1;
 	public final static int RED = 2;
@@ -46,7 +47,7 @@ public class Card extends JRadioButton implements Serializable{
 	 */
 	public Card(int rank, int color){
 		//validate type
-		if( rank < ONE || rank > WILD){
+		if( (rank < ONE || rank > WILD) && rank != DRAW ){
 			this._rank = BLANK;
 		}
 		else{
@@ -54,7 +55,7 @@ public class Card extends JRadioButton implements Serializable{
 		}
 		
 		//validate color
-		if( color != YELLOW && color != RED && color != GREEN && color != BLUE){
+		if( color != YELLOW && color != RED && color != GREEN && color != BLUE && color != DRAW){
 			this._color = BLANK;
 		}
 		else{
@@ -91,9 +92,10 @@ public class Card extends JRadioButton implements Serializable{
 	}
 	
 	/**
+	 * @return 
 	 * 
 	 */
-	public void render(){
+	public Card render(){
 		//construct the path to the image that this card represents
 		String path = "Game/CardImages/"+ this._rank;
 		switch(this._color){
@@ -112,14 +114,19 @@ public class Card extends JRadioButton implements Serializable{
 		case BLANK:
 			path += "_Blank.png";
 			break;
+		case DRAW:
+			path += "_Draw.png";
 		}
-
+		
 		ClassLoader cl = this.getClass().getClassLoader();
 		try {
 			this.setIcon( new ImageIcon( cl.getResource(path)));
 		} catch(Exception e){
-			this.setIcon( new ImageIcon( cl.getResource("Game/CardImages/1_Blue.png")));
+			this.setIcon( new ImageIcon( cl.getResource("Game/CardImages/-1_Blank.png")));
 			e.printStackTrace();
 		}
+		
+		this.setSize( this.getPreferredSize() );
+		return this;
 	}
 }
