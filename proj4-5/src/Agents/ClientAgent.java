@@ -6,8 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import Chat.ChatPanel;
-import Game.GamePanel;
 import Game.Player;
 
 public class ClientAgent {
@@ -19,17 +17,12 @@ public class ClientAgent {
 	private ObjectOutputStream _outStream;
 	private Thread _client;
 	
-	private ChatPanel _chatPanel;
-	private GamePanel _gamePanel;
 	private InetAddress _addr;
 	private int _port;
 
-	public ClientAgent(InetAddress addr, int port, ChatPanel chatPanel, GamePanel gamePanel){
+	public ClientAgent(InetAddress addr, int port){
 		this._addr = addr;
 		this._port = port;
-		//init the connection to the panels
-		this._chatPanel = chatPanel;
-		this._gamePanel = gamePanel;
 		
 		//init the connection
 		this._client = new Thread( new AcceptClient() );

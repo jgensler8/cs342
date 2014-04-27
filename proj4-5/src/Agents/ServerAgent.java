@@ -110,12 +110,10 @@ public class ServerAgent {
             playerRoom.addPlayer(player);
             
             // notify user of room assignment
-            /*
             dispatchMessage(playerRoom, Message.ADMIN, Message.USER,
                             Message.ROOM_ASSIGNMENT, playerRoom.getID());
-            */
             dispatchMessage(playerRoom, Message.SERVER, Message.USER,
-                    Message.IDENTITY, player);
+		                    Message.NAME_ASSIGNMENT, player.getName());
             
             // notify all users in room of new player
 			/* XXX
@@ -128,8 +126,6 @@ public class ServerAgent {
             // start listening
             start();
 		}
-
-
 
         /**
          * Internal message displayed on server GUI as update of activity

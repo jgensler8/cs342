@@ -3,7 +3,7 @@ package Game;
 import java.io.Serializable;
 import java.util.*;
 
-public class Pile implements CardAttributes, Serializable{
+public class Pile implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Stack<Card> _deck = null;
     private Stack<Card> _discards = null;
@@ -53,11 +53,11 @@ public class Pile implements CardAttributes, Serializable{
 	 * initialize deck for the Phase Ten Game
 	 */
 	public void initPhaseTen(){
-		for(int type = ONE; type <= WILD; type++){
-			this._deck.push( new Card(type, BLUE));
-			this._deck.push( new Card(type, YELLOW));
-			this._deck.push( new Card(type, RED));
-			this._deck.push( new Card(type, YELLOW));
+		for(int type = Card.ONE; type <= Card.WILD; type++){
+			this._deck.push( new Card(type, Card.BLUE));
+			this._deck.push( new Card(type, Card.YELLOW));
+			this._deck.push( new Card(type, Card.RED));
+			this._deck.push( new Card(type, Card.YELLOW));
 		}
 	}
 	

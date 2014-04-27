@@ -24,6 +24,7 @@ public class Message implements Serializable {
         public final static String USER = "$USER$";
         // common subjects
         public final static String ROOM_ASSIGNMENT = "$ROOM$"; //XXX Perhaps we can just send the whole identity back
+        public final static String NAME_ASSIGNMENT = "$NAME$"; 
         public final static String PLAYER_JOINED = "$JOINED$";
         public final static String PLAYER_EXITED = "$EXITED$";
         public final static String START_GAME = "$START$";
@@ -32,7 +33,6 @@ public class Message implements Serializable {
         public final static String DRAWCARD= "$DRAWCARD$";
         public final static String DISCARD = "$DISCARD$";
         public final static String PLAYHAND = "$PLAYHAND$";
-        public final static String IDENTITY = "$IDENTITY$";
 
         // data members
         private Object _sender;

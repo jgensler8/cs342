@@ -1,6 +1,8 @@
 package Game;
 
 import java.awt.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 import Agents.ClientAgent;
@@ -10,11 +12,18 @@ public class GamePanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private ArrayList<ClientAgent> _drawCardObservers;
+	private ArrayList<ClientAgent> _discardObservers;
+	private ArrayList<ClientAgent> _makePlayObservers;
 	
 	/**
 	 * Construct the game pane, creating the players and their hands.
 	 */
 	public GamePanel(){
+		_drawCardObservers = new ArrayList<ClientAgent>();
+		_discardObservers = new ArrayList<ClientAgent>();
+		_makePlayObservers = new ArrayList<ClientAgent>();
+		
 		//init the board (done with swt designer)
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -100,7 +109,13 @@ public class GamePanel extends JPanel{
 	 * @param options , the list of options the observer wishes to listen to
 	 */
 	public void addObserver(ClientAgent agent, int[] options) {
-		// TODO Auto-generated method stub
-		
+/*
+		if( event == 1)
+			this._drawCardObservers.add(agent);
+		else if( event == 2)
+			this._discardObservers.add(agent);
+		else if( event == 3)
+			this._makePlayObservers.add(agent);
+			*/
 	}
 }

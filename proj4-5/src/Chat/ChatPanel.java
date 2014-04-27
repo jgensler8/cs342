@@ -59,9 +59,6 @@ public class ChatPanel extends JPanel implements ActionListener, WindowListener,
 	 * observers
 	 */
 	private ArrayList<ClientAgent> _messageObservers;
-	private ArrayList<ClientAgent> _drawCardObservers;
-	private ArrayList<ClientAgent> _discardObservers;
-	private ArrayList<ClientAgent> _makePlayObservers;
 	private ArrayList<ClientAgent> _quitObservers;
 	
 
@@ -150,12 +147,6 @@ public class ChatPanel extends JPanel implements ActionListener, WindowListener,
 				this._messageObservers.add(agent);
 			else if( event == 101)
 				this._quitObservers.add(agent);
-			else if( event == 1)
-				this._drawCardObservers.add(agent);
-			else if( event == 2)
-				this._discardObservers.add(agent);
-			else if( event == 3)
-				this._makePlayObservers.add(agent);
 		}
 	}
 

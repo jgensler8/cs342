@@ -1,5 +1,6 @@
 package Game;
 
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.*;
 
@@ -22,6 +23,10 @@ public class Hand extends JPanel implements Serializable{
 	private final static String DELIMITER = "*";
 	
 	private ArrayList<Card> _cards;
+
+	private Card _selectedCard;
+	
+	private ButtonGroup _group;		//the group of cards INSIDE of this panel (GUI)
 	
 	/**
 	 * construct a hand;
@@ -53,13 +58,18 @@ public class Hand extends JPanel implements Serializable{
 	}
 	
 	/**
-	 * reset the hand's attributes
+	 * get the 
 	 */
-	public Hand render(){
+	public Hand render(Color background){
 		this.removeAll();
+		this._group = new ButtonGroup();
 		for(Card c : this._cards){
+			c.render();
+			this._group.add( c);
 			this.add(c);
 		}
+		this.setSize(this.getPreferredSize());
+		this.setBackground(background);
 		return this;
 	}
 	
@@ -140,4 +150,13 @@ public class Hand extends JPanel implements Serializable{
             }
             return true;
     }
+
+    /**
+     * XXX todo
+     */
+	public Card cardSelected(Card card) {
+		return (Card) this._group.getSelection();
+	}
+	
+	
 }
