@@ -1,0 +1,233 @@
+package Agents;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
+
+import Game.Player;
+import NameBuilder.NameBuilder;
+
+public class ServerAgent {
+    // maximum number of concurrent users allowed to be connected
+    public static final int MAX_CONN = 100;
+
+	static ArrayList<Room> _Rooms;
+	private ServerSocket _socket;
+	
+	/**
+	 * construct an agent to host the server and mediate the game and connections
+	 */
+	public ServerAgent(InetAddress address, int userPort){
+		_Rooms = new ArrayList<Room>();
+		
+		//start the server
+		Thread manager = new Thread( new AcceptManager() );
+		try {
+			_socket = new ServerSocket(userPort, MAX_CONN, address);
+			System.out.println("SERVER: STARTED AT:" + new Date().toString());
+			manager.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * 
+	 */
+	private class AcceptManager implements Runnable{
+		public void run(){
+			Socket clientSocket = null;
+			while(true){
+				try {
+					clientSocket = _socket.accept();
+					System.out.println("SERVER: GOT A CONNECTION");
+					AcceptClient client = new AcceptClient(clientSocket);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	/*
+	 * This thread is instantiated when a new socket (new client) needs to be accepted
+	 */
+	private class AcceptClient extends Thread{
+		private Socket _clientSocket;
+		private ObjectInputStream _inStream;
+		private ObjectOutputStream _outStream;
+
+		AcceptClient(Socket clientSocket) throws Exception {
+			_clientSocket = clientSocket;
+
+            _inStream = new ObjectInputStream(_clientSocket.getInputStream());
+            _outStream = new ObjectOutputStream(_clientSocket.getOutputStream());
+
+            // read incoming serialized message from client
+            Message message = (Message) _inStream.readObject();
+            // build player object from sender
+            Player player = (Player) message.getSender();
+            player.setSocket(_clientSocket);
+
+            // pointer to room that the player will be assigned to
+            Room playerRoom = null;
+            // find available room to play
+            for (Room room : _Rooms) {
+                    if (!room.isRoomFull()) {
+                            playerRoom = room;
+                            // assign player to new room
+                            player.setRoomID(playerRoom.getID());
+                            break;
+                    }
+            }
+
+            // no room found?
+            if (player.getRoomID().length() == 0) {
+                    // create new room and make this player the owner
+                    playerRoom = new Room(player);
+                    // add room to list of rooms hosted by server
+                    _Rooms.add(playerRoom);
+                    // assign player to new room
+                    player.setRoomID(playerRoom.getID());
+            }
+
+            // add player to new room
+            playerRoom.addPlayer(player);
+            // notify user of room assignment
+
+            dispatchMessage(playerRoom, Message.ADMIN, Message.USER,
+                            Message.ROOM_ASSIGNMENT, playerRoom.getID());
+            // notify all users in room of new player
+
+            dispatchMessage(playerRoom, Message.ADMIN,
+                            Message.ALL_USERS_IN_ROOM, Message.PLAYER_JOINED,
+                            playerRoom.getPlayers());
+
+            updateInternalMessage(message.toString());
+
+			System.out.println("adsfasdfasdf");
+            // start listening
+            start();
+			System.out.println("adsfasdfasdf");
+
+		}
+
+
+
+        /**
+         * Internal message displayed on server GUI as update of activity
+         * 
+         * @param msg
+         *            Content to display
+         */
+        private void updateInternalMessage(String msg) {
+        		System.out.println(msg);
+                //Date d = new Date(); //XXX
+                //_chatDisplay.insert(msg + "\nTime: " + d.toString()
+                //                + "\n-------------\n", 0);
+        }
+
+        /**
+         * Create a message and send to recipient(s)
+         * 
+         * @param room
+         *            room to dispatch message within
+         * @param sender
+         *            indicate who is sender the message, typically the admin
+         * @param recipient
+         *            indicate who is receiving, either single user or everyone
+         *            in room
+         * @param subject
+         *            indicate subject of message
+         * @param message
+         *            message content
+         * @throws IOException
+         */
+        private void dispatchMessage(Room room, Object sender,
+                        Object recipient, Object subject, Object body)
+                        throws IOException {
+                // create message and serialize as text
+                Message message = new Message(sender, recipient, subject, body);
+                // String data = message.serialize();
+                // determine audience
+                if (recipient.equals(Message.USER)) {
+                        // send to single user
+                        _outStream.writeObject(message);
+                } else if (recipient.equals(Message.ALL_USERS_IN_ROOM)) {
+                        // send to all in room
+                        for (Player player : room.getPlayers()) {
+
+                                (new ObjectOutputStream(player.getSocket()
+                                                .getOutputStream())).writeObject(message);
+                        }
+                }
+        }
+
+        /**
+         * loop through all rooms hosted on server and return room associated to
+         * given ID
+         * 
+         * @param roomID
+         *            unique identifier associated to room
+         * @return room object
+         */
+        private Room getRoom(String roomID) {
+                for (Room room : _Rooms) {
+                        if (room.getID().equals(roomID)) {
+                                return room;
+                        }
+                }
+                return null;
+        }
+        
+        /*
+         * there is a unique thread running for each player connected, and for
+         * as long as the user is connected the server will receive messages
+         * from the user here
+         */
+        public void run() {
+                while (true) {
+                        try {
+                                // read incoming serialized message from client
+                                Message message = (Message) _inStream.readObject();
+                                // build player object from sender
+                                Player player = (Player) message.getSender();
+
+                                // check subject
+                                /*
+                                switch (message.getSubject().toString()) {
+                                case Message.START_GAME:
+                                        Room room = getRoom(player.getRoomID());
+                                        if (room == null) {
+                                                // TODO: why wasn't room found?
+                                                break;
+                                        }
+                                        if (!room.isPlayerOwner(player)) {
+                                                // TODO: why wasn't player the owner?
+                                                break;
+                                        }
+                                        room.startGame();
+                                        // TODO: what else is needed?
+                                        break;
+                                }
+                                */
+
+                                updateInternalMessage(message.toString());
+
+                        } catch (Exception ex) {
+                                ex.printStackTrace();
+                        }
+                }
+        }
+	}
+	
+	
+}

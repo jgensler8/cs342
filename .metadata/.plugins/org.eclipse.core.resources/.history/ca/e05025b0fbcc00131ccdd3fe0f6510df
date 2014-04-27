@@ -1,0 +1,135 @@
+package Agents;
+
+import java.util.ArrayList;
+import java.util.UUID;
+
+import edu.uic.cs342.proj5.shared.Player;
+
+/**
+ * The Room class maintains to the current status of a given and players
+ * participating.
+ * 
+ * @author Azita
+ * 
+ */
+public class Room {
+
+        // minimum number of players to start the game
+        public final static int MIN_SIZE = 2;
+        // maximum number of players allowed in a room
+        public final static int MAX_SIZE = 6;
+
+        // unique identifier of room
+        private String _ID;
+        // list of players in room
+        private ArrayList<Player> _players = null;
+        // player that started this room
+        private Player _owner = null;
+        // flag if room open to players to join
+        private boolean _isLocked = false;
+        // current player whose turn it is
+        private Player _currPlyr = null;
+        // winner of game
+        private Player _winner = null;
+        // pile of deck and discard cards
+        private Pile _pile = null;
+
+        /**
+         * class constructor instantiated by user
+         * 
+         * @param owner
+         *            reference to player that started this room
+         */
+        public Room(Player owner) {
+                _owner = owner;
+                // generate random unique identifier
+                _ID = UUID.randomUUID().toString();
+                _pile = new Pile();
+        }
+
+        /**
+         * @return Room's Unique identifier
+         */
+        public String getID() {
+                return _ID;
+        }
+
+        /**
+         * check if player is the owner of this room
+         * 
+         * @param player
+         *            player to check
+         * @return true if player is the owner of this room, otherwise false
+         */
+        public boolean isPlayerOwner(Player player) {
+                return _owner.getID().equals(player.getID());
+        }
+
+        /**
+         * @return true if room has enough players to start game
+         */
+        public boolean isMorePlayersNeed() {
+                return _players.size() >= MIN_SIZE;
+        }
+
+        /**
+         * @return true if number of players that should be playing in this room is
+         *         equal to the number of players joined in this room to play,
+         *         otherwise false
+         */
+        public boolean isRoomFull() {
+                return MAX_SIZE == _players.size();
+        }
+
+        /**
+         * lock room so no more players can join
+         */
+        public void startGame() {
+                _isLocked = true;
+        }
+
+        /**
+         * add to player to this room
+         * 
+         * @param player
+         *            player to add
+         * @return true if there is room available for player, otherwise false
+         */
+        public boolean addPlayer(Player player) {
+                if (_players == null)
+                        _players = new ArrayList<Player>();
+                if (_players.size() >= MAX_SIZE) {
+                        // TODO: relay message of room size limit
+                        return false;
+                }
+                _players.add(player);
+                return true;
+        }
+
+        /**
+         * remove player from this room
+         * 
+         * @param player
+         *            player to remove
+         * @return true if player was found and removed, otherwise false
+         */
+        public boolean removePlayer(Player player) {
+                if (_players.contains(player)) {
+                        _players.remove(player);
+                        return true;
+                } else {
+                        // TODO: print error
+                        return false;
+                }
+        }
+
+        /**
+         * return all players inside room
+         * 
+         * @return list of player objects
+         */
+        public ArrayList<Player> getPlayers() {
+                return _players;
+        }
+}
+

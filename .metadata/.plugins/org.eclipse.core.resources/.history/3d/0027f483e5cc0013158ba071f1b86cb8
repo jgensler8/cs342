@@ -1,0 +1,259 @@
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.*;
+import java.net.*;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+public class ChatPanel extends JPanel implements ActionListener, WindowListener, KeyListener {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public String _serverHostname = "localhost";
+	public int _serverPort = 5217;
+
+	/**
+	 * GUI Components
+	 */
+	private JFrame _chatZoo; // overall frame
+	private JTextArea _chatDisplay; // displays chat messages
+	private JTextField _chatBox; // user text box
+	private JPanel _userPanel;
+	private ArrayList<JCheckBox> _userCheckboxes;
+	private JButton _sendButton; // submit user chat message
+ 
+	/**
+	 * User Settings
+	 */
+	private String _buddy;
+	private String _userName;
+
+	/**
+	 * Socket Settings
+	 */
+	private Socket _soc;
+	private Thread _daemon = null;
+	private DataOutputStream _outStream;
+	private DataInputStream _inStream;
+	
+	/**
+	 * observers
+	 */
+	private ArrayList<ClientAgent> _messageObservers;
+	private ArrayList<ClientAgent> _drawCardObservers;
+	private ArrayList<ClientAgent> _discardObservers;
+	private ArrayList<ClientAgent> _makePlayObservers;
+	private ArrayList<ClientAgent> _quitObservers;
+	
+
+	public ChatPanel(){
+		// initialize GUI Components
+		initializeGUI();
+		// initialize User and Socket Settings
+		this._messageObservers = new ArrayList<ClientAgent>();
+		this._drawCardObservers = new ArrayList<ClientAgent>();
+		this._discardObservers = new ArrayList<ClientAgent>();
+		this._makePlayObservers = new ArrayList<ClientAgent>();
+		this._quitObservers = new ArrayList<ClientAgent>(); //XXX
+	}
+
+	/**
+	 * 
+	 */
+	public ChatPanel(String userName, String buddy, String hostname, int port) throws Exception {
+		this._serverHostname = hostname;
+		this._serverPort = port;
+		
+		// initialize GUI Components
+		initializeGUI();
+	}
+
+	/**
+	 * 
+	 */
+	public JFrame getFrame() {
+		return _chatZoo;
+	}
+
+	// Initializes contents of frame
+	private void initializeGUI() {
+		this.setBackground(new Color(176, 196, 222));
+		this.setBounds(0, 0, 640, 370);
+		//this.addWindowListener(this);
+		this.setLayout(null);
+
+		_chatDisplay = new JTextArea();
+		_chatDisplay.setEditable(false);
+		_chatDisplay.setBounds(16, 29, 415, 234);
+		this.add(_chatDisplay);
+
+		_chatBox = new JTextField();
+		_chatBox.setBounds(16, 285, 285, 40);
+		_chatBox.addKeyListener(this);
+		this.add(_chatBox);
+
+		_userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		_userPanel.setBounds(454, 25, 160, 300);
+		this.add(_userPanel);
+
+		_userCheckboxes = new ArrayList<JCheckBox>();
+
+		JLabel lblOnlineUsers = new JLabel("ONLINE USERS");
+		lblOnlineUsers.setForeground(new Color(0, 0, 0));
+		lblOnlineUsers.setFont(new Font("Franklin Gothic Medium", Font.PLAIN,
+				13));
+		lblOnlineUsers.setBounds(474, 6, 80, 16);
+		this.add(lblOnlineUsers);
+
+		_sendButton = new JButton("SUBMIT");
+		_sendButton.setIcon(new ImageIcon("monkey.png"));
+		_sendButton.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 13));
+		_sendButton.setBounds(313, 285, 120, 40);
+		_sendButton.addActionListener(this);
+
+		this.add(_sendButton);
+	}
+
+	/**
+	 * add an observer to be notified of the events given
+	 * @param agent , the agent to be notified of events
+	 * @param events , the list of events that the agent "subscribes" to
+	 * events:
+	 * 	100: user wants to send message
+	 *  101: user is quitting ?
+	 *  1: user wants to draw a card
+	 *  2: user wants to discard a card
+ 	 *  3: user wants to make a play
+	 */
+	public void addObserver(ClientAgent agent, int events[]){
+		System.out.println(events);
+		for(int event : events){
+			System.out.println(event);
+			if(event == 100)
+				this._messageObservers.add(agent);
+			else if( event == 101)
+				this._quitObservers.add(agent);
+			else if( event == 1)
+				this._drawCardObservers.add(agent);
+			else if( event == 2)
+				this._discardObservers.add(agent);
+			else if( event == 3)
+				this._makePlayObservers.add(agent);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(_sendButton)) {
+			System.out.println("asdfddd");
+			for( ClientAgent agent : this._messageObservers){
+				System.out.println("asdfddd");
+				agent.sendMessage("asdf");
+			}
+		} else if (_userCheckboxes.contains(e.getSource())) {
+			StringBuilder buddies = new StringBuilder();
+			String delim = "";
+			int iCount = 0;
+			for (JCheckBox user : _userCheckboxes) {
+				if (user.equals(e.getSource())) {
+					user.setSelected(((JCheckBox) e.getSource()).isSelected());
+				}
+				if (user.isSelected()) {
+					buddies.append(delim + user.getText());
+					delim = ";";
+					iCount++;
+				}
+			}
+			if (iCount == _userCheckboxes.size()) {
+				_buddy = "$PUBLIC$";
+			} else {
+				_buddy = buddies.toString();
+			}
+		}
+	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosed(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent arg0) {
+		for(ClientAgent agent: this._quitObservers){
+			//agent.quit();
+		}
+		_chatZoo.setVisible(false);
+		_chatZoo.dispose();
+		System.exit(1);
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getSource().equals(_chatBox)) {
+			if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+				for(ClientAgent agent : this._messageObservers){
+					agent.sendMessage( this._chatBox.getText() );
+				}
+			}
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+}

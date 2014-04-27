@@ -1,0 +1,22 @@
+package Chat;
+
+import Agents.Message;
+
+public class ClientPanel {
+	
+	/**
+	 * send text to the server
+	 * @param message, the message to be sent
+	 */
+	public void sendMessage(String text) {
+		try {
+			Message message = new Message(this._myPlayer, Message.ALL_USERS_IN_ROOM, Message.TEXT, text );
+			System.out.println("CLIENT AGENT: MESSAGE TO SEND: " + message.toString() );
+			this._outStream.writeObject(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+}

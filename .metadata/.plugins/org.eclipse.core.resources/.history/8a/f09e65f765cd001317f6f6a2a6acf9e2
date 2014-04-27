@@ -1,0 +1,124 @@
+package Agents;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+
+import Chat.ChatPanel;
+import Game.GamePanel;
+import Game.Player;
+
+public class ClientAgent {
+
+	private Player _myPlayer;
+	
+	private Socket _socket;
+	private ObjectInputStream _inStream;
+	private ObjectOutputStream _outStream;
+	private Thread _client;
+	
+	private ChatPanel _chatPanel;
+	private GamePanel _gamePanel;
+	private InetAddress _addr;
+	private int _port;
+
+	public ClientAgent(InetAddress addr, int port, ChatPanel chatPanel, GamePanel gamePanel){
+		this._addr = addr;
+		this._port = port;
+		//init the connection to the panels
+		this._chatPanel = chatPanel;
+		this._gamePanel = gamePanel;
+		
+		//init the connection
+		this._client = new Thread( new AcceptClient() );
+		this._client.start();
+	}
+
+	private class AcceptClient implements Runnable{
+		public AcceptClient(){
+			try {
+				_socket = new Socket(_addr, _port);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void run() {
+			try {
+				System.out.println("CLIENT THREAD: STARTING IO STREAMS");
+				//_inStream = new ObjectInputStream(_socket.getInputStream());
+				_outStream = new ObjectOutputStream(_socket.getOutputStream());
+			
+                // introduce self to server
+				System.out.println("CLIENT THREAD: INTRODUCING TO SERVER");
+                Message message = new Message("", "", Message.PLAYER_JOINED, "");
+                _outStream.writeObject(message);
+				_myPlayer = new Player("NAMEFROMCLIENT WOULDBEASSIGNEDFROMSERVER");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			while (true) {
+				try {
+					//Message message = (Message) _inStream.readObject();
+//					System.out.println(message);
+					//cool switch case with message
+					/*
+					String[] msgArray = _inStream.readUTF().split("\\|\\|");
+					if (msgArray.length > 1) {
+						if (msgArray[0].equals(Message.ALL_USERS_IN_ROOM)) {
+							//_chatPanel.setStuff();
+							_userName = msgArray[1];
+						} else if (msgArray[0].equals("$DATA$")) {
+							_chatPanel.appendToDisplay("\n" + msgArray[1]);
+						} else if (msgArray[0].equals("$ERROR$")) {
+							_chatPanel.appendToDisplay("\n" + msgArray[1]);
+						} else if (msgArray[0].equals("$USERS$")) {
+							// Relay update list of online users to everyone
+							_outStream.writeUTF(formatMsgToSrv("$UPDATE$",
+									msgArray[1].trim()));
+						} else if (msgArray[0].equals("$UPDATE$")) {
+							String[] userArray = msgArray[1].trim().split("\\~");
+							ArrayList<String> users = new ArrayList<String>();
+							for( String user : userArray)
+								users.add(user);
+							_chatPanel.updateConnectedList(users);
+						}
+					}
+					 */
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * called when the chat window is closing and the agent must tell the server
+	 * that it is closing the conenction
+	 */
+	public void quit(){
+		try {
+            // send message to server that client disconnected, so server can
+            // notify other clients with the updated list of online users
+            _outStream.writeObject(new Message(this._myPlayer, "", Message.PLAYER_EXITED, ""));
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	/**
+	 * send text to the server
+	 * @param message, the message to be sent
+	 */
+	public void sendMessage(String text) {
+		try {
+			Message message = new Message(this._myPlayer, Message.ALL_USERS_IN_ROOM, Message.TEXT, text );
+			System.out.println("CLIENT AGENT: MESSAGE TO SEND: " + message.toString() );
+			this._outStream.writeObject(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

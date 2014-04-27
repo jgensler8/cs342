@@ -1,0 +1,57 @@
+package Game;
+
+import java.io.*;
+import java.util.*;
+
+public class Game implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	ArrayList<Player> _players;
+	Pile _pile;
+	Table _table;
+	
+	/**
+	 * 
+	 */
+	public Game(ArrayList<String> playersNames){
+		//initialize the decks
+		this._pile = new Pile();
+		this._pile.initPhaseTen();
+		
+		//initialize the players
+		this._players = new ArrayList<Player>();
+		for(int playerIndex = 0; playerIndex < playersNames.size(); playerIndex++){
+			this._players.add(playerIndex, new Player( playersNames.get(playerIndex) ) );
+			this._players.get(playerIndex).getHand().addCards( this._pile.draw(5) );
+		}
+	}
+	
+	
+	//// ************************ moves of a player *****************************
+	
+	/**
+	 * called when a player wants to discard a card from their hand
+	 * @param card , the card that the player wished to discard
+	 */
+	public void discard( Card card){
+		
+	}
+	
+	/**
+	 * called when a player wants to draw a card
+	 * @param deckType , 1: draw deck 2: discard deck
+	 */
+	public void drawcard( int deckType){
+		
+	}
+	
+	/**
+	 * called when a player wants to make a play with the selected cards
+	 */
+	public void makePlay( ArrayList<Card> cards){
+		//Azita's validation and phase storage 
+		//perhaps the phase that the player is on should be stored in the player class
+	}
+}

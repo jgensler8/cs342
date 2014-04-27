@@ -2,3 +2,18 @@
 1398356525639	Move compilation units
 1398356548162	Move compilation unit
 1398460921325	Rename type 'ChatServer'
+1398477516931	Move compilation units
+1398477536006	Move compilation unit
+1398477545308	Move compilation unit
+1398486791976	Rename type 'Deck'
+1398487054467	Rename field 'ConnectedUsers'
+1398487061649	Rename field 'ClientSockets'
+1398487929013	Rename field '_type'
+1398487941320	Rename local variable 'type'
+1398487976504	Rename method 'getType'
+1398489230709	Rename field '_draw'
+1398527396402	Rename field '_soc'
+1398528161368	Rename field '_daemon'
+1398530607383	Rename field 'MESSAGE'
+1398532127837	Rename field '_Rooms'
+1398533815804	Delete element
