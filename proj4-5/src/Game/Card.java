@@ -25,6 +25,8 @@ public class Card extends JRadioButton implements Serializable{
 	public static final int TWELVE = 12;
 	public static final int SKIP = 13;
 	public static final int WILD = 14;
+	
+	public static final int BLANK = -1;
 	//colors
 	public final static int YELLOW = 1;
 	public final static int RED = 2;
@@ -45,7 +47,7 @@ public class Card extends JRadioButton implements Serializable{
 	public Card(int rank, int color){
 		//validate type
 		if( rank < ONE || rank > WILD){
-			this._rank = -1;
+			this._rank = BLANK;
 		}
 		else{
 			this._rank = rank;
@@ -53,7 +55,7 @@ public class Card extends JRadioButton implements Serializable{
 		
 		//validate color
 		if( color != YELLOW && color != RED && color != GREEN && color != BLUE){
-			this._color = -1;
+			this._color = BLANK;
 		}
 		else{
 			this._color = color;
@@ -106,6 +108,9 @@ public class Card extends JRadioButton implements Serializable{
 			break;
 		case GREEN:
 			path += "_Green.png";
+			break;
+		case BLANK:
+			path += "_Blank.png";
 			break;
 		}
 

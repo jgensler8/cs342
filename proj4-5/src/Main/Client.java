@@ -11,6 +11,7 @@ import Agents.ClientAgent;
 import Agents.ServerAgent;
 import Game.Card;
 import Game.Hand;
+import Game.Pile;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -109,6 +110,12 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		temp.addCard( new Card(1,2));
 		temp.addCard( new Card(1,3));
 		this.renderHand( temp);
+		
+		
+		Pile pile = new Pile();
+		pile.initPhaseTen();
+		this.renderDiscard(pile);
+		this.renderDraw(pile);
 	}
 
 	/**
@@ -212,6 +219,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								JButton btnSubmitPhase_1 = new JButton("Go to Phase Submission");
 								btnSubmitPhase_1.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent arg0) {
+										
 									}
 								});
 								btnSubmitPhase_1.setBounds(328, 234, 186, 29);
@@ -391,14 +399,9 @@ public class Client implements Runnable, ActionListener, WindowListener,
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		try {
-			// send message to server that client disconnected, so server can
-			// notify other clients with the updated list of online users
-			_outStream.writeUTF(formatMsgToSrv("$LOGOUT$"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// send message to server that client disconnected, so server can
+		// notify other clients with the updated list of online users
+		if( this._agent != null) this._agent.quit();
 		_gameFrame.setVisible(false);
 		_gameFrame.dispose();
 		System.exit(1);
@@ -486,7 +489,25 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 * 
 	 */
 	private void renderHand(Hand hand){
+		//this.handPanel.handPart.clearAll()
+		//this.handPanel.handPart.add( hand.render(...))
+		
 		this.handPanel.add( hand.render( this.handPanel.getBackground() ) );
+	}
+	
+	/**
+	 * 
+	 */
+	private void renderDiscard(Pile pile){
+		Card c = pile.renderDiscard();
+		this.tablePanel.tgl
+	}
+	
+	/**
+	 * 
+	 */
+	private void renderDraw(Pile pile){
+		//this.tablePanel.add( pile.renderDraw());
 	}
 	
 	public static class NetworkInput extends JPanel{
