@@ -15,13 +15,19 @@ import Game.PhasePanel;
 import Game.Pile;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
@@ -542,7 +548,22 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 */
 	private void renderDiscard(Pile pile){
 		this.discardPart.removeAll();
-		this.discardPart.add( pile.renderDiscard() );
+		Component c = pile.renderDiscard();
+		c.addMouseListener( new MouseListener(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("discard pile clicked");
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+		});
+		this.discardPart.add( c );
 	}
 	
 	/**
@@ -550,7 +571,22 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 */
 	private void renderDraw(Pile pile){
 		this.drawPart.removeAll();
-		this.drawPart.add( pile.renderDraw());
+		Component c = pile.renderDraw();
+		c.addMouseListener( new MouseListener(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("draw pile clicked");
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+		});
+		this.drawPart.add( c);
 	}
 	
 	public static class NetworkInput extends JPanel{
