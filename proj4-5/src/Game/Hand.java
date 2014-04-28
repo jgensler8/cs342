@@ -56,6 +56,14 @@ public class Hand extends JPanel implements Serializable{
 	}
 	
 	/**
+	 * remove a card from the hand
+	 * @param index of the card to remove
+	 */
+	public Boolean removeCard(Card c){
+		return this._cards.remove(c);
+	}
+	
+	/**
 	 * get the 
 	 */
 	public Hand render(Color background){

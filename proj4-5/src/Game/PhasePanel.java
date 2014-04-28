@@ -2,11 +2,14 @@ package Game;
 
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.*;
 
 import javax.swing.*;
 
 public class PhasePanel extends JPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int p;
 	private Hand _otherHand;			//hand in hand part panel
 	private JPanel phaseHandOnePanel;
@@ -14,62 +17,67 @@ public class PhasePanel extends JPanel{
 	private Hand phaseHandOne;			//cards you are playing 
 	private Hand phaseHandTwo;			//more cards you are playing
 	
-	
 	public PhasePanel(int whichPhase, Hand myHand) {
+		this.setBackground( Color.RED );
 		this.p = whichPhase;
 		this.phaseHandOne = new Hand();
 		this.phaseHandTwo = new Hand();
 		this._otherHand = myHand;
 		
-		if (p == 4 || p == 5 || p == 6 || p == 8) {
-			JPanel phasePart = new JPanel();						
-			phasePart.setBackground(new Color(255, 255, 0));
-			phasePart.setBounds(6, 23, 448, 274);
-			this.add(phasePart);
-		}
-		else {
-			JPanel phasePartTwo = new JPanel();
-			phasePartTwo.setBackground(new Color(255, 255, 0));
-			phasePartTwo.setBounds(6, 25, 448, 281);
-			phasePartTwo.setLayout(null);
-			
-			phaseHandOnePanel = new JPanel();
-			phaseHandOnePanel.setBounds(0, 0, 448, 138);
-			phasePartTwo.add(phaseHandOnePanel);
-			phaseHandOnePanel.setBackground(new Color(255, 255, 0));
-			
+		switch( whichPhase){
+		case 1:
+		case 2:
+		case 3:
+		case 7:
+		case 9:
+		case 10:
 			phaseHandTwoPanel = new JPanel();
 			phaseHandTwoPanel.setBounds(0, 143, 448, 138);
-			phasePartTwo.add(phaseHandTwoPanel);
-			phaseHandTwoPanel.setBackground(Color.YELLOW);
-			
-			this.add(phasePartTwo);
-			this.add(phaseHandOnePanel);
+			phaseHandTwoPanel.setBackground(Color.BLUE);
 			this.add(phaseHandTwoPanel);
+		case 4:
+		case 5:
+		case 6:
+		case 8:
+			phaseHandOnePanel = new JPanel();
+			phaseHandOnePanel.setBounds(0, 0, 448, 138);
+			phaseHandOnePanel.setBackground(Color.GREEN);
+			this.add(phaseHandOnePanel);
 		}
 	}
 	
 	/**
-	 * 
+	 * remove the currently selected card from the hand that was passed to the constructor.
+	 * Place this exact card into the section that is specified by the argument
+	 * @param hand , the hand that the currently selected card should be placed in
 	 */
-	public void addTo( int hand){
+	public PhasePanel addTo( int hand){
 		if(hand == 1){
 			Card c = this._otherHand.cardSelected();
-			this._otherHand.remove(c);
+			c.unselect();
+			this.phaseHandOne.addCard( c);
+			this._otherHand.removeCard(c);
 			this._otherHand.render( this._otherHand.getBackground() );
-			this.phaseHandOne.add( c);
+			
 			this.phaseHandOnePanel.removeAll();
-			this.phaseHandOnePanel.add( this.phaseHandOne.render(new Color(255, 255, 0)) );
-			//XXX maybe resize etc
+			this.phaseHandOnePanel.add( this.phaseHandOne.render(Color.BLUE) );
+			this.phaseHandOnePanel.setBackground( Color.BLACK );
+			this.phaseHandOnePanel.setSize( this.phaseHandOnePanel.getPreferredSize());
 		}
 		else if( hand == 2){
 			Card c = this._otherHand.cardSelected();
-			this._otherHand.remove(c);
+			c.unselect();
+			this.phaseHandTwo.addCard( c);
+			this._otherHand.removeCard(c);
 			this._otherHand.render( this._otherHand.getBackground() );
-			this.phaseHandTwo.add( c);
+			
 			this.phaseHandTwoPanel.removeAll();
-			this.phaseHandTwoPanel.add( this.phaseHandTwo.render(Color.YELLOW) );
-			//XXX maybe resize etc
+			this.phaseHandTwoPanel.add( this.phaseHandTwo.render( Color.YELLOW));
+			this.phaseHandOnePanel.setBackground( Color.YELLOW );
+			this.phaseHandTwoPanel.setSize( this.phaseHandTwoPanel.getPreferredSize());
 		}
+		this.setSize( this.getPreferredSize());
+		System.out.println(this);
+		return this;
 	}
 }

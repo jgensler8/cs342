@@ -1,0 +1,100 @@
+package Game;
+
+import java.awt.Color;
+import java.io.Serializable;
+import java.util.*;
+
+import javax.swing.*;
+
+public class PhasePanel extends JPanel{
+	private int p;
+	private Hand _otherHand;			//hand in hand part panel
+	private JPanel phaseHandOnePanel;
+	private JPanel phaseHandTwoPanel;
+	private Hand phaseHandOne;			//cards you are playing 
+	private Hand phaseHandTwo;			//more cards you are playing
+	
+	public PhasePanel(int whichPhase, Hand myHand) {
+		this.p = whichPhase;
+		this.phaseHandOne = new Hand();
+		this.phaseHandTwo = new Hand();
+		this._otherHand = myHand;
+		
+		switch( whichPhase){
+		case 1:
+		case 2:
+		case 3:
+		case 7:
+		case 9:
+		case 10:
+		
+		
+		case 4:
+		case 5:
+		case 6:
+		case 8:
+		
+		}
+		if (p == 4 || p == 5 || p == 6 || p == 8) {
+			JPanel phasePartOne = new JPanel();						
+			phasePartOne.setBackground(new Color(255, 255, 0));
+			phasePartOne.setBounds(6, 23, 448, 274);
+			this.add(phasePartOne);
+			
+			phaseHandOnePanel = new JPanel();
+			phaseHandOnePanel.setBounds(0, 0, 448, 138);
+			phaseHandOnePanel.setBackground(new Color(255, 255, 0));
+			phasePartOne.add(phaseHandOnePanel);
+			
+			this.add(phasePartOne);
+		}
+		else {
+			JPanel phasePartTwo = new JPanel();
+			phasePartTwo.setBackground(new Color(255, 255, 0));
+			phasePartTwo.setBounds(6, 25, 448, 281);
+			phasePartTwo.setLayout(null);
+			
+			phaseHandOnePanel = new JPanel();
+			phaseHandOnePanel.setBounds(0, 0, 448, 138);
+			phasePartTwo.add(phaseHandOnePanel);
+			phaseHandOnePanel.setBackground(new Color(255, 255, 0));
+			
+			phaseHandTwoPanel = new JPanel();
+			phaseHandTwoPanel.setBounds(0, 143, 448, 138);
+			phasePartTwo.add(phaseHandTwoPanel);
+			phaseHandTwoPanel.setBackground(Color.YELLOW);
+			
+			this.add(phasePartTwo);
+			phasePartTwo.add(phaseHandTwoPanel);
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public PhasePanel addTo( int hand){
+		this.removeAll();
+		if(hand == 1){
+			Card c = this._otherHand.cardSelected();
+			this._otherHand.remove(c);
+			//this._otherHand.render( this._otherHand.getBackground() );
+			this.phaseHandOne.add( c);
+			this.phaseHandOnePanel.removeAll();
+			//this.phaseHandOnePanel.add( this.phaseHandOne.render(new Color(255, 255, 0)) );
+			this.add( this.phaseHandOnePanel);
+			return this;
+			//XXX maybe resize etc
+		}
+		else if( hand == 2){
+			Card c = this._otherHand.cardSelected();
+			this._otherHand.remove(c);
+			//this._otherHand.render( this._otherHand.getBackground() );
+			this.phaseHandTwo.add( c);
+			this.phaseHandTwoPanel.removeAll();
+			//this.phaseHandTwoPanel.add( this.phaseHandTwo.render(Color.YELLOW) );
+			return this;
+			//XXX maybe resize etc
+		}
+		return this;
+	}
+}

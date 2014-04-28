@@ -34,6 +34,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -116,10 +117,9 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		
 		Hand temp = new Hand();
 		temp.addCard( new Card(1,1));
-		temp.addCard( new Card(1,2));
-		temp.addCard( new Card(1,3));
+		temp.addCard( new Card(3,2));
+		temp.addCard( new Card(7,3));
 		this.renderHand( temp);
-		
 		
 		Pile pile = new Pile();
 		pile.initPhaseTen();
@@ -127,7 +127,17 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		this.renderDiscard(pile);
 		this.renderDraw(pile);
 		
-		System.out.println( temp.cardSelected() );
+		//System.out.println( temp.cardSelected() ); //used to get the users card selected
+		
+		PhasePanel p = new PhasePanel(1, temp);
+		phasePart.removeAll();
+		phasePart.add( p.addTo(1) );
+		phasePart.removeAll();								//make sure we "refresh" the view
+		phasePart.add( p.addTo(2) );
+		phasePart.setBackground( Color.LIGHT_GRAY);			//don't forget to make this part match
+		phasePart.setSize( phasePart.getPreferredSize());	//as always...
+		
+		//JOptionPane.showMessageDialog(null, p); //show what the phase panel looks like rendered
 	}
 
 	/**
@@ -261,7 +271,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								phasePanel.setLayout(null);
 								
 								phasePart = new JPanel();
-								phasePanel.add(phasePart);
+								phasePanel.add( phasePart);
 								
 								JLabel lblNewLabel_1 = new JLabel("Phase Submission");
 								lblNewLabel_1.setForeground(Color.RED);
