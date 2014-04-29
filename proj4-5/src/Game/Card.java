@@ -55,21 +55,8 @@ public class Card extends JToggleButton implements Serializable, MouseListener{
 	 * @param color should match those in CardAttributes Interface
 	 */
 	public Card(int rank, int color){
-		//validate type
-		if( (rank < ONE || rank > WILD) && rank != DRAW ){
-			this._rank = BLANK;
-		}
-		else{
-			this._rank = rank;
-		}
-		
-		//validate color
-		if( color != YELLOW && color != RED && color != GREEN && color != BLUE && color != DRAW){
-			this._color = BLANK;
-		}
-		else{
-			this._color = color;
-		}
+		this._color = color;
+		this._rank = rank;
 	}
 	
 	/**
@@ -97,6 +84,7 @@ public class Card extends JToggleButton implements Serializable, MouseListener{
 			this.setBorderPainted(true);
 		}
 		
+		//System.out.println( this._color + " " + this._rank);
 		//construct the path to the image that this card represents
 		this._hand = containedBy;
 		String path = "Game/CardImages/"+ this._rank;

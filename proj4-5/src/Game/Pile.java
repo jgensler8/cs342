@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Pile implements Serializable{
-    private static int[] colors = new int[] { Card.GREEN, Card.BLUE,
+	private static final long serialVersionUID = 1L;
+
+	private static int[] colors = new int[] { Card.GREEN, Card.BLUE,
                     Card.RED, Card.YELLOW };
 
     // deck to draw card
@@ -31,17 +33,21 @@ public class Pile implements Serializable{
             for (int iPair = 1; iPair <= 2; iPair++) {
                     for (int iColor : colors) {
                             for (int iRank = 1; iRank <= 12; iRank++) {
-                                    _deck.push(new Card(iColor, iRank));
+                                    _deck.push(new Card(iRank, iColor));
                             }
                     }
             }
             // eight Wild cards
             for (int i = 1; i <= 8; i++) {
-                    _deck.push(new Card(0, Card.WILD));
+            	for (int iColor : colors) {
+                    _deck.push(new Card(Card.WILD, iColor));
+            	}
             }
             // four Skip cards
             for (int i = 1; i <= 4; i++) {
-                    _deck.push(new Card(0, Card.SKIP));
+            	for (int iColor : colors) {
+            		_deck.push(new Card(Card.SKIP, iColor));
+            	}
             }
             // shuffle deck
             shuffle();
@@ -208,5 +214,20 @@ public class Pile implements Serializable{
 	 */
 	public void returnCard( Card c){
 		this._discards.push( c);
+	}
+	
+	/**
+	 * 
+	 */
+	public Card popDiscard(){
+		return this._discards.pop();
+	}
+	
+	/**
+	 * 
+	 */
+	public Card popDraw(){
+		System.out.println(this._deck.peek().getRank() + " " + this._deck.peek().getColor());
+		return this._deck.pop();
 	}
 }

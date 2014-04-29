@@ -75,7 +75,8 @@ public class Hand extends JPanel implements Serializable{
 			c.unselect();
 			this.add(c);
 		}
-		this._cards.get(0).select();
+		
+		if(!this._cards.isEmpty()) this._cards.get(0).select();
 		
 		this.setSize(this.getPreferredSize());
 		this.setBackground(background);

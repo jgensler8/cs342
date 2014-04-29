@@ -71,10 +71,16 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private JButton _sendButton; // submit user chat message
 
 	/**
-	 * User Settings
+	 * User + Game Settings
 	 */
 	private String _buddy;
 	private String _userName;
+	private Hand _usersHand;
+	private Card _topDiscard;
+	private Card _topDraw;
+	private Pile _pile;
+	private Boolean _isDrawPhase;
+	private Boolean _isReturnPhase;
 
 	/**
 	 * Socket Settings
@@ -90,6 +96,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private JPanel tablePart;
 	private JPanel handPart;
 	private JPanel phasePart;
+	
 	
 	/**
 	 * Main entry point of the program
@@ -123,25 +130,28 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		// initialize User and Socket Settings
 		//initializeSettings("$REPLACE_TOKEN$", buddy);
 		
-		Hand temp = new Hand();
-		temp.addCard( new Card(1,1));
-		temp.addCard( new Card(3,2));
-		temp.addCard( new Card(7,3));
-		temp.addCard( new Card(2,2));
-		temp.addCard( new Card(5,1));
-		temp.addCard( new Card(5,2));
-		temp.addCard( new Card(5,3));
-		temp.addCard( new Card(5,4));
-		this.renderHand( temp);
+		_isDrawPhase = false;
+		_isReturnPhase = true;
 		
-		Pile pile = new Pile();
-		//pile.returnCard( new Card(1,1) );
-		this.renderDiscard(pile);
-		this.renderDraw(pile);
+		_usersHand = new Hand();
+		_usersHand.addCard( new Card(1,1));
+		_usersHand.addCard( new Card(3,2));
+		_usersHand.addCard( new Card(7,3));
+		_usersHand.addCard( new Card(2,2));
+		_usersHand.addCard( new Card(5,1));
+		_usersHand.addCard( new Card(5,2));
+		_usersHand.addCard( new Card(5,3));
+		_usersHand.addCard( new Card(5,4));
+		this.renderHand();
+		
+		_pile = new Pile();
+		_pile.returnCard( new Card(1,2) );
+		this.renderDiscard();
+		this.renderDraw();
 		
 		//System.out.println( temp.cardSelected() ); //used to get the users card selected
 		
-		PhasePanel p = new PhasePanel(1, temp);
+		PhasePanel p = new PhasePanel(1, _usersHand);
 		phasePart.removeAll();
 		phasePart.add( p.addTo(1) );
 		phasePart.removeAll();								//make sure we "refresh" the view
@@ -216,70 +226,70 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		
 		JPanel chatPanel = new JPanel();
 		chatPanel.setBackground(Color.BLUE);
-		chatPanel.setBounds(6, 6, 460, 321);
+		chatPanel.setBounds(6, 6, 280, 396);
 		_gameFrame.getContentPane().add(chatPanel);
 		chatPanel.setLayout(null);
 		
 				_chatBox = new JTextField();
-				_chatBox.setBounds(24, 18, 285, 40);
+				_chatBox.setBounds(16, 18, 157, 40);
 				chatPanel.add(_chatBox);
 				
 						_sendButton = new JButton("SUBMIT");
-						_sendButton.setBounds(321, 19, 120, 40);
+						_sendButton.setBounds(185, 19, 58, 40);
 						chatPanel.add(_sendButton);
 						//_sendButton.setIcon(new ImageIcon("monkey.png"));
 						_sendButton.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 13));
 						
 								_chatDisplay = new JTextArea();
-								_chatDisplay.setBounds(26, 70, 285, 237);
+								_chatDisplay.setBounds(16, 70, 154, 301);
 								chatPanel.add(_chatDisplay);
 								_chatDisplay.setEditable(false);
 								
 										_userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 										_userPanel.setBackground(Color.WHITE);
-										_userPanel.setBounds(331, 97, 113, 210);
+										_userPanel.setBounds(182, 97, 84, 274);
 										chatPanel.add(_userPanel);
 										
 												JLabel lblOnlineUsers = new JLabel("ONLINE USERS");
-												lblOnlineUsers.setBounds(348, 81, 80, 16);
+												lblOnlineUsers.setBounds(182, 81, 80, 16);
 												chatPanel.add(lblOnlineUsers);
 												lblOnlineUsers.setForeground(Color.WHITE);
 												lblOnlineUsers.setFont(new Font("Franklin Gothic Medium", Font.PLAIN,
 														13));
 								tablePanel.setBackground(Color.RED);
-								tablePanel.setBounds(474, 6, 520, 396);
+								tablePanel.setBounds(294, 6, 700, 396);
 								_gameFrame.getContentPane().add(tablePanel);
 								tablePanel.setLayout(null);
 								
 								JLabel lblTable = new JLabel("Table");
 								lblTable.setForeground(Color.WHITE);
-								lblTable.setBounds(480, 6, 34, 16);
+								lblTable.setBounds(660, 6, 34, 16);
 								tablePanel.add(lblTable);
 								
 								tablePart = new JPanel();
 								tablePart.setBackground(new Color(255, 0, 0));
-								tablePart.setBounds(6, 23, 508, 222);
+								tablePart.setBounds(6, 23, 688, 241);
 								tablePanel.add(tablePart);
 								
 								drawPart = new JPanel();
 								drawPart.setBackground(new Color(255, 0, 0));
-								drawPart.setBounds(439, 267, 75, 112);
+								drawPart.setBounds(619, 267, 75, 112);
 								tablePanel.add(drawPart);
 								
 								discardPart = new JPanel();
 								discardPart.setBackground(new Color(255, 0, 0));
-								discardPart.setBounds(352, 267, 75, 112);
+								discardPart.setBounds(532, 267, 75, 112);
 								tablePanel.add(discardPart);
 								
 								JLabel lblDiscard = new JLabel("Discard");
 								lblDiscard.setForeground(new Color(255, 255, 255));
-								lblDiscard.setBounds(365, 249, 48, 16);
+								lblDiscard.setBounds(559, 380, 48, 16);
 								tablePanel.add(lblDiscard);
 								
 								JLabel lblDraw = new JLabel("Draw");
 								lblDraw.setForeground(new Color(255, 255, 255));
 								lblDraw.setBackground(new Color(255, 0, 0));
-								lblDraw.setBounds(455, 249, 34, 16);
+								lblDraw.setBounds(660, 380, 34, 16);
 								tablePanel.add(lblDraw);
 								
 								handPanel = new JPanel();
@@ -293,40 +303,25 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								lblHand.setBounds(481, 6, 33, 16);
 								handPanel.add(lblHand);
 								
-								JButton btnSubmitPhase_1 = new JButton("Go to Phase Submission");
-								btnSubmitPhase_1.addActionListener(new ActionListener() {
-									public void actionPerformed(ActionEvent arg0) {
-									}
-								});
-								btnSubmitPhase_1.setBounds(328, 234, 186, 29);
-								handPanel.add(btnSubmitPhase_1);
-								
 								handPart = new JPanel();
 								handPart.setBackground(new Color(0, 128, 0));
-								handPart.setBounds(6, 24, 508, 209);
+								handPart.setBounds(6, 24, 508, 239);
 								handPanel.add(handPart);
 								
 								phasePanel = new JPanel();
 								phasePanel.setBackground(Color.YELLOW);
-								phasePanel.setBounds(6, 334, 460, 344);
+								phasePanel.setBounds(6, 409, 460, 269);
 								_gameFrame.getContentPane().add(phasePanel);
 								phasePanel.setLayout(null);
 								
 								phasePart = new JPanel();
+								phasePart.setLocation(6, 23);
 								phasePanel.add( phasePart);
 								
 								JLabel lblNewLabel_1 = new JLabel("Phase Submission");
 								lblNewLabel_1.setForeground(Color.RED);
 								lblNewLabel_1.setBounds(341, 6, 113, 16);
 								phasePanel.add(lblNewLabel_1);
-								
-								JButton btnSubmitPhase = new JButton("Submit Phase");
-								btnSubmitPhase.setBounds(337, 309, 117, 29);
-								phasePanel.add(btnSubmitPhase);
-								
-								JButton btnReturnAllCards = new JButton("Return All Cards to Hand");
-								btnReturnAllCards.setBounds(0, 309, 194, 29);
-								phasePanel.add(btnReturnAllCards);
 						_sendButton.addActionListener(this);
 				_chatBox.addKeyListener(this);
 	}
@@ -574,21 +569,39 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	/**
 	 * 
 	 */
-	private void renderHand(Hand hand){
+	private void renderHand(){
 		this.handPart.removeAll();
-		this.handPart.add( hand.render( this.handPanel.getBackground() ));
+		this.handPart.add( _usersHand.render( this.handPanel.getBackground() ));
+		this.handPart.repaint();
+		this.handPart.revalidate();
 	}
 	
 	/**
 	 * 
 	 */
-	private void renderDiscard(Pile pile){
+	private void renderDiscard(){
 		this.discardPart.removeAll();
-		Component c = pile.renderDiscard();
-		c.addMouseListener( new MouseListener(){
+		this._topDiscard = _pile.renderDiscard();
+		MouseListener m = new MouseListener(){
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("discard pile clicked");
+				if( _isDrawPhase){
+					if( _topDiscard.getRank() != Card.BLANK){
+						_isDrawPhase = false;
+						_topDiscard.removeMouseListener(this);
+						_usersHand.addCard( _pile.popDiscard());
+						renderHand();
+						renderDiscard();
+					}
+				}
+				else if( _isReturnPhase){
+					Card c =  _usersHand.cardSelected();
+					_usersHand.removeCard(c);
+					_pile.returnCard( c );
+
+					renderHand();
+					renderDiscard();
+				}
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {}
@@ -598,20 +611,29 @@ public class Client implements Runnable, ActionListener, WindowListener,
 			public void mousePressed(MouseEvent e) {}
 			@Override
 			public void mouseReleased(MouseEvent e) {}
-		});
-		this.discardPart.add( c );
+		};
+		this._topDiscard.addMouseListener(m);
+		this.discardPart.add( this._topDiscard );
+		this.discardPart.repaint();
+		this.discardPart.revalidate();
 	}
 	
 	/**
 	 * 
 	 */
-	private void renderDraw(Pile pile){
+	private void renderDraw(){
 		this.drawPart.removeAll();
-		Component c = pile.renderDraw();
-		c.addMouseListener( new MouseListener(){
+		this._topDraw  = _pile.renderDraw();
+		MouseListener m = new MouseListener(){
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("draw pile clicked");
+				if( _isDrawPhase){
+					_isDrawPhase = false;
+					_topDraw.removeMouseListener(this);
+					_usersHand.addCard( _pile.popDraw());
+					renderHand();
+					renderDraw();
+				}
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {}
@@ -621,8 +643,11 @@ public class Client implements Runnable, ActionListener, WindowListener,
 			public void mousePressed(MouseEvent e) {}
 			@Override
 			public void mouseReleased(MouseEvent e) {}
-		});
-		this.drawPart.add( c);
+		};
+		this._topDraw.addMouseListener(m);
+		this.drawPart.add( _topDraw);
+		this.drawPart.repaint();
+		this.drawPart.revalidate();
 	}
 	
 	/**
@@ -649,6 +674,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		outerWrapperPane.setSize( outerWrapperPane.getPreferredSize() );
 		tablePart.add(outerWrapperPane);
 		tablePart.setSize(tablePart.getPreferredSize());
+		tablePart.repaint();
+		tablePart.revalidate();
 	}
 	
 	
