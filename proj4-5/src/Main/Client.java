@@ -81,6 +81,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private Pile _pile;
 	private Boolean _isDrawPhase;
 	private Boolean _isReturnPhase;
+	private String phaseButtonOne;
+	private String phaseButtonTwo;
 
 	/**
 	 * Socket Settings
@@ -90,12 +92,17 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private final JPanel tablePanel = new JPanel();
 	private JPanel phasePanel;
 	private JPanel handPanel;
+	private PhasePanel p;
 	
 	private JPanel discardPart;
 	private JPanel drawPart;
 	private JPanel tablePart;
 	private JPanel handPart;
 	private JPanel phasePart;
+	private JButton button;
+	private JButton button_1;
+	private JButton btnSubmitPhase;
+	private JButton btnReturnToHand;
 	
 	
 	/**
@@ -151,15 +158,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		
 		//System.out.println( temp.cardSelected() ); //used to get the users card selected
 		
-		PhasePanel p = new PhasePanel(1, _usersHand);
-		phasePart.removeAll();
-		phasePart.add( p.addTo(1) );
-		phasePart.removeAll();								//make sure we "refresh" the view
-		phasePart.add( p.addTo(2) );
-		phasePart.setBackground( Color.LIGHT_GRAY);			//don't forget to make this part match
-		phasePart.setSize( phasePart.getPreferredSize());	//as always...
-		
-		//JOptionPane.showMessageDialog(null, p); //show what the phase panel looks like rendered
+		p = new PhasePanel(phaseNumber, _usersHand);
 		
 		//show what table will look like
 
@@ -268,22 +267,22 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								
 								tablePart = new JPanel();
 								tablePart.setBackground(new Color(255, 0, 0));
-								tablePart.setBounds(6, 23, 688, 241);
+								tablePart.setBounds(6, 23, 688, 294);
 								tablePanel.add(tablePart);
 								
 								drawPart = new JPanel();
 								drawPart.setBackground(new Color(255, 0, 0));
-								drawPart.setBounds(619, 267, 75, 112);
+								drawPart.setBounds(654, 320, 40, 59);
 								tablePanel.add(drawPart);
 								
 								discardPart = new JPanel();
 								discardPart.setBackground(new Color(255, 0, 0));
-								discardPart.setBounds(532, 267, 75, 112);
+								discardPart.setBounds(602, 320, 40, 59);
 								tablePanel.add(discardPart);
 								
 								JLabel lblDiscard = new JLabel("Discard");
 								lblDiscard.setForeground(new Color(255, 255, 255));
-								lblDiscard.setBounds(559, 380, 48, 16);
+								lblDiscard.setBounds(594, 380, 48, 16);
 								tablePanel.add(lblDiscard);
 								
 								JLabel lblDraw = new JLabel("Draw");
@@ -305,8 +304,59 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								
 								handPart = new JPanel();
 								handPart.setBackground(new Color(0, 128, 0));
-								handPart.setBounds(6, 24, 508, 239);
+								handPart.setBounds(6, 24, 508, 205);
 								handPanel.add(handPart);
+								handPart.setLayout(null);
+								
+								switch(phaseNumber){
+								case 1: phaseButtonOne = "1st Set of 3"; phaseButtonTwo = "2nd Set of 3"; break;
+								case 2: phaseButtonOne = "Set of 3"; phaseButtonTwo = "Run of 4"; break;
+								case 3: phaseButtonOne = "Set of 4"; phaseButtonTwo = "Run of 4"; break;
+								case 4: phaseButtonOne = "Run of 7"; break;
+								case 5: phaseButtonOne = "Run of 8"; break;
+								case 6: phaseButtonOne = "Run of 9"; break;
+								case 7: phaseButtonOne = "1st Set of 4"; phaseButtonTwo = "2nd Set of 4"; break;
+								case 8: phaseButtonOne = "7 of 1 Color"; break;
+								case 9: phaseButtonOne = "Set of 5"; phaseButtonTwo = "Run of 2"; break;
+								case 10: phaseButtonOne = "Set of 5"; phaseButtonTwo = "Run of 3"; break;
+								}
+								
+								if (phaseNumber == 1 || phaseNumber == 2 || phaseNumber == 3 || 
+										phaseNumber == 7 || phaseNumber == 9 || phaseNumber == 10) {
+									button_1 = new JButton(phaseButtonOne);
+									button_1.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											phasePart.removeAll();
+											phasePart.add( p.addTo(1) );
+										}
+									});
+									button_1.setBounds(6, 234, 117, 29);
+									handPanel.add(button_1);
+									
+									button = new JButton(phaseButtonTwo);
+									button.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											phasePart.removeAll();							//make sure we "refresh" the view
+											phasePart.add( p.addTo(2) );
+										}
+										
+									});
+									button.setBounds(397, 234, 117, 29);
+									handPanel.add(button);
+								}
+								else {
+									button_1 = new JButton(phaseButtonOne);
+									button_1.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											phasePart.removeAll();
+											phasePart.add( p.addTo(1) );
+										}
+									});
+									button_1.setBounds(6, 234, 117, 29);
+									handPanel.add(button_1);
+								}
+								
+
 								
 								phasePanel = new JPanel();
 								phasePanel.setBackground(Color.YELLOW);
@@ -315,13 +365,30 @@ public class Client implements Runnable, ActionListener, WindowListener,
 								phasePanel.setLayout(null);
 								
 								phasePart = new JPanel();
-								phasePart.setLocation(6, 23);
-								phasePanel.add( phasePart);
+								phasePart.setBackground(new Color(255, 255, 0));
+								phasePart.setBounds(6, 21, 448, 211);
+								phasePanel.add(phasePart);
+								phasePart.setLayout(null);
 								
 								JLabel lblNewLabel_1 = new JLabel("Phase Submission");
 								lblNewLabel_1.setForeground(Color.RED);
 								lblNewLabel_1.setBounds(341, 6, 113, 16);
 								phasePanel.add(lblNewLabel_1);
+								
+								btnSubmitPhase = new JButton("Submit Phase");
+								btnSubmitPhase.setBounds(341, 234, 117, 29);
+								phasePanel.add(btnSubmitPhase);
+								
+								btnReturnToHand = new JButton("Return to Hand");
+								btnReturnToHand.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent e) {
+										p.returnAllCards(_usersHand);
+										renderHand();
+									}
+								});
+								btnReturnToHand.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
+								btnReturnToHand.setBounds(6, 234, 117, 29);
+								phasePanel.add(btnReturnToHand);
 						_sendButton.addActionListener(this);
 				_chatBox.addKeyListener(this);
 	}

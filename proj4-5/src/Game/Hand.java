@@ -23,8 +23,6 @@ public class Hand extends JPanel implements Serializable{
 	private final static String DELIMITER = "*";
 	
 	private ArrayList<Card> _cards;
-
-	private Card _selectedCard;
 	
 	/**
 	 * construct a hand;
@@ -57,6 +55,19 @@ public class Hand extends JPanel implements Serializable{
 	}
 	
 	/**
+	 * @return 
+	 * 
+	 */
+	public ArrayList<Card> removeAllCards(){
+		ArrayList<Card> toReturn = new ArrayList<Card>();
+		for(Card c : this._cards){
+			toReturn.add(c);
+		}
+		this._cards.clear();
+		return toReturn;
+	}
+	
+	/**
 	 * remove a card from the hand
 	 * @param Card to match
 	 * @return if the card was successfully removed
@@ -80,6 +91,8 @@ public class Hand extends JPanel implements Serializable{
 		
 		this.setSize(this.getPreferredSize());
 		this.setBackground(background);
+		this.repaint();
+		this.revalidate();
 		return this;
 	}
 
