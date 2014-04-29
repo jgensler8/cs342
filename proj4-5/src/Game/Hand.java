@@ -77,6 +77,20 @@ public class Hand extends JPanel implements Serializable{
 	}
 	
 	/**
+	 * 
+	 */
+	public int getNumCards(){
+		return this._cards.size();
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<Card> getCards(){
+		return this._cards;
+	}
+	
+	/**
 	 * get the 
 	 */
 	public Hand render(Color background){
@@ -140,6 +154,13 @@ public class Hand extends JPanel implements Serializable{
             }
             return true;
     }
+    
+    /**
+     * 
+     */
+    public boolean hasSet(){
+    	return Hand.isSet(this._cards, this._cards.size());
+    }
 
     /**
      * static method used for validation when user "declares" to have a run.
@@ -171,6 +192,13 @@ public class Hand extends JPanel implements Serializable{
     }
 
     /**
+     * 
+     */
+    public boolean hasRun(){
+    	return Hand.isRun(this._cards, this._cards.size());
+    }
+
+    /**
      * static method used for validation when user "declares" to have a cards of
      * the same color.
      * 
@@ -193,6 +221,13 @@ public class Hand extends JPanel implements Serializable{
                             return false;
             }
             return true;
+    }
+    
+    /**
+     * 
+     */
+    public Boolean hasSameColor(){
+    	return Hand.isSameColor(this._cards, this._cards.size());
     }
 	
 }

@@ -81,6 +81,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	private Pile _pile;
 	private Boolean _isDrawPhase;
 	private Boolean _isReturnPhase;
+	private Boolean _isHitPhase;
 	private String phaseButtonOne;
 	private String phaseButtonTwo;
 
@@ -139,6 +140,7 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		
 		_isDrawPhase = false;
 		_isReturnPhase = true;
+		_isHitPhase = true;
 		
 		_usersHand = new Hand();
 		_usersHand.addCard( new Card(1,1));
@@ -736,9 +738,79 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		outerWrapperPane.setLayout( new GridLayout(10,1) );
 		outerWrapperPane.setBackground(background);
 		
+		class TabListener implements MouseListener{
+			Hand _hand;
+			int _handType;
+			public TabListener(Hand myHand, int handType){
+				this._hand = myHand;
+				this._handType = handType;
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(_isHitPhase){
+					System.out.println("asdf");
+					Card selected =  _usersHand.cardSelected();
+					selected.unselect();
+					_usersHand.removeCard(selected);
+					this._hand.addCard( selected);
+					
+					switch(this._handType){
+					case 1:
+						if(this._hand.hasRun()){
+							this._hand.render(this._hand.getBackground());
+							_isHitPhase = false; //XXX 
+						}
+						else{
+							System.out.println("INVALID RUN");
+							this._hand.removeCard(selected);
+							_usersHand.addCard(selected);
+						}
+						break;
+					case 2:
+						if(this._hand.hasSet()){
+							this._hand.render(this._hand.getBackground());
+							_isHitPhase = false; //XXX
+						}
+						else{
+							System.out.println("INVALID SET");
+							this._hand.removeCard(selected);
+							_usersHand.addCard(selected);
+						}
+						break;
+					case 3:
+						if(this._hand.hasSameColor()){
+							this._hand.render(this._hand.getBackground());
+							_isHitPhase = false; //XXX
+						}
+						else{
+							System.out.println("INVALID SAME COLOR");
+							this._hand.removeCard(selected);
+							_usersHand.addCard(selected);
+						}
+						break;
+					}
+					
+					tablePart.repaint();
+					tablePart.revalidate();
+					this._hand.render(this._hand.getBackground());
+					_usersHand.render( _usersHand.getBackground());
+				}
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+		}
+		
 		//add a tabbed pane of hands of colors
 		JTabbedPane runsTab = new JTabbedPane();
 		for( Hand h : Runs){
+			TabListener tl = new TabListener(h,1);
+			h.addMouseListener(tl);
 			runsTab.add(h.render(background) );
 		}
 		runsTab.setBackground(background);
@@ -748,6 +820,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		//add a tabbed pane of hands of sets
 		JTabbedPane setsTab = new JTabbedPane();
 		for( Hand h : Sets){
+			TabListener tl = new TabListener(h,2);
+			h.addMouseListener(tl);
 			setsTab.add(h.render(background) );
 		}
 		setsTab.setBackground(background);
@@ -757,6 +831,8 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		//add a tabbed pane of hands of colors
 		JTabbedPane colorsTab = new JTabbedPane();
 		for( Hand h : Colors){
+			TabListener tl = new TabListener(h,3);
+			h.addMouseListener(tl);
 			colorsTab.add(h.render(background) );
 		}
 		colorsTab.setBackground(background);
