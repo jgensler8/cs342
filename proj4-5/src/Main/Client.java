@@ -163,32 +163,40 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		//show what table will look like
 
 		Hand temp2 = new Hand();
-		temp2.addCard( new Card(6,1));
+		temp2.addCard( new Card(5,1));
 		temp2.addCard( new Card(6,2));
-		temp2.addCard( new Card(6,3));
-		temp2.addCard( new Card(6,4));
+		temp2.addCard( new Card(7,3));
+		temp2.addCard( new Card(8,4));
 		Hand temp3 = new Hand();
 		temp3.addCard( new Card(1,1));
 		temp3.addCard( new Card(2,2));
 		temp3.addCard( new Card(3,3));
 		temp3.addCard( new Card(4,2));
-		ArrayList<Hand> playerOnes = new ArrayList<Hand>();
-		playerOnes.add(temp2);
-		playerOnes.add(temp3);
+		ArrayList<Hand> runs = new ArrayList<Hand>();
+		runs.add(temp2);
+		runs.add(temp3);
 		
 		Hand temp4 = new Hand();
 		temp4.addCard( new Card(8,1));
 		temp4.addCard( new Card(8,2));
 		temp4.addCard( new Card(8,3));
 		temp4.addCard( new Card(8,2));
-		ArrayList<Hand> playerTwos = new ArrayList<Hand>();
-		playerTwos.add(temp4);
+		ArrayList<Hand> sets = new ArrayList<Hand>();
+		sets.add(temp4);
+
+		Hand temp5 = new Hand();
+		temp5.addCard( new Card(1,1));
+		temp5.addCard( new Card(2,1));
+		temp5.addCard( new Card(3,1));
+		temp5.addCard( new Card(4,1));
+		temp5.addCard( new Card(8,1));
+		temp5.addCard( new Card(9,1));
+		temp5.addCard( new Card(10,1));
+		temp5.addCard( new Card(11,1));
+		ArrayList<Hand> colors = new ArrayList<Hand>();
+		colors.add(temp5);
 		
-		ArrayList<ArrayList<Hand>> table = new ArrayList<ArrayList<Hand>>();
-		table.add( playerOnes);
-		table.add( playerTwos);
-	
-		this.renderTable(table);
+		this.renderTable(runs, sets, colors);
 	}
 
 	/**
@@ -721,22 +729,39 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	 * render an arraylist of arraylist of cards
 	 * Everyplayer has multiple plays which are contined in the hands
 	 */
-	private void renderTable(ArrayList<ArrayList<Hand>> allPlayersHands){
+	private void renderTable(ArrayList<Hand> Runs, ArrayList<Hand> Sets, ArrayList<Hand> Colors){
 		tablePart.removeAll();
 		Color background = Color.RED;
 		JPanel outerWrapperPane = new JPanel();
 		outerWrapperPane.setLayout( new GridLayout(10,1) );
 		outerWrapperPane.setBackground(background);
-		for(ArrayList<Hand> playerPlays : allPlayersHands){
-			
-			JTabbedPane playerWrapper = new JTabbedPane();
-			for( Hand h : playerPlays){
-				playerWrapper.add(h.render(background) );
-			}
-			playerWrapper.setBackground(background);
-			playerWrapper.setSize( playerWrapper.getPreferredSize());
-			outerWrapperPane.add(playerWrapper);
+		
+		//add a tabbed pane of hands of colors
+		JTabbedPane runsTab = new JTabbedPane();
+		for( Hand h : Runs){
+			runsTab.add(h.render(background) );
 		}
+		runsTab.setBackground(background);
+		runsTab.setSize( runsTab.getPreferredSize());
+		outerWrapperPane.add(runsTab);
+		
+		//add a tabbed pane of hands of sets
+		JTabbedPane setsTab = new JTabbedPane();
+		for( Hand h : Sets){
+			setsTab.add(h.render(background) );
+		}
+		setsTab.setBackground(background);
+		setsTab.setSize( setsTab.getPreferredSize());
+		outerWrapperPane.add(setsTab);
+		
+		//add a tabbed pane of hands of colors
+		JTabbedPane colorsTab = new JTabbedPane();
+		for( Hand h : Colors){
+			colorsTab.add(h.render(background) );
+		}
+		colorsTab.setBackground(background);
+		colorsTab.setSize( colorsTab.getPreferredSize());
+		outerWrapperPane.add(colorsTab);
 		
 		outerWrapperPane.setSize( outerWrapperPane.getPreferredSize() );
 		tablePart.add(outerWrapperPane);

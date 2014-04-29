@@ -75,10 +75,6 @@ public class PhasePanel extends JPanel{
 				c.unselect();
 				this._otherHand.removeCard(c);
 				this.phaseHandOne.addCard( c);
-				
-				this.render();
-				
-				this._otherHand.render( this._otherHand.getBackground() );
 			}
 		}
 		else if( hand == 2){
@@ -87,14 +83,10 @@ public class PhasePanel extends JPanel{
 				c.unselect();
 				this._otherHand.removeCard(c);
 				this.phaseHandTwo.addCard( c);
-				
-				this.render();
-				
-				this._otherHand.render( this._otherHand.getBackground() );
 			}
 		}
-		this.setSize( this.getPreferredSize());
-		//System.out.println(this);
+		this.render();
+		this._otherHand.render( this._otherHand.getBackground() );
 		return this;
 	}
 	
@@ -122,5 +114,7 @@ public class PhasePanel extends JPanel{
 		this.phaseHandTwoPanel.setSize( this.phaseHandTwoPanel.getPreferredSize());
 
 		this.setSize( this.getPreferredSize());
+		this.revalidate();
+		this.repaint();
 	}
 }
