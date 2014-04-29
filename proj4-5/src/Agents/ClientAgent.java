@@ -46,9 +46,12 @@ public class ClientAgent {
 			
                 // introduce self to server
 				System.out.println("CLIENT THREAD: INTRODUCING TO SERVER");
+				/*
+				 * todo
+				 
                 Message message = new Message("", "", Message.PLAYER_JOINED, "");
                 _outStream.writeObject(message);
-                
+                */
                 //sever will give up identity which is stored in the body of the message from the server
                 Message identity = (Message) _inStream.readObject();
                 System.out.println("CLIENT THREAD: IDENTITY RECEIVED: " + identity);
@@ -98,13 +101,16 @@ public class ClientAgent {
 	 * that it is closing the conenction
 	 */
 	public void quit(){
+		/*
 		try {
             // send message to server that client disconnected, so server can
             // notify other clients with the updated list of online users
+			
             _outStream.writeObject(new Message(this._myPlayer, "", Message.PLAYER_EXITED, ""));
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
+	    */
 	}
 	
 	/**
@@ -112,6 +118,7 @@ public class ClientAgent {
 	 * @param message, the message to be sent
 	 */
 	public void sendMessage(String text) {
+		/*
 		try {
 			Message message = new Message(this._myPlayer, Message.ALL_USERS_IN_ROOM, Message.TEXT, text );
 			System.out.println("CLIENT AGENT: MESSAGE TO SEND: " + message.toString() );
@@ -119,5 +126,6 @@ public class ClientAgent {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 }

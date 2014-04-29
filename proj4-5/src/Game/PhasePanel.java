@@ -77,7 +77,6 @@ public class PhasePanel extends JPanel{
 			this.phaseHandTwoPanel.setSize( this.phaseHandTwoPanel.getPreferredSize());
 		}
 		this.setSize( this.getPreferredSize());
-		System.out.println(this);
 		return this;
 	}
 }

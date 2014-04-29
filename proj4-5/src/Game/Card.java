@@ -7,15 +7,13 @@ import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JRadioButton;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
+import javax.swing.JToggleButton;
 
 /*
  * !!!!!!!!!!!!!!!!!!!!! I don't have pictures for wild or skip cards yet
  */
 
-public class Card extends JRadioButton implements Serializable, MouseListener{
+public class Card extends JToggleButton implements Serializable, MouseListener{
 	//types
 	public static final int ONE = 1;
 	public static final int TWO = 2;

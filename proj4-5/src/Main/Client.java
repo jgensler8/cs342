@@ -16,18 +16,19 @@ import Game.Pile;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
@@ -37,15 +38,16 @@ import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-
+import javax.swing.ScrollPaneLayout;
+import javax.swing.Scrollable;
 
 public class Client implements Runnable, ActionListener, WindowListener,
 		KeyListener {
@@ -125,10 +127,14 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		temp.addCard( new Card(1,1));
 		temp.addCard( new Card(3,2));
 		temp.addCard( new Card(7,3));
+		temp.addCard( new Card(2,2));
+		temp.addCard( new Card(5,1));
+		temp.addCard( new Card(5,2));
+		temp.addCard( new Card(5,3));
+		temp.addCard( new Card(5,4));
 		this.renderHand( temp);
 		
 		Pile pile = new Pile();
-		pile.initPhaseTen();
 		//pile.returnCard( new Card(1,1) );
 		this.renderDiscard(pile);
 		this.renderDraw(pile);
@@ -144,6 +150,36 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		phasePart.setSize( phasePart.getPreferredSize());	//as always...
 		
 		//JOptionPane.showMessageDialog(null, p); //show what the phase panel looks like rendered
+		
+		//show what table will look like
+
+		Hand temp2 = new Hand();
+		temp2.addCard( new Card(6,1));
+		temp2.addCard( new Card(6,2));
+		temp2.addCard( new Card(6,3));
+		temp2.addCard( new Card(6,4));
+		Hand temp3 = new Hand();
+		temp3.addCard( new Card(1,1));
+		temp3.addCard( new Card(2,2));
+		temp3.addCard( new Card(3,3));
+		temp3.addCard( new Card(4,2));
+		ArrayList<Hand> playerOnes = new ArrayList<Hand>();
+		playerOnes.add(temp2);
+		playerOnes.add(temp3);
+		
+		Hand temp4 = new Hand();
+		temp4.addCard( new Card(8,1));
+		temp4.addCard( new Card(8,2));
+		temp4.addCard( new Card(8,3));
+		temp4.addCard( new Card(8,2));
+		ArrayList<Hand> playerTwos = new ArrayList<Hand>();
+		playerTwos.add(temp4);
+		
+		ArrayList<ArrayList<Hand>> table = new ArrayList<ArrayList<Hand>>();
+		table.add( playerOnes);
+		table.add( playerTwos);
+	
+		this.renderTable(table);
 	}
 
 	/**
@@ -588,6 +624,33 @@ public class Client implements Runnable, ActionListener, WindowListener,
 		});
 		this.drawPart.add( c);
 	}
+	
+	/**
+	 * render an arraylist of arraylist of cards
+	 * Everyplayer has multiple plays which are contined in the hands
+	 */
+	private void renderTable(ArrayList<ArrayList<Hand>> allPlayersHands){
+		tablePart.removeAll();
+		Color background = Color.RED;
+		JPanel outerWrapperPane = new JPanel();
+		outerWrapperPane.setLayout( new GridLayout(10,1) );
+		outerWrapperPane.setBackground(background);
+		for(ArrayList<Hand> playerPlays : allPlayersHands){
+			
+			JTabbedPane playerWrapper = new JTabbedPane();
+			for( Hand h : playerPlays){
+				playerWrapper.add(h.render(background) );
+			}
+			playerWrapper.setBackground(background);
+			playerWrapper.setSize( playerWrapper.getPreferredSize());
+			outerWrapperPane.add("Player 1",  playerWrapper);
+		}
+		
+		outerWrapperPane.setSize( outerWrapperPane.getPreferredSize() );
+		tablePart.add(outerWrapperPane);
+		tablePart.setSize(300,300);
+	}
+	
 	
 	public static class NetworkInput extends JPanel{
 		/**

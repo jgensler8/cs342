@@ -82,7 +82,6 @@ public class ServerAgent {
             //Player player = (Player) message.getSender();
             //XXX Rather, create a new player to assign to this new connection
             Player player = new Player(_nameBuilder.generateUniqueName());
-            player.setSocket(_clientSocket);
 
             // pointer to room that the player will be assigned to
             Room playerRoom = null;
@@ -110,11 +109,13 @@ public class ServerAgent {
             playerRoom.addPlayer(player);
             
             // notify user of room assignment
+            /*
+             * TODO
             dispatchMessage(playerRoom, Message.ADMIN, Message.USER,
                             Message.ROOM_ASSIGNMENT, playerRoom.getID());
             dispatchMessage(playerRoom, Message.SERVER, Message.USER,
 		                    Message.NAME_ASSIGNMENT, player.getName());
-            
+            */
             // notify all users in room of new player
 			/* XXX
             dispatchMessage(playerRoom, Message.ADMIN,
@@ -161,6 +162,7 @@ public class ServerAgent {
                 Message message = new Message(sender, recipient, subject, body);
                 // String data = message.serialize();
                 // determine audience
+                /*
                 if (recipient.equals(Message.USER)) {
                         // send to single user
                         _outStream.writeObject(message);
@@ -172,6 +174,8 @@ public class ServerAgent {
                                                 .getOutputStream())).writeObject(message);
                         }
                 }
+                TODO
+                */
         }
 
         /**

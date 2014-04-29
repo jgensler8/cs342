@@ -1,6 +1,7 @@
 package Agents;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Because socket stream between server and client is plain text we need this
@@ -11,75 +12,86 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
 
-        private static final long serialVersionUID = 1L;
+	 private static final long serialVersionUID = 1L;
 
-        // delimiter used for serialization - must be unique to class
-        private final static String DELIMITER = "~";
+     // final class and attributes for relay of message
+     // organize by final class so attributes don't have name conflicts
 
-        // unique identifier of admin as sender
-        public final static String ADMIN = "$ADMIN$";
-        public final static String SERVER = "$SERVER$";
-        // recipients
-        public final static String ALL_USERS_IN_ROOM = "$ROOM_USERS$";
-        public final static String USER = "$USER$";
-        // common subjects
-        public final static String ROOM_ASSIGNMENT = "$ROOM$"; //XXX Perhaps we can just send the whole identity back
-        public final static String NAME_ASSIGNMENT = "$NAME$"; 
-        public final static String PLAYER_JOINED = "$JOINED$";
-        public final static String PLAYER_EXITED = "$EXITED$";
-        public final static String START_GAME = "$START$";
+     // common subjects
+     public final static class Subject {
+             public final static String ROOM_ASSIGNMENT = "$ROOM$";
+             public final static String PLAYER_JOINED = "$JOINED$";
+             public final static String PLAYER_EXITED = "$EXITED$";
+             public final static String START_GAME = "$START$";
+             public final static String DRAW_FROM_DECK = "$DRAW_DECK$";
+             public final static String DRAW_FROM_DISCARD = "$DRAW_DISCARD$";
+             public final static String PLAY_SET = "$PLAY_SET$";
+             public final static String PLAY_RUN = "$PLAY_RUN$";
+             public final static String PLAY_COLOR = "$PLAY_COLOR$";
+             public final static String APPEND_SET = "$APPEND_SET$";
+             public final static String APPEND_RUN = "$APPEND_RUN$";
+             public final static String APPEND_COLOR = "$APPEND_COLOR$";
+             public final static String PHASE_REJECTED = "$PHASE_REJECTED$";
+             public final static String WINNER = "$WINNER$";
+             public final static String TEXT = "$TEXT$";
+     }
 
-        public final static String TEXT = "$TEXT$";
-        public final static String DRAWCARD= "$DRAWCARD$";
-        public final static String DISCARD = "$DISCARD$";
-        public final static String PLAYHAND = "$PLAYHAND$";
+     // unique identifier of admin as sender
+     public final static class Sender {
+             public final static String ADMIN = "$ADMIN$";
+     }
 
-        // data members
-        private Object _sender;
-        private Object _recipient;
-        private Object _subject;
-        private Object _body;
+     // recipients
+     public final static class Recipient {
+             public final static String ALL_USERS_IN_ROOM = "$ROOM_USERS$";
+             public final static String USER = "$USER$";
+     }
 
-        /**
-         * Class Constructor
-         */
-        public Message(Object sender, Object recipient, Object subject, Object body) {
-                _sender = sender;
-                _recipient = recipient;
-                _subject = subject;
-                _body = body;
-                
-                //System.out.println("MESSAGE: DEBUG: sender:"+ sender + ":recipient:"+recipient+":subject:"+subject+":body:"+body);
-        }
+     // data members
+     private Object _sender;
+     private Object _recipient;
+     private Object _subject;
+     private Object _body;
 
-        /**
-         * Get methods to retrieve message information
-         * 
-         * @return request attribute
-         */
-        public Object getSender() {
-                return _sender;
-        }
+     /**
+      * Class Constructor
+      */
+     public Message(Object sender, Object recipient, Object subject, Object body) {
+             _sender = sender;
+             _recipient = recipient;
+             _subject = subject;
+             _body = body;
+     }
 
-        public Object getRecipient() {
-                return _recipient;
-        }
+     /**
+      * Get methods to retrieve message information
+      *
+      * @return request attribute
+      */
+     public Object getSender() {
+             return _sender;
+     }
 
-        public Object getSubject() {
-                return _subject;
-        }
+     public Object getRecipient() {
+             return _recipient;
+     }
 
-        public Object getBody() {
-                return _body;
-        }
+     public Object getSubject() {
+             return _subject;
+     }
 
-        /**
-         * return string representation of instance for logging
-         */
-        public String toString() {       	
-                return "getSender: " + _sender.toString() + "\n&" + "getRecipient: "
-                                + _recipient.toString() + "\n&" + "getSubject: "
-                                + _subject.toString() + "\n&" + "getBody: " + _body.toString()
-                                + "\n";
-        }
+     public Object getBody() {
+             return _body;
+     }
+
+     /**
+      * return string representation of instance for logging
+      */
+     public String toString() {
+             Date d = new Date();
+             return "getSender: " + _sender.toString() + "\n&" + "getRecipient: "
+                             + _recipient.toString() + "\n&" + "getSubject: "
+                             + _subject.toString() + "\n&" + "getBody: " + _body.toString()
+                             + "\n" +  d.toString() + "\n";
+     }
 }

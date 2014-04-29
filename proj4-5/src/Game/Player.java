@@ -1,6 +1,9 @@
 package Game;
 
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.UUID;
@@ -25,8 +28,11 @@ public class Player implements Serializable{
     private String _roomID;
     // cards in player's hand
     private Hand _hand;
-    // player's socket connection to server
-    private Socket _socket;
+    // player's input stream (needed because it can be instantiate only once)
+    private transient ObjectInputStream _inStream;
+    // player's input stream (needed because it can be instantiate only once)
+    private transient ObjectOutputStream _outStream;
+
 
     /**
      * FOR USE ON THE SERVER
@@ -46,24 +52,23 @@ public class Player implements Serializable{
     }
     
     /**
-     * FOR USE ON THE CLIENT
+     * FOR USE ON THE CLIENT ? XXX
      */
     public Player(Player p){
     	this._ID = p._ID;
     	this._name = p._name;
     	this._roomID = p._roomID;
     	this._hand = p._hand;
-    	//this._socket = p._socket //The client doesn't really need the socket
     }
 
     /**
      * helper method to class constructor
      */
     private void init() {
-            // generate random unique identifier
-            _ID = UUID.randomUUID().toString();
-            _hand = new Hand();
-            _roomID = "";
+    	 // generate random unique identifier
+        _ID = UUID.randomUUID().toString();
+        _hand = new Hand();
+        _roomID = "";
     }
 
     /**
@@ -78,18 +83,27 @@ public class Player implements Serializable{
      * 
      * @param socket
      *            socket connection
+     * @throws IOException
      */
-    public void setSocket(Socket socket) {
-            _socket = socket;
+    public void setSocketStream(ObjectInputStream inStream, ObjectOutputStream outStream) throws IOException {
+            _inStream = inStream;
+            _outStream = outStream;
     }
 
     /**
-     * return this client/player's connection to server
+     * @return player input stream given socket
      */
-    public Socket getSocket() {
-            return _socket;
+    public ObjectInputStream getInputStream() {
+            return _inStream;
     }
 
+    /**
+     * @return player output stream given socket
+     */
+    public ObjectOutputStream getOutputStream() {
+            return _outStream;
+    }
+    
     /**
      * assign player to a room
      * 

@@ -50,6 +50,7 @@ public class Hand extends JPanel implements Serializable{
 	/**
 	 * remove a card from the hand
 	 * @param index of the card to remove
+	 * @return the card removed
 	 */
 	public Card removeCard(int index){
 		return this._cards.remove(index);
@@ -57,7 +58,8 @@ public class Hand extends JPanel implements Serializable{
 	
 	/**
 	 * remove a card from the hand
-	 * @param index of the card to remove
+	 * @param Card to match
+	 * @return if the card was successfully removed
 	 */
 	public Boolean removeCard(Card c){
 		return this._cards.remove(c);
