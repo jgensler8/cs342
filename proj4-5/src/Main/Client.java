@@ -643,12 +643,12 @@ public class Client implements Runnable, ActionListener, WindowListener,
 			}
 			playerWrapper.setBackground(background);
 			playerWrapper.setSize( playerWrapper.getPreferredSize());
-			outerWrapperPane.add("Player 1",  playerWrapper);
+			outerWrapperPane.add(playerWrapper);
 		}
 		
 		outerWrapperPane.setSize( outerWrapperPane.getPreferredSize() );
 		tablePart.add(outerWrapperPane);
-		tablePart.setSize(300,300);
+		tablePart.setSize(tablePart.getPreferredSize());
 	}
 	
 	
