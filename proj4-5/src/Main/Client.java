@@ -730,6 +730,9 @@ public class Client implements Runnable, ActionListener, WindowListener,
 	/**
 	 * render an arraylist of arraylist of cards
 	 * Everyplayer has multiple plays which are contined in the hands
+	 * 
+	 * also add listeners to the tab of the hands
+	 * these listeners try and match hits when the player is on the hitting phase
 	 */
 	private void renderTable(ArrayList<Hand> Runs, ArrayList<Hand> Sets, ArrayList<Hand> Colors){
 		tablePart.removeAll();
@@ -748,7 +751,6 @@ public class Client implements Runnable, ActionListener, WindowListener,
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(_isHitPhase){
-					System.out.println("asdf");
 					Card selected =  _usersHand.cardSelected();
 					selected.unselect();
 					_usersHand.removeCard(selected);
