@@ -69,24 +69,28 @@ public class PhasePanel extends JPanel{
 	 * @param hand , the hand that the currently selected card should be placed in
 	 */
 	public PhasePanel addTo( int hand){
-		if(hand == 1){
-			if (handOneLimit > 0) {
-				Card c = this._otherHand.cardSelected();
-				c.unselect();
-				this._otherHand.removeCard(c);
-				this.phaseHandOne.addCard( c);
+		if( this._otherHand.cardSelected() != null){
+			if(hand == 1){
+				if (handOneLimit > 0) {
+					Card c = this._otherHand.cardSelected();
+					c.unselect();
+					this._otherHand.removeCard(c);
+					this.phaseHandOne.addCard( c);
+					handOneLimit--;
+				}
 			}
-		}
-		else if( hand == 2){
-			if (handTwoLimit > 0) {
-				Card c = this._otherHand.cardSelected();
-				c.unselect();
-				this._otherHand.removeCard(c);
-				this.phaseHandTwo.addCard( c);
+			else if( hand == 2){
+				if (handTwoLimit > 0) {
+					Card c = this._otherHand.cardSelected();
+					c.unselect();
+					this._otherHand.removeCard(c);
+					this.phaseHandTwo.addCard( c);
+					handTwoLimit--;
+				}
 			}
+			this.render();
+			this._otherHand.render( this._otherHand.getBackground() );
 		}
-		this.render();
-		this._otherHand.render( this._otherHand.getBackground() );
 		return this;
 	}
 	
@@ -94,6 +98,19 @@ public class PhasePanel extends JPanel{
 	 * 
 	 */
 	public void returnAllCards(Hand usersHand) {
+		switch(p){
+		case 1: handOneLimit = 3; handTwoLimit = 3; break;
+		case 2: handOneLimit = 3; handTwoLimit = 4; break;
+		case 3: handOneLimit = 4; handTwoLimit = 4; break;
+		case 4: handOneLimit = 7; handTwoLimit = 0; break;
+		case 5: handOneLimit = 8; handTwoLimit = 0; break;
+		case 6: handOneLimit = 9; handTwoLimit = 0; break;
+		case 7: handOneLimit = 4; handTwoLimit = 4; break;
+		case 8: handOneLimit = 7; handTwoLimit = 0; break;
+		case 9: handOneLimit = 5; handTwoLimit = 2; break;
+		case 10: handOneLimit = 5; handTwoLimit = 3; break;
+		}
+		
 		usersHand.addCards(phaseHandOne.removeAllCards());
 		usersHand.addCards(phaseHandTwo.removeAllCards());
 		this.render();
